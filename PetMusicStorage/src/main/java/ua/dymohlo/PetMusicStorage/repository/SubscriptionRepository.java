@@ -5,4 +5,6 @@ import org.springframework.stereotype.Repository;
 import ua.dymohlo.PetMusicStorage.entity.Subscription;
 @Repository
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
+    Subscription findBySubscriptionName(String subscriptionName);
+    boolean existsBySubscriptionName(String subscriptionName);
 }

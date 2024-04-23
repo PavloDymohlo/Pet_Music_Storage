@@ -5,8 +5,11 @@ import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,19 +22,12 @@ import ua.dymohlo.PetMusicStorage.entity.Subscription;
 import ua.dymohlo.PetMusicStorage.entity.User;
 import ua.dymohlo.PetMusicStorage.repository.UserRepository;
 
-
+@ExtendWith(MockitoExtension.class)
 public class DatabaseUserDetailsServiceTest {
-
+    @InjectMocks
     private DatabaseUserDetailsService databaseUserDetailsService;
-
     @Mock
     private UserRepository userRepository;
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        databaseUserDetailsService = new DatabaseUserDetailsService(userRepository);
-    }
 
     @Test
     public void loadUserByUsername_userExists_returnsUserDetails() {

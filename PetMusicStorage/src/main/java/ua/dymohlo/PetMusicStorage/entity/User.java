@@ -1,9 +1,10 @@
 package ua.dymohlo.PetMusicStorage.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import lombok.*;
 
+import lombok.*;
+import ua.dymohlo.PetMusicStorage.Enum.AutoRenewStatus;
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -11,28 +12,27 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Data
 @Builder
-@ToString(exclude = {"userBankCard", "subscription"})
+@ToString(exclude = {"subscription"})
 @Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column(name = "phone_number")
     private long phoneNumber;
     @Column(name = "password")
     private String password;
     @Column(name = "auto_renew")
-    private String autoRenew;
+    @Enumerated(EnumType.STRING)
+    private AutoRenewStatus autoRenew;
     @Column(name = "end_time")
     private LocalDateTime endTime;
     @Column(name = "email")
     private String email;
-    @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "bank_card_number")
+    @JoinColumn(name = "bank_card_id")
     private UserBankCard userBankCard;
-    @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "subscriptions_id")
+    @JoinColumn(name = "subscription_id")
     private Subscription subscription;
 }

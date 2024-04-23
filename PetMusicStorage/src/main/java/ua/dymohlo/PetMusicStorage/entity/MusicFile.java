@@ -1,8 +1,9 @@
 package ua.dymohlo.PetMusicStorage.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+
 import lombok.*;
+
+import javax.persistence.*;
 
 @Entity
 @AllArgsConstructor
@@ -13,11 +14,10 @@ import lombok.*;
 @Table(name = "music_files")
 public class MusicFile {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column(name = "music_file_name")
     private String musicFileName;
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "subscriptions_id")
     private Subscription subscription;

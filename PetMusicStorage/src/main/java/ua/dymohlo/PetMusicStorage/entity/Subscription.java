@@ -1,9 +1,10 @@
 package ua.dymohlo.PetMusicStorage.entity;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
 import lombok.*;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -16,7 +17,7 @@ import java.util.List;
 @Table(name = "subscriptions")
 public class Subscription {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column(name = "subscription_name")
     private String subscriptionName;
@@ -27,7 +28,6 @@ public class Subscription {
     @JsonIgnore
     @OneToMany(mappedBy = "subscription", cascade = CascadeType.ALL)
     private List<MusicFile> musicFiles;
-    @JsonIgnore
     @OneToMany(mappedBy = "subscription", cascade = CascadeType.ALL)
     private List<User> users;
 }

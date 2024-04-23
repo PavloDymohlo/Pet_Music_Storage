@@ -25,7 +25,7 @@ public class ClientController {
         try {
             clientService.transactionMoney(outputCardNumber, targetCardNumber, sum, cardExpirationDate, cvv);
             return ResponseEntity.ok("Transaction successful!");
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Transaction failed: " + e.getMessage());
         }
     }

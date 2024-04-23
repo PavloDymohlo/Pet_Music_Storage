@@ -30,10 +30,10 @@ public class ClientService {
                 clientRepository.save(recipient);
                 System.out.println("Transaction successful!");
             } else {
-                throw new RuntimeException("Insufficient funds!");
+                throw new IllegalArgumentException("Insufficient funds!");
             }
         } else {
-            throw new RuntimeException("Invalid card data!");
+            throw new IllegalArgumentException("Invalid card data!");
         }
     }
 
@@ -41,19 +41,16 @@ public class ClientService {
         Date currentDate = new Date();
         if (clientRepository.existsByCardNumber(cardNumber)) {
             Client client = clientRepository.findByCardNumber(cardNumber);
-            if (cardExpirationDate(cardExpirationDate).after(currentDate)) {
+            if (cardExpirationDate(cardExpirationDate).after(currentDate)
+                && client.getCardExpirationDate().equals(cardExpirationDate)) {
                 if (client.getCvv() == cvv) {
                     return true;
-                } else {
-                    System.out.println("CVV is not correct!");
-                    return false;
                 }
+                throw new IllegalArgumentException("CVV is not correct!");
             }
-            System.out.println("The card has expired!");
-            return false;
+            throw new IllegalArgumentException("The card has expired, or not correct!");
         }
-        System.out.println("Card with this number not found! ");
-        return false;
+        throw new IllegalArgumentException("Card with this number not found! ");
     }
 
     private Date cardExpirationDate(String cardExpirationDate) {

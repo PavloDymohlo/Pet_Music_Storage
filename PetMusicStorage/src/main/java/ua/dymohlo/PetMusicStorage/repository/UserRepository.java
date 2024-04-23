@@ -6,5 +6,7 @@ import ua.dymohlo.PetMusicStorage.entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User,Long> {
-    User findByPhoneNumber(long phoneNumber);
+    User findByPhoneNumber(long phoneNumber);//test+
+    boolean existsByPhoneNumber(long phoneNumber);//test+
+    boolean existsByEmail(String email);//test+
 }
