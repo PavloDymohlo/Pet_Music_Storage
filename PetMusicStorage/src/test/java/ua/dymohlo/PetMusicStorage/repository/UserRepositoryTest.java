@@ -82,7 +82,7 @@ public class UserRepositoryTest {
         assertFalse(exists, "User with  phone number should not exist");
     }
     @Test
-    public void existsByEmail_EmailExists_true(){
+    public void existsByEmail_emailExists_true(){
         String email = "mockUser@mail.com";
         when(mockUserRepository.existsByEmail(email)).thenReturn(true);
 
@@ -91,7 +91,7 @@ public class UserRepositoryTest {
         assertTrue(exists, "User with the email exist");
     }
     @Test
-    public void existsByEmail_EmailExists_false() {
+    public void existsByEmail_emailExists_false() {
         String email = "mockUser@mail.com";
         when(mockUserRepository.existsByEmail(email)).thenReturn(false);
 

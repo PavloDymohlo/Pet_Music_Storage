@@ -40,7 +40,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void userDetailsService_PhoneNumberExist() {
+    public void userDetailsService_phoneNumberExist() {
         long phoneNumber = 80996663322L;
         UserDetails mockUserDetails = mock(UserDetails.class);
         when(databaseUserDetailsService.loadUserByUsername(String.valueOf(phoneNumber))).thenReturn(mockUserDetails);
@@ -54,7 +54,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void userDetailService_PhoneNumberNotFound() {
+    public void userDetailService_phoneNumberNotFound() {
         long phoneNumber = 80996663322L;
 
         UserDetailsService userDetailsService = userService.userDetailsService();
@@ -64,7 +64,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void registerUser_Success() {
+    public void registerUser_success() {
 
     }
 }

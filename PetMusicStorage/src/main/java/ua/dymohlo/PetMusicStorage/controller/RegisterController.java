@@ -5,20 +5,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 import ua.dymohlo.PetMusicStorage.dto.TransactionDTO;
 import ua.dymohlo.PetMusicStorage.dto.UserRegistrationDTO;
 import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
 import ua.dymohlo.PetMusicStorage.service.JWTService;
 import ua.dymohlo.PetMusicStorage.service.UserService;
+import org.springframework.web.reactive.function.client.WebClient;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/register")
@@ -26,6 +25,7 @@ public class RegisterController {
     private final UserService userService;
     private final DatabaseUserDetailsService databaseUserDetailsService;
     private final JWTService jwtService;
+    private final WebClient.Builder webClientBuilder;
 
     @PostMapping
     public ResponseEntity<String> registerUser(@RequestBody UserRegistrationDTO request) {
@@ -40,20 +40,26 @@ public class RegisterController {
             }
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
+            long recipientBankCardNumber = 1234567890123456L;
+            int paymentPrice = 1;
+            String bankUrlTransaction = "http://localhost:8081/transaction";
             TransactionDTO transactionDTO = TransactionDTO.builder()
                     .outputCardNumber(request.getUserBankCard().getCardNumber())
-                    .targetCardNumber(1234567890123456L)
-                    .sum(100)
+                    .targetCardNumber(recipientBankCardNumber)
+                    .sum(paymentPrice)
                     .cardExpirationDate(request.getUserBankCard().getCardExpirationDate())
                     .cvv(request.getUserBankCard().getCvv()).build();
-            HttpEntity<TransactionDTO> cardRequest = new HttpEntity<>(transactionDTO, headers);
-            ResponseEntity<String> bankResponse;
-            try {
-                bankResponse = new RestTemplate().exchange("http://localhost:8081/transaction",
-                        HttpMethod.POST, cardRequest, String.class);
-            } catch (HttpClientErrorException | HttpServerErrorException ex) {
-                return ResponseEntity.status(ex.getStatusCode()).body(ex.getResponseBodyAsString());
-            }
+
+            Mono<ResponseEntity<String>> bankResponseMono = webClientBuilder.build()
+                    .post()
+                    .uri(bankUrlTransaction)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(transactionDTO)
+                    .retrieve()
+                    .toEntity(String.class);
+
+            ResponseEntity<String> bankResponse = bankResponseMono.block();
+
             if (bankResponse.getStatusCode().is2xxSuccessful()) {
                 userService.registerUser(request);
                 UserDetails userDetails = databaseUserDetailsService.loadUserByUsername(String.valueOf(request.getPhoneNumber()));
