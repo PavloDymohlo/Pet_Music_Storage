@@ -2,9 +2,7 @@ package ua.dymohlo.PetMusicStorage.repository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import ua.dymohlo.PetMusicStorage.entity.Subscription;
 import ua.dymohlo.PetMusicStorage.entity.User;
@@ -14,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @DataJpaTest
-
 public class UserRepositoryTest {
     @Mock
     private UserRepository mockUserRepository;
@@ -30,7 +27,7 @@ public class UserRepositoryTest {
     private Subscription mockSubscription;
 
     @BeforeEach
-    public void setUser() {
+    public void setUp() {
         mockUserBankCard = UserBankCard.builder()
                 .cardNumber(1234567890123456L)
                 .cvv((short) 111)
@@ -63,40 +60,44 @@ public class UserRepositoryTest {
         when(mockUserRepository.findByPhoneNumber(80663698521L)).thenReturn(null);
         assertNull(byPhoneNumber);
     }
+
     @Test
-    public void existsByPhoneNumber_phoneNumberExists_true(){
+    public void existsByPhoneNumber_phoneNumberExists_true() {
         long phoneNumber = 80663698520L;
         when(mockUserRepository.existsByPhoneNumber(phoneNumber)).thenReturn(true);
 
-        boolean exists = mockUserRepository.existsByPhoneNumber(phoneNumber);
+        boolean phoneNumberExists = mockUserRepository.existsByPhoneNumber(phoneNumber);
 
-        assertTrue(exists, "User with the phone number exist");
+        assertTrue(phoneNumberExists, "User with the phone number exist");
     }
+
     @Test
     public void existsByPhoneNumber_phoneNumberNotExists_false() {
-        long nonExistentPhoneNumber = 1234567890L;
-        when(mockUserRepository.existsByPhoneNumber(nonExistentPhoneNumber)).thenReturn(false);
+        long phoneNumber = 80996653200L;
+        when(mockUserRepository.existsByPhoneNumber(phoneNumber)).thenReturn(false);
 
-        boolean exists = mockUserRepository.existsByPhoneNumber(nonExistentPhoneNumber);
+        boolean phoneNumberExists = mockUserRepository.existsByPhoneNumber(phoneNumber);
 
-        assertFalse(exists, "User with  phone number should not exist");
+        assertFalse(phoneNumberExists, "User with  phone number should not exist");
     }
+
     @Test
-    public void existsByEmail_emailExists_true(){
+    public void existsByEmail_emailExists_true() {
         String email = "mockUser@mail.com";
         when(mockUserRepository.existsByEmail(email)).thenReturn(true);
 
-        boolean exists = mockUserRepository.existsByEmail(email);
+        boolean emailExists = mockUserRepository.existsByEmail(email);
 
-        assertTrue(exists, "User with the email exist");
+        assertTrue(emailExists, "User with the email exist");
     }
+
     @Test
     public void existsByEmail_emailExists_false() {
         String email = "mockUser@mail.com";
         when(mockUserRepository.existsByEmail(email)).thenReturn(false);
 
-        boolean exists = mockUserRepository.existsByEmail(email);
+        boolean emailExists = mockUserRepository.existsByEmail(email);
 
-        assertFalse(exists, "User with email should not exist");
+        assertFalse(emailExists, "User with email should not exist");
     }
 }

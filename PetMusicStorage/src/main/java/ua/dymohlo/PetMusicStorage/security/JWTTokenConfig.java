@@ -62,5 +62,4 @@ public class JWTTokenConfig extends OncePerRequestFilter {
         }
         filterChain.doFilter(request, response);
     }
-
 }

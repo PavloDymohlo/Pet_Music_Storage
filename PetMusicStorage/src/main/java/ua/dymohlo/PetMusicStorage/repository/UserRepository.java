@@ -5,8 +5,10 @@ import org.springframework.stereotype.Repository;
 import ua.dymohlo.PetMusicStorage.entity.User;
 
 @Repository
-public interface UserRepository extends JpaRepository<User,Long> {
-    User findByPhoneNumber(long phoneNumber);//test+
-    boolean existsByPhoneNumber(long phoneNumber);//test+
-    boolean existsByEmail(String email);//test+
+public interface UserRepository extends JpaRepository<User, Long> {
+    User findByPhoneNumber(long phoneNumber);
+
+    boolean existsByPhoneNumber(long phoneNumber);
+
+    boolean existsByEmail(String email);
 }

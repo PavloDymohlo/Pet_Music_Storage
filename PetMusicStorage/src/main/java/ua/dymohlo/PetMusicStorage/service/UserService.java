@@ -28,11 +28,11 @@ public class UserService {
     private final UserBankCardRepository userBankCardRepository;
 
 
-    public UserDetailsService userDetailsService() {  //test
+    public UserDetailsService userDetailsService() {
         return phoneNumber -> getUserByPhoneNumber(Long.parseLong(phoneNumber));
     }
 
-    private UserDetails getUserByPhoneNumber(long phoneNumber) {  //test
+    private UserDetails getUserByPhoneNumber(long phoneNumber) {
         long phoneNumberValue = phoneNumber;
         return databaseUserDetailsService.loadUserByUsername(String.valueOf(phoneNumberValue));
     }
@@ -50,7 +50,7 @@ public class UserService {
                 .cardNumber(userDTO.getUserBankCard().getCardNumber())
                 .cvv(userDTO.getUserBankCard().getCvv())
                 .cardExpirationDate(userDTO.getUserBankCard().getCardExpirationDate()).build();
-        UserBankCard existingCard = (UserBankCard) userBankCardRepository.findByCardNumber(userBankCard.getCardNumber());
+        UserBankCard existingCard = userBankCardRepository.findByCardNumber(userBankCard.getCardNumber());//(UserBankCard) перед userBankCardRepository
         if (existingCard == null) {
             userBankCardRepository.save(userBankCard);
         } else {
@@ -68,6 +68,7 @@ public class UserService {
                 .build();
         return userRepository.save(user);
     }
+
     private boolean userPhoneNumberExists(long phoneNumber) {
         return userRepository.existsByPhoneNumber(phoneNumber);
     }
@@ -75,6 +76,7 @@ public class UserService {
     private boolean userEmailExists(String email) {
         return userRepository.existsByEmail(email);
     }
+
     public boolean isPhoneNumberRegistered(long phoneNumber) {
         return userPhoneNumberExists(phoneNumber);
     }
