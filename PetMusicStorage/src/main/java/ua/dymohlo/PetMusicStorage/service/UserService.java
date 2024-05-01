@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.dymohlo.PetMusicStorage.Enum.AutoRenewStatus;
+import ua.dymohlo.PetMusicStorage.dto.UserLoginInDTO;
 import ua.dymohlo.PetMusicStorage.dto.UserRegistrationDTO;
 import ua.dymohlo.PetMusicStorage.entity.Subscription;
 import ua.dymohlo.PetMusicStorage.entity.User;
@@ -83,6 +84,34 @@ public class UserService {
 
     public boolean isEmailRegistered(String email) {
         return userEmailExists(email);
+    }
+
+    public String loginIn(UserLoginInDTO userLoginInDTO) {
+        if (!userPhoneNumberExists(userLoginInDTO.getPhoneNumber())) {
+            log.error("Invalid phone number: {}", userLoginInDTO.getPhoneNumber());
+            throw new IllegalArgumentException("This phone number not found!");
+        }
+        User user = userRepository.findByPhoneNumber(userLoginInDTO.getPhoneNumber());
+        if (!passwordEncoder.matches(userLoginInDTO.getPassword(), user.getPassword())) {
+            log.error("Incorrect password for user with phone number: {}", userLoginInDTO.getPhoneNumber());
+            throw new IllegalArgumentException("Incorrect password!");
+        }
+        log.info("User login successful: {}", userLoginInDTO.getPhoneNumber());
+        return "Success";
+    }
+
+    public boolean isAdminSubscription(long phoneNumber) {
+        User user = userRepository.findByPhoneNumber(phoneNumber);
+        if (user == null) {
+            log.error("User not found with phone number: {}", phoneNumber);
+            throw new IllegalArgumentException("User not found");
+        }
+        Subscription subscription = user.getSubscription();
+        if (subscription == null) {
+            log.info("User with phone number {} does not have any subscription", phoneNumber);
+            return false;
+        }
+        return subscription == subscriptionRepository.findBySubscriptionName("ADMIN");
     }
 
     public void setAutoRenewStatus(long phoneNumber, AutoRenewStatus status) {
