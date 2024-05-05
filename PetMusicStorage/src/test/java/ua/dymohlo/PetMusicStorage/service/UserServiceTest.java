@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ua.dymohlo.PetMusicStorage.Enum.AutoRenewStatus;
+import ua.dymohlo.PetMusicStorage.dto.UserLoginInDTO;
 import ua.dymohlo.PetMusicStorage.dto.UserRegistrationDTO;
 import ua.dymohlo.PetMusicStorage.entity.Subscription;
 import ua.dymohlo.PetMusicStorage.entity.User;
@@ -40,6 +41,8 @@ public class UserServiceTest {
     private User mockUser;
     @Mock
     private PasswordEncoder mockPasswordEncoder;
+    @Mock
+    private Subscription mockSubscription;
 
     @Test
     public void userDetailsService_phoneNumberExist() {
@@ -176,5 +179,85 @@ public class UserServiceTest {
 
         assertFalse(result);
         verify(mockUserRepository).existsByEmail(email);
+    }
+
+    @Test
+    public void loginIn_successful_returnSuccess() {
+        UserLoginInDTO userLoginInDTO = UserLoginInDTO.builder()
+                .phoneNumber(80966584100L)
+                .password("password").build();
+        mockUser = User.builder()
+                .phoneNumber(80966584100L)
+                .password("password").build();
+        when(mockUserRepository.existsByPhoneNumber(anyLong())).thenReturn(true);
+        when(mockUserRepository.findByPhoneNumber(80966584100L)).thenReturn(mockUser);
+        when(mockPasswordEncoder.matches("password", "password")).thenReturn(true);
+
+        String result = userService.loginIn(userLoginInDTO);
+
+        assertEquals("Success", result);
+        verify(mockUserRepository, times(1)).findByPhoneNumber(80966584100L);
+        verify(mockPasswordEncoder, times(1)).matches("password", "password");
+    }
+
+    @Test
+    public void loginIn_invalidPhoneNumber_returnIllegalArgumentException() {
+        UserLoginInDTO userLoginInDTO = UserLoginInDTO.builder()
+                .phoneNumber(80966584100L).build();
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.loginIn(userLoginInDTO);
+        });
+
+        assert exception.getMessage().equals("This phone number not found!");
+    }
+
+    @Test
+    public void loginIn_invalidPassword_returnIllegalArgumentException() {
+        UserLoginInDTO userLoginInDTO = UserLoginInDTO.builder()
+                .phoneNumber(80966584100L)
+                .password("password").build();
+        mockUser = User.builder()
+                .phoneNumber(80966584100L)
+                .password("1234").build();
+        when(mockUserRepository.existsByPhoneNumber(anyLong())).thenReturn(true);
+        when(mockUserRepository.findByPhoneNumber(anyLong())).thenReturn(mockUser);
+        when(mockPasswordEncoder.matches("password", "1234")).thenReturn(false);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.loginIn(userLoginInDTO);
+        });
+
+        assert exception.getMessage().equals("Incorrect password!");
+    }
+
+    @Test
+    public void isAdminSubscription_returnTrue() {
+        mockSubscription = Subscription.builder()
+                .subscriptionName("ADMIN").build();
+        mockUser = User.builder()
+                .subscription(mockSubscription).build();
+        when(mockSubscriptionRepository.findBySubscriptionName("ADMIN")).thenReturn(mockSubscription);
+        Subscription subscription = mockUser.getSubscription();
+
+        boolean result = subscription == mockSubscriptionRepository.findBySubscriptionName("ADMIN");
+
+        assertTrue(result);
+        verify(mockSubscriptionRepository, times(1)).findBySubscriptionName("ADMIN");
+    }
+
+    @Test
+    public void isAdminSubscription_returnFalse() {
+        mockSubscription = Subscription.builder()
+                .subscriptionName("FREE").build();
+        mockUser = User.builder()
+                .subscription(mockSubscription).build();
+        when(mockSubscriptionRepository.findBySubscriptionName("ADMIN")).thenReturn(null);
+        Subscription subscription = mockUser.getSubscription();
+
+        boolean result = subscription == mockSubscriptionRepository.findBySubscriptionName("ADMIN");
+
+        assertFalse(result);
+        verify(mockSubscriptionRepository, times(1)).findBySubscriptionName("ADMIN");
     }
 }

@@ -102,15 +102,7 @@ public class UserService {
 
     public boolean isAdminSubscription(long phoneNumber) {
         User user = userRepository.findByPhoneNumber(phoneNumber);
-        if (user == null) {
-            log.error("User not found with phone number: {}", phoneNumber);
-            throw new IllegalArgumentException("User not found");
-        }
         Subscription subscription = user.getSubscription();
-        if (subscription == null) {
-            log.info("User with phone number {} does not have any subscription", phoneNumber);
-            return false;
-        }
         return subscription == subscriptionRepository.findBySubscriptionName("ADMIN");
     }
 
