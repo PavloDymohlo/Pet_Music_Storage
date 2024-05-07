@@ -6,7 +6,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ua.dymohlo.PetMusicStorage.Enum.AutoRenewStatus;
 import ua.dymohlo.PetMusicStorage.dto.UserLoginInDTO;
 import ua.dymohlo.PetMusicStorage.dto.UserRegistrationDTO;
@@ -27,6 +26,7 @@ public class UserService {
     private final SubscriptionRepository subscriptionRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserBankCardRepository userBankCardRepository;
+    private final JWTService jwtService;
 
 
     public UserDetailsService userDetailsService() {
@@ -104,6 +104,29 @@ public class UserService {
         User user = userRepository.findByPhoneNumber(phoneNumber);
         Subscription subscription = user.getSubscription();
         return subscription == subscriptionRepository.findBySubscriptionName("ADMIN");
+    }
+
+    public void updatePhoneNumber(long currentPhoneNumber, long newPhoneNumber) {
+        if (!userPhoneNumberExists(currentPhoneNumber)) {
+            log.error("User with phone number: {} does not exists", currentPhoneNumber);
+            throw new IllegalArgumentException("Phone number not found");
+        }
+        User user = userRepository.findByPhoneNumber(currentPhoneNumber);
+        user.setPhoneNumber(newPhoneNumber);
+        userRepository.save(user);
+        log.info("Phone number updated successfully for user with ID: {}", user);
+    }
+
+    public long getCurrentUserPhoneNumber(String jwtToken) {
+        String userPhoneNumber = getUserPhoneNumberFromToken(jwtToken);
+        log.info("User phone number extracted from token: {}", userPhoneNumber);
+        return Long.parseLong(userPhoneNumber);
+    }
+
+    private String getUserPhoneNumberFromToken(String jwtToken) {
+        String parseToken = jwtToken.substring("Bearer".length()).trim();
+        log.debug("Parsed token: {}", parseToken);
+        return jwtService.extractUserName(parseToken);
     }
 
     public void setAutoRenewStatus(long phoneNumber, AutoRenewStatus status) {

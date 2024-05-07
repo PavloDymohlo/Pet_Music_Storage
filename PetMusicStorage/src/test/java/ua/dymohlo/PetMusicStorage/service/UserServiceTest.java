@@ -260,4 +260,26 @@ public class UserServiceTest {
         assertFalse(result);
         verify(mockSubscriptionRepository, times(1)).findBySubscriptionName("ADMIN");
     }
+    @Test
+    public void getCurrentUserPhoneNumber_returnsPhoneNumber(){
+        String jwtToken = "mockJwtToken";
+        long userPhoneNumber = 80995658855L;
+        UserService extractor = mock(UserService.class);
+        when(extractor.getCurrentUserPhoneNumber(jwtToken)).thenReturn(userPhoneNumber);
+
+        long result = extractor.getCurrentUserPhoneNumber(jwtToken);
+
+        assertEquals(userPhoneNumber, result);
+    }
+    @Test
+    public void getCurrentUserPhoneNumber_phoneNumberIsNull(){
+        String jwtToken = "mockJwtToken";
+        long userPhoneNumber = 0L;
+        UserService userService = mock(UserService.class);
+        when(userService.getCurrentUserPhoneNumber(jwtToken)).thenReturn(userPhoneNumber);
+
+        long result = userService.getCurrentUserPhoneNumber(jwtToken);
+
+        assertEquals(userPhoneNumber, result);
+    }
 }

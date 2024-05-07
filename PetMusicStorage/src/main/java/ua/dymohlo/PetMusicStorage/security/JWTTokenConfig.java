@@ -25,7 +25,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Slf4j
 public class JWTTokenConfig extends OncePerRequestFilter {
-    private static final String BEARER_PREFIX = "Bearer";
+    private static final String BEARER_PREFIX = "Bearer ";
     private static final String HEADER_NAME = "Authorization";
     private final JWTService jwtService;
     private final UserService userService;
