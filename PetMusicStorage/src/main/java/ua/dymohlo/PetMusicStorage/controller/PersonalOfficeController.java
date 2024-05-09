@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import ua.dymohlo.PetMusicStorage.dto.UpdatePhoneNumberDTO;
+import ua.dymohlo.PetMusicStorage.dto.UpdateUserBankCardDTO;
 import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
 import ua.dymohlo.PetMusicStorage.service.JWTService;
 import ua.dymohlo.PetMusicStorage.service.UserService;
@@ -26,6 +27,7 @@ public class PersonalOfficeController {
                                                     @RequestHeader("Authorization") String jwtToken) {
         long currentUserPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
         log.debug("Current user's phone number retrieved: {}", currentUserPhoneNumber);
+
         try {
             userService.updatePhoneNumber(currentUserPhoneNumber, request.getNewPhoneNumber());
             UserDetails userDetails = databaseUserDetailsService.loadUserByUsername(String.valueOf(request.getNewPhoneNumber()));
@@ -33,11 +35,28 @@ public class PersonalOfficeController {
             log.info("Phone number updated successfully!");
             return ResponseEntity.ok().body(newJwtToken);
         } catch (IllegalArgumentException e) {
-            log.warn("User with current phone number not found");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User with current phone number not found");
+            log.error("Failed to update phone number: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            log.error("An error occurred while updating phone number", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while updating phone number");
+            log.error("An unexpected error occurred: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping("/updateBankCard")
+    public ResponseEntity<String> updateBankCard(@RequestBody UpdateUserBankCardDTO request,
+                                                 @RequestHeader("Authorization") String jwtToken) {
+        long userPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
+        log.debug("Current user's phone number retrieved: {}", userPhoneNumber);
+        try {
+            userService.updateBankCard(userPhoneNumber, request);
+            return ResponseEntity.ok("Bank card updated successful");
+        } catch (IllegalArgumentException e) {
+            log.warn("User with current phone number not found");
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            log.error("An error occurred while updating bank card", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

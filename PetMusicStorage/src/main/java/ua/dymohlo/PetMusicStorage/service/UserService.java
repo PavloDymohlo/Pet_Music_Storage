@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ua.dymohlo.PetMusicStorage.Enum.AutoRenewStatus;
+import ua.dymohlo.PetMusicStorage.dto.UpdateUserBankCardDTO;
 import ua.dymohlo.PetMusicStorage.dto.UserLoginInDTO;
 import ua.dymohlo.PetMusicStorage.dto.UserRegistrationDTO;
 import ua.dymohlo.PetMusicStorage.entity.Subscription;
@@ -27,6 +28,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserBankCardRepository userBankCardRepository;
     private final JWTService jwtService;
+    private final UserBankCardService userBankCardService;
 
 
     public UserDetailsService userDetailsService() {
@@ -111,6 +113,10 @@ public class UserService {
             log.error("User with phone number: {} does not exists", currentPhoneNumber);
             throw new IllegalArgumentException("Phone number not found");
         }
+        if (userPhoneNumberExists(newPhoneNumber)) {
+            log.error("Phone number {} already exists ", newPhoneNumber);
+            throw new IllegalArgumentException("Phone number already exists");
+        }
         User user = userRepository.findByPhoneNumber(currentPhoneNumber);
         user.setPhoneNumber(newPhoneNumber);
         userRepository.save(user);
@@ -127,6 +133,31 @@ public class UserService {
         String parseToken = jwtToken.substring("Bearer".length()).trim();
         log.debug("Parsed token: {}", parseToken);
         return jwtService.extractUserName(parseToken);
+    }
+
+    public void updateBankCard(long userPhoneNumber, UpdateUserBankCardDTO updateUserBankCardDTO) {
+        if (!userPhoneNumberExists(userPhoneNumber)) {
+            log.error("User with phone number: {} does not exists", updateUserBankCardDTO.getNewUserBankCard());
+            throw new IllegalArgumentException("Phone number not found");
+        }
+        UserBankCard newUserBankCard = UserBankCard.builder()
+                .cardNumber(updateUserBankCardDTO.getNewUserBankCard().getCardNumber())
+                .cardExpirationDate(updateUserBankCardDTO.getNewUserBankCard().getCardExpirationDate())
+                .cvv(updateUserBankCardDTO.getNewUserBankCard().getCvv()).build();
+        UserBankCard existingCard = userBankCardRepository.findByCardNumber(updateUserBankCardDTO.getNewUserBankCard().getCardNumber());
+        if (existingCard == null) {
+            userBankCardRepository.save(newUserBankCard);
+        } else {
+            if(userBankCardService.validateBankCard(newUserBankCard)){
+                newUserBankCard = existingCard;
+            }else {
+                throw new IllegalArgumentException("Invalid card details");
+            }
+        }
+        User user = userRepository.findByPhoneNumber(userPhoneNumber);
+        user.setUserBankCard(newUserBankCard);
+        userRepository.save(user);
+        log.info("Bank card updated successful for user with id: {}", user);
     }
 
     public void setAutoRenewStatus(long phoneNumber, AutoRenewStatus status) {

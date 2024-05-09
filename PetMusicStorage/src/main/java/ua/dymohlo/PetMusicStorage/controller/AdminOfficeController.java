@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import ua.dymohlo.PetMusicStorage.dto.UpdatePhoneNumberDTO;
+import ua.dymohlo.PetMusicStorage.dto.UpdateUserBankCardDTO;
 import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
 import ua.dymohlo.PetMusicStorage.service.JWTService;
 import ua.dymohlo.PetMusicStorage.service.UserService;
@@ -31,10 +32,24 @@ public class AdminOfficeController {
             return ResponseEntity.ok().body(newJwtToken);
         } catch (IllegalArgumentException e) {
             log.warn("User with current phone number not found");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User with current phone number not found");
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             log.error("An error occurred while updating phone number", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while updating phone number");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping("/updateBankCard")
+    public ResponseEntity<String> updateUserBankCard(@RequestBody UpdateUserBankCardDTO request) {
+        try {
+            userService.updateBankCard(request.getUserPhoneNumber(), request);
+            return ResponseEntity.ok("Bank card updated successful");
+        } catch (IllegalArgumentException e) {
+            log.warn("User with current phone number not found");
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            log.error("An error occurred while updating bank card");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

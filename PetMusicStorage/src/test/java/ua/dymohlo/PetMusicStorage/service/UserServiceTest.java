@@ -43,6 +43,8 @@ public class UserServiceTest {
     private PasswordEncoder mockPasswordEncoder;
     @Mock
     private Subscription mockSubscription;
+    @Mock
+    private JWTService mockJwtService;
 
     @Test
     public void userDetailsService_phoneNumberExist() {
@@ -260,26 +262,16 @@ public class UserServiceTest {
         assertFalse(result);
         verify(mockSubscriptionRepository, times(1)).findBySubscriptionName("ADMIN");
     }
+
     @Test
-    public void getCurrentUserPhoneNumber_returnsPhoneNumber(){
-        String jwtToken = "mockJwtToken";
-        long userPhoneNumber = 80995658855L;
-        UserService extractor = mock(UserService.class);
-        when(extractor.getCurrentUserPhoneNumber(jwtToken)).thenReturn(userPhoneNumber);
+    void getCurrentUserPhoneNumber_returnPhoneNumber() {
+        String jwtToken = "Bearer <token>";
+        long phoneNumber = 80996658896L;
+        when(mockJwtService.extractUserName(anyString())).thenReturn(String.valueOf(phoneNumber));
 
-        long result = extractor.getCurrentUserPhoneNumber(jwtToken);
+        long actualPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
 
-        assertEquals(userPhoneNumber, result);
-    }
-    @Test
-    public void getCurrentUserPhoneNumber_phoneNumberIsNull(){
-        String jwtToken = "mockJwtToken";
-        long userPhoneNumber = 0L;
-        UserService userService = mock(UserService.class);
-        when(userService.getCurrentUserPhoneNumber(jwtToken)).thenReturn(userPhoneNumber);
-
-        long result = userService.getCurrentUserPhoneNumber(jwtToken);
-
-        assertEquals(userPhoneNumber, result);
+        verify(mockJwtService).extractUserName(anyString());
+        assertEquals(Long.parseLong(String.valueOf(phoneNumber)), actualPhoneNumber);
     }
 }
