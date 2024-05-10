@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ua.dymohlo.PetMusicStorage.Enum.AutoRenewStatus;
+import ua.dymohlo.PetMusicStorage.dto.UpdatePasswordDTO;
 import ua.dymohlo.PetMusicStorage.dto.UpdateUserBankCardDTO;
 import ua.dymohlo.PetMusicStorage.dto.UserLoginInDTO;
 import ua.dymohlo.PetMusicStorage.dto.UserRegistrationDTO;
@@ -137,7 +138,7 @@ public class UserService {
 
     public void updateBankCard(long userPhoneNumber, UpdateUserBankCardDTO updateUserBankCardDTO) {
         if (!userPhoneNumberExists(userPhoneNumber)) {
-            log.error("User with phone number: {} does not exists", updateUserBankCardDTO.getNewUserBankCard());
+            log.error("User with phone number: {} does not exists", updateUserBankCardDTO.getUserPhoneNumber());
             throw new IllegalArgumentException("Phone number not found");
         }
         UserBankCard newUserBankCard = UserBankCard.builder()
@@ -148,9 +149,10 @@ public class UserService {
         if (existingCard == null) {
             userBankCardRepository.save(newUserBankCard);
         } else {
-            if(userBankCardService.validateBankCard(newUserBankCard)){
+            if (userBankCardService.validateBankCard(newUserBankCard)) {
                 newUserBankCard = existingCard;
-            }else {
+            } else {
+                log.error("Invalid details for card: {}",newUserBankCard);
                 throw new IllegalArgumentException("Invalid card details");
             }
         }
@@ -158,6 +160,17 @@ public class UserService {
         user.setUserBankCard(newUserBankCard);
         userRepository.save(user);
         log.info("Bank card updated successful for user with id: {}", user);
+    }
+
+    public void updatePassword(long userPhoneNumber, UpdatePasswordDTO updatePasswordDTO) {
+        if (!userPhoneNumberExists(userPhoneNumber)) {
+            log.error("User with phone number: {} does not exists", updatePasswordDTO.getUserPhoneNumber());
+            throw new IllegalArgumentException("Phone number not found");
+        }
+        User user = userRepository.findByPhoneNumber(userPhoneNumber);
+        user.setPassword(passwordEncoder.encode(updatePasswordDTO.getNewPassword()));
+        userRepository.save(user);
+        log.info("Password updated successful for user with id: {}", user);
     }
 
     public void setAutoRenewStatus(long phoneNumber, AutoRenewStatus status) {

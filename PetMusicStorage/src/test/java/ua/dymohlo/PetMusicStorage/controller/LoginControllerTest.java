@@ -3,18 +3,15 @@ package ua.dymohlo.PetMusicStorage.controller;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.web.JsonPath;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
-import ua.dymohlo.PetMusicStorage.Enum.AutoRenewStatus;
 import ua.dymohlo.PetMusicStorage.dto.UserLoginInDTO;
 import ua.dymohlo.PetMusicStorage.entity.Subscription;
 import ua.dymohlo.PetMusicStorage.entity.User;
@@ -25,7 +22,6 @@ import ua.dymohlo.PetMusicStorage.service.UserService;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 
 import static org.mockito.Mockito.when;
@@ -47,7 +43,7 @@ public class LoginControllerTest {
     private PasswordEncoder passwordEncoder;
 
     @Test
-    public void loginIn_failure_redirectedToAdminOfficePage() throws Exception {
+    public void loginIn_redirectedToAdminOfficePage() throws Exception {
         UserLoginInDTO userLoginInDTO = UserLoginInDTO.builder()
                 .phoneNumber(80981213335L)
                 .password("password").build();
@@ -79,7 +75,7 @@ public class LoginControllerTest {
     }
 
     @Test
-    public void loginIn_failure_redirectedToPersonalOfficePage() throws Exception {
+    public void loginIn_redirectedToPersonalOfficePage() throws Exception {
         UserLoginInDTO userLoginInDTO = UserLoginInDTO.builder()
                 .phoneNumber(80981213335L)
                 .password("password").build();

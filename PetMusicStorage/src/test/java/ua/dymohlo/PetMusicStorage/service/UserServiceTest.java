@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ua.dymohlo.PetMusicStorage.Enum.AutoRenewStatus;
+import ua.dymohlo.PetMusicStorage.dto.UpdateUserBankCardDTO;
 import ua.dymohlo.PetMusicStorage.dto.UserLoginInDTO;
 import ua.dymohlo.PetMusicStorage.dto.UserRegistrationDTO;
 import ua.dymohlo.PetMusicStorage.entity.Subscription;
@@ -45,6 +46,8 @@ public class UserServiceTest {
     private Subscription mockSubscription;
     @Mock
     private JWTService mockJwtService;
+    @Mock
+    private UserBankCardService mockUserBankCardService;
 
     @Test
     public void userDetailsService_phoneNumberExist() {
@@ -264,7 +267,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void getCurrentUserPhoneNumber_returnPhoneNumber() {
+    public void getCurrentUserPhoneNumber_returnPhoneNumber() {
         String jwtToken = "Bearer <token>";
         long phoneNumber = 80996658896L;
         when(mockJwtService.extractUserName(anyString())).thenReturn(String.valueOf(phoneNumber));
@@ -274,4 +277,144 @@ public class UserServiceTest {
         verify(mockJwtService).extractUserName(anyString());
         assertEquals(Long.parseLong(String.valueOf(phoneNumber)), actualPhoneNumber);
     }
+
+    @Test
+    public void updatePhoneNumber_phoneNumberNotFound() {
+        long currentPhoneNumber = 80998885566l;
+        long newPhoneNumber = 80663210022l;
+        when(mockUserRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(false);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.updatePhoneNumber(currentPhoneNumber, newPhoneNumber);
+        });
+
+        assert exception.getMessage().equals("Phone number not found");
+    }
+
+    @Test
+    public void updatePhoneNumber_newPhoneNumberAlreadyExists() {
+        long currentPhoneNumber = 80998885566l;
+        long newPhoneNumber = 80663210022l;
+        when(mockUserRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(true);
+        when(mockUserRepository.existsByPhoneNumber(newPhoneNumber)).thenReturn(true);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.updatePhoneNumber(currentPhoneNumber, newPhoneNumber);
+        });
+
+        assert exception.getMessage().equals("Phone number already exists");
+    }
+
+    @Test
+    public void updatePhoneNumber_success() {
+        long currentPhoneNumber = 80998866555l;
+        long newPhoneNumber = 80985623300l;
+        mockUser = User.builder()
+                .phoneNumber(80998866555l).build();
+        when(mockUserRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(true);
+        when(mockUserRepository.existsByPhoneNumber(newPhoneNumber)).thenReturn(false);
+        when(mockUserRepository.findByPhoneNumber(currentPhoneNumber)).thenReturn(mockUser);
+
+        userService.updatePhoneNumber(currentPhoneNumber, newPhoneNumber);
+
+        assertEquals(newPhoneNumber, mockUser.getPhoneNumber());
+        verify(mockUserRepository).save(mockUser);
+    }
+
+    @Test
+    public void updateBankCard_phoneNumberNotFound() {
+        long currentPhoneNumber = 80998885566l;
+        UpdateUserBankCardDTO mockUpdateUserBankCardDTO = UpdateUserBankCardDTO.builder()
+                .userPhoneNumber(currentPhoneNumber)
+                .newUserBankCard(UserBankCard.builder()
+                        .cardNumber(1234567890125874l)
+                        .cardExpirationDate("25/25")
+                        .cvv((short) 123).build()).build();
+
+        when(mockUserRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(false);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.updateBankCard(currentPhoneNumber, mockUpdateUserBankCardDTO);
+        });
+
+        assert exception.getMessage().equals("Phone number not found");
+    }
+
+    @Test
+    public void updateBankCard_invalidCardDetails() {
+        long currentPhoneNumber = 80998885566l;
+        UpdateUserBankCardDTO mockUpdateUserBankCardDTO = UpdateUserBankCardDTO.builder()
+                .userPhoneNumber(currentPhoneNumber)
+                .newUserBankCard(UserBankCard.builder()
+                        .cardNumber(1234567890125874l)
+                        .cardExpirationDate("25/25")
+                        .cvv((short) 123).build()).build();
+        when(mockUserRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(true);
+        when(mockUserBankCardRepository.findByCardNumber(mockUpdateUserBankCardDTO.getNewUserBankCard().getCardNumber()))
+                .thenReturn(mockUserBankCard);
+        when(mockUserBankCardService.validateBankCard(mockUpdateUserBankCardDTO.getNewUserBankCard())).thenReturn(false);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.updateBankCard(currentPhoneNumber, mockUpdateUserBankCardDTO);
+        });
+
+        assert exception.getMessage().equals("Invalid card details");
+    }
+
+    @Test
+    public void updateBankCard_cardExists_updateCard() {
+        long currentPhoneNumber = 80998885566L;
+        long newCardNumber = 9876543210987654L;
+        mockUser = new User();
+        UpdateUserBankCardDTO mockUpdateUserBankCardDTO = UpdateUserBankCardDTO.builder()
+                .userPhoneNumber(currentPhoneNumber)
+                .newUserBankCard(UserBankCard.builder()
+                        .cardNumber(newCardNumber)
+                        .cardExpirationDate("25/25")
+                        .cvv((short) 123)
+                        .build())
+                .build();
+        UserBankCard existingCard = UserBankCard.builder()
+                .cardNumber(mockUpdateUserBankCardDTO.getNewUserBankCard().getCardNumber())
+                .cardExpirationDate(mockUpdateUserBankCardDTO.getNewUserBankCard().getCardExpirationDate())
+                .cvv(mockUpdateUserBankCardDTO.getNewUserBankCard().getCvv())
+                .build();
+        when(mockUserRepository.findByPhoneNumber(currentPhoneNumber)).thenReturn(mockUser);
+        when(mockUserRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(true);
+        when(mockUserBankCardRepository.findByCardNumber(mockUpdateUserBankCardDTO.getNewUserBankCard().getCardNumber()))
+                .thenReturn(existingCard);
+        when(mockUserBankCardService.validateBankCard(existingCard)).thenReturn(true);
+
+        userService.updateBankCard(currentPhoneNumber, mockUpdateUserBankCardDTO);
+
+        verify(mockUserRepository).existsByPhoneNumber(currentPhoneNumber);
+        verify(mockUserBankCardRepository).findByCardNumber(newCardNumber);
+        verify(mockUserBankCardService).validateBankCard(existingCard);
+        verify(mockUserRepository).save(any(User.class));
+    }
+    @Test
+    public void updateBankCard_newBankCard(){
+        long currentPhoneNumber = 80998885566L;
+        long newCardNumber = 9876543210987654L;
+        mockUser = new User();
+        UpdateUserBankCardDTO mockUpdateUserBankCardDTO = UpdateUserBankCardDTO.builder()
+                .userPhoneNumber(currentPhoneNumber)
+                .newUserBankCard(UserBankCard.builder()
+                        .cardNumber(newCardNumber)
+                        .cardExpirationDate("25/25")
+                        .cvv((short) 123)
+                        .build())
+                .build();
+        when(mockUserRepository.findByPhoneNumber(currentPhoneNumber)).thenReturn(mockUser);
+        when(mockUserRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(true);
+        when(mockUserBankCardRepository.findByCardNumber(mockUpdateUserBankCardDTO.getNewUserBankCard().getCardNumber()))
+                .thenReturn(null);
+
+        userService.updateBankCard(currentPhoneNumber, mockUpdateUserBankCardDTO);
+
+        verify(mockUserRepository).existsByPhoneNumber(currentPhoneNumber);
+        verify(mockUserBankCardRepository).findByCardNumber(newCardNumber);
+        verify(mockUserRepository).save(any(User.class));
+    }
+
 }
