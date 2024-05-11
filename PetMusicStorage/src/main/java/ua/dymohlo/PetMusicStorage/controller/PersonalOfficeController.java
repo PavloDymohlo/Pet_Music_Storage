@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import ua.dymohlo.PetMusicStorage.dto.UpdatePasswordDTO;
 import ua.dymohlo.PetMusicStorage.dto.UpdatePhoneNumberDTO;
 import ua.dymohlo.PetMusicStorage.dto.UpdateUserBankCardDTO;
 import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
@@ -28,7 +27,6 @@ public class PersonalOfficeController {
                                                     @RequestHeader("Authorization") String jwtToken) {
         long currentUserPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
         log.debug("Current user's phone number retrieved: {}", currentUserPhoneNumber);
-
         try {
             userService.updatePhoneNumber(currentUserPhoneNumber, request.getNewPhoneNumber());
             UserDetails userDetails = databaseUserDetailsService.loadUserByUsername(String.valueOf(request.getNewPhoneNumber()));
@@ -51,9 +49,10 @@ public class PersonalOfficeController {
         log.debug("Current user's phone number retrieved: {}", userPhoneNumber);
         try {
             userService.updateBankCard(userPhoneNumber, request);
+            log.info("Bank card updated successful");
             return ResponseEntity.ok("Bank card updated successful");
         } catch (IllegalArgumentException e) {
-            log.warn("User with current phone number not found");
+            log.warn("Invalid card details");
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             log.error("An error occurred while updating bank card", e);

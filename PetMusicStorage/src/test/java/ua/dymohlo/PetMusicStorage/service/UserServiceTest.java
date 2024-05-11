@@ -9,7 +9,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import ua.dymohlo.PetMusicStorage.Enum.AutoRenewStatus;
 import ua.dymohlo.PetMusicStorage.dto.UpdateUserBankCardDTO;
 import ua.dymohlo.PetMusicStorage.dto.UserLoginInDTO;
 import ua.dymohlo.PetMusicStorage.dto.UserRegistrationDTO;

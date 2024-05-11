@@ -31,7 +31,7 @@ public class AdminOfficeController {
             log.info("Phone number updated successfully!");
             return ResponseEntity.ok().body(newJwtToken);
         } catch (IllegalArgumentException e) {
-            log.warn("User with current phone number not found");
+            log.warn("Phone number already exists");
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             log.error("An error occurred while updating phone number", e);
@@ -45,7 +45,7 @@ public class AdminOfficeController {
             userService.updateBankCard(request.getUserPhoneNumber(), request);
             return ResponseEntity.ok("Bank card updated successful");
         } catch (IllegalArgumentException e) {
-            log.warn("User with current phone number not found");
+            log.warn("Invalid card details");
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             log.error("An error occurred while updating bank card");

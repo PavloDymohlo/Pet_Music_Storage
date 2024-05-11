@@ -30,7 +30,7 @@ public class WebSecurityConfig {
                         .antMatchers("/free_subscription").hasAnyRole("FREE", "OPTIMAL", "MAXIMUM", "ADMIN")
                         .antMatchers("/optimal_subscription").hasAnyRole("MAXIMUM", "OPTIMAL", "ADMIN")
                         .antMatchers("/maximum_subscription").hasAnyRole("MAXIMUM", "ADMIN")
-                        .antMatchers("/admin/**").hasRole("ADMIN")
+                        .antMatchers("/admin_office/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
