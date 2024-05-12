@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
@@ -12,9 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
+import ua.dymohlo.PetMusicStorage.dto.UpdatePasswordDTO;
 import ua.dymohlo.PetMusicStorage.dto.UpdatePhoneNumberDTO;
 import ua.dymohlo.PetMusicStorage.dto.UpdateUserBankCardDTO;
 import ua.dymohlo.PetMusicStorage.entity.UserBankCard;
@@ -22,6 +24,7 @@ import ua.dymohlo.PetMusicStorage.repository.UserRepository;
 import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
 import ua.dymohlo.PetMusicStorage.service.JWTService;
 import ua.dymohlo.PetMusicStorage.service.UserService;
+
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -108,6 +111,7 @@ public class PersonalOfficeControllerTest {
 
         verify(mockUserService, times(1)).updateBankCard(anyLong(), any(UpdateUserBankCardDTO.class));
     }
+
     @Test
     public void updateBankCard_invalidCardDetails() throws Exception {
         UpdateUserBankCardDTO updateUserBankCardDTO = UpdateUserBankCardDTO.builder()
@@ -127,6 +131,27 @@ public class PersonalOfficeControllerTest {
                 .andExpect(content().string("Invalid card details"));
 
         verify(mockUserService, times(1)).updateBankCard(anyLong(), any(UpdateUserBankCardDTO.class));
+    }
+    @Test
+    public void updatePassword_success() {
+        PersonalOfficeController controller = new PersonalOfficeController(mockUserService, mockJwtService, mockDatabaseUserDetailsService);
+        UpdatePasswordDTO updatePasswordDTO = UpdatePasswordDTO.builder()
+                .userPhoneNumber(80996320011L)
+                .newPassword("password")
+                .build();
+        String jwtToken = "mockJwtToken";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", jwtToken);
+        HttpEntity<UpdatePasswordDTO> requestEntity = new HttpEntity<>(updatePasswordDTO, headers);
+        when(mockJwtService.generateJwtToken(any())).thenReturn("mockJwtToken");
+        when(mockDatabaseUserDetailsService.loadUserByUsername(anyString())).thenReturn(mockUserDetails);
+        when(mockUserService.getCurrentUserPhoneNumber(jwtToken)).thenReturn(80996320011L);
+        doNothing().when(mockUserService).updatePassword(anyLong(), any());
+
+        ResponseEntity<String> response = controller.updatePassword(updatePasswordDTO, jwtToken);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Password updated successful", response.getBody());
     }
 
 }

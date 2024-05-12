@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import ua.dymohlo.PetMusicStorage.dto.UpdatePasswordDTO;
 import ua.dymohlo.PetMusicStorage.dto.UpdateUserBankCardDTO;
 import ua.dymohlo.PetMusicStorage.dto.UserLoginInDTO;
 import ua.dymohlo.PetMusicStorage.dto.UserRegistrationDTO;
@@ -391,8 +392,9 @@ public class UserServiceTest {
         verify(mockUserBankCardService).validateBankCard(existingCard);
         verify(mockUserRepository).save(any(User.class));
     }
+
     @Test
-    public void updateBankCard_newBankCard(){
+    public void updateBankCard_newBankCard() {
         long currentPhoneNumber = 80998885566L;
         long newCardNumber = 9876543210987654L;
         mockUser = new User();
@@ -416,4 +418,33 @@ public class UserServiceTest {
         verify(mockUserRepository).save(any(User.class));
     }
 
+    @Test
+    public void updatePassword_success() {
+        long userPhoneNumber = 80998885566L;
+        String newPassword = "password";
+        UpdatePasswordDTO updatePasswordDTO = UpdatePasswordDTO.builder()
+                .newPassword(newPassword).build();
+        when(mockUserRepository.existsByPhoneNumber(userPhoneNumber)).thenReturn(true);
+        when(mockUserRepository.findByPhoneNumber(userPhoneNumber)).thenReturn(mockUser);
+        when(mockPasswordEncoder.encode(newPassword)).thenReturn(newPassword);
+
+        userService.updatePassword(userPhoneNumber, updatePasswordDTO);
+
+        verify(mockUserRepository).save(any(User.class));
+    }
+
+    @Test
+    public void updatePassword_phoneNumberNotFound() {
+        long userPhoneNumber = 80998885566L;
+        String newPassword = "password";
+        UpdatePasswordDTO updatePasswordDTO = UpdatePasswordDTO.builder()
+                .newPassword(newPassword)
+                .userPhoneNumber(userPhoneNumber).build();
+        when(mockUserRepository.existsByPhoneNumber(userPhoneNumber)).thenReturn(false);
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.updatePassword(userPhoneNumber, updatePasswordDTO);
+        });
+
+        assert exception.getMessage().equals("Phone number not found");
+    }
 }

@@ -75,13 +75,14 @@ public class AdminOfficeControllerTest {
     public void updateBankCard_success() {
         AdminOfficeController controller = new AdminOfficeController(mockUserService, mockJwtService, mockDatabaseUserDetailsService);
         doNothing().when(mockUserService).updateBankCard(anyLong(), any());
-        when(mockJwtService.generateJwtToken(any())).thenReturn("mockedJwtToken");
+        when(mockJwtService.generateJwtToken(any())).thenReturn("mockJwtToken");
         when(mockDatabaseUserDetailsService.loadUserByUsername(anyString())).thenReturn(mockUserDetails);
         UpdateUserBankCardDTO request = UpdateUserBankCardDTO.builder()
                 .newUserBankCard(UserBankCard.builder()
                         .cardNumber(1234567890123456L)
                         .cardExpirationDate("25/25")
                         .cvv((short) 123).build()).userPhoneNumber(80663256655L).build();
+
         ResponseEntity<String> response = controller.updateUserBankCard(request);
 
         assert response.getStatusCode().equals(HttpStatus.OK);
