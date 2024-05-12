@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import ua.dymohlo.PetMusicStorage.dto.UpdatePasswordDTO;
 import ua.dymohlo.PetMusicStorage.dto.UpdatePhoneNumberDTO;
 import ua.dymohlo.PetMusicStorage.dto.UpdateUserBankCardDTO;
 import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
@@ -60,10 +61,18 @@ public class PersonalOfficeController {
         }
     }
 
-//    @PutMapping("/updatePassword")
-//    public ResponseEntity<String> updatePassword(@RequestBody UpdatePasswordDTO request,
-//                                                 @RequestHeader("Authorization") String jwtToken) {
-//        long userPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
-//        log.debug("Current user's phone number retrieved: {}", userPhoneNumber);
-//    }
+    @PutMapping("/updatePassword")
+    public ResponseEntity<String> updatePassword(@RequestBody UpdatePasswordDTO request,
+                                                 @RequestHeader("Authorization") String jwtToken) {
+        long userPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
+        log.debug("Current user's phone number retrieved: {}", userPhoneNumber);
+        try {
+            userService.updatePassword(userPhoneNumber, request);
+            log.info("Password updated successful");
+            return ResponseEntity.ok("Password updated successful");
+        } catch (Exception e) {
+            log.error("An error occurred while updating bank card", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }
