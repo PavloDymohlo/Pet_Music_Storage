@@ -9,10 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import ua.dymohlo.PetMusicStorage.dto.UpdatePasswordDTO;
-import ua.dymohlo.PetMusicStorage.dto.UpdateUserBankCardDTO;
-import ua.dymohlo.PetMusicStorage.dto.UserLoginInDTO;
-import ua.dymohlo.PetMusicStorage.dto.UserRegistrationDTO;
+import ua.dymohlo.PetMusicStorage.dto.*;
 import ua.dymohlo.PetMusicStorage.entity.Subscription;
 import ua.dymohlo.PetMusicStorage.entity.User;
 import ua.dymohlo.PetMusicStorage.entity.UserBankCard;
@@ -280,8 +277,8 @@ public class UserServiceTest {
 
     @Test
     public void updatePhoneNumber_phoneNumberNotFound() {
-        long currentPhoneNumber = 80998885566l;
-        long newPhoneNumber = 80663210022l;
+        long currentPhoneNumber = 80998885566L;
+        long newPhoneNumber = 80663210022L;
         when(mockUserRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(false);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -293,8 +290,8 @@ public class UserServiceTest {
 
     @Test
     public void updatePhoneNumber_newPhoneNumberAlreadyExists() {
-        long currentPhoneNumber = 80998885566l;
-        long newPhoneNumber = 80663210022l;
+        long currentPhoneNumber = 80998885566L;
+        long newPhoneNumber = 80663210022L;
         when(mockUserRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(true);
         when(mockUserRepository.existsByPhoneNumber(newPhoneNumber)).thenReturn(true);
 
@@ -307,10 +304,10 @@ public class UserServiceTest {
 
     @Test
     public void updatePhoneNumber_success() {
-        long currentPhoneNumber = 80998866555l;
-        long newPhoneNumber = 80985623300l;
+        long currentPhoneNumber = 80998866555L;
+        long newPhoneNumber = 80985623300L;
         mockUser = User.builder()
-                .phoneNumber(80998866555l).build();
+                .phoneNumber(80998866555L).build();
         when(mockUserRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(true);
         when(mockUserRepository.existsByPhoneNumber(newPhoneNumber)).thenReturn(false);
         when(mockUserRepository.findByPhoneNumber(currentPhoneNumber)).thenReturn(mockUser);
@@ -323,11 +320,11 @@ public class UserServiceTest {
 
     @Test
     public void updateBankCard_phoneNumberNotFound() {
-        long currentPhoneNumber = 80998885566l;
+        long currentPhoneNumber = 80998885566L;
         UpdateUserBankCardDTO mockUpdateUserBankCardDTO = UpdateUserBankCardDTO.builder()
                 .userPhoneNumber(currentPhoneNumber)
                 .newUserBankCard(UserBankCard.builder()
-                        .cardNumber(1234567890125874l)
+                        .cardNumber(1234567890125874L)
                         .cardExpirationDate("25/25")
                         .cvv((short) 123).build()).build();
 
@@ -342,11 +339,11 @@ public class UserServiceTest {
 
     @Test
     public void updateBankCard_invalidCardDetails() {
-        long currentPhoneNumber = 80998885566l;
+        long currentPhoneNumber = 80998885566L;
         UpdateUserBankCardDTO mockUpdateUserBankCardDTO = UpdateUserBankCardDTO.builder()
                 .userPhoneNumber(currentPhoneNumber)
                 .newUserBankCard(UserBankCard.builder()
-                        .cardNumber(1234567890125874l)
+                        .cardNumber(1234567890125874L)
                         .cardExpirationDate("25/25")
                         .cvv((short) 123).build()).build();
         when(mockUserRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(true);
@@ -446,5 +443,39 @@ public class UserServiceTest {
         });
 
         assert exception.getMessage().equals("Phone number not found");
+    }
+
+    @Test
+    public void updateEmail_success() {
+        long userPhoneNumber = 80998885566L;
+        String newEmail = "newEmail@example.com";
+        UpdateEmailDTO updateEmailDTO = UpdateEmailDTO.builder()
+                .userPhoneNumber(userPhoneNumber)
+                .newEmail(newEmail).build();
+        when(mockUserRepository.existsByPhoneNumber(userPhoneNumber)).thenReturn(true);
+        when(mockUserRepository.existsByEmail(newEmail)).thenReturn(false);
+        when(mockUserRepository.findByPhoneNumber(userPhoneNumber)).thenReturn(mockUser);
+
+        userService.updateEmail(userPhoneNumber, updateEmailDTO);
+
+        assertEquals(newEmail, updateEmailDTO.getNewEmail());
+        verify(mockUserRepository).save(any(User.class));
+    }
+
+    @Test
+    public void updateEmail_emailIsAlreadyExists() {
+        long userPhoneNumber = 80998885566L;
+        String newEmail = "newEmail@example.com";
+        UpdateEmailDTO updateEmailDTO = UpdateEmailDTO.builder()
+                .userPhoneNumber(userPhoneNumber)
+                .newEmail(newEmail).build();
+        when(mockUserRepository.existsByPhoneNumber(userPhoneNumber)).thenReturn(true);
+        when(mockUserRepository.existsByEmail(newEmail)).thenReturn(true);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.updateEmail(userPhoneNumber, updateEmailDTO);
+        });
+
+        assert exception.getMessage().equals("Email is already exists");
     }
 }

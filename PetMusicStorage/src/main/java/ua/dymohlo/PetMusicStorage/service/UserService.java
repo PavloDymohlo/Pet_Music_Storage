@@ -7,10 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ua.dymohlo.PetMusicStorage.Enum.AutoRenewStatus;
-import ua.dymohlo.PetMusicStorage.dto.UpdatePasswordDTO;
-import ua.dymohlo.PetMusicStorage.dto.UpdateUserBankCardDTO;
-import ua.dymohlo.PetMusicStorage.dto.UserLoginInDTO;
-import ua.dymohlo.PetMusicStorage.dto.UserRegistrationDTO;
+import ua.dymohlo.PetMusicStorage.dto.*;
 import ua.dymohlo.PetMusicStorage.entity.Subscription;
 import ua.dymohlo.PetMusicStorage.entity.User;
 import ua.dymohlo.PetMusicStorage.entity.UserBankCard;
@@ -152,7 +149,7 @@ public class UserService {
             if (userBankCardService.validateBankCard(newUserBankCard)) {
                 newUserBankCard = existingCard;
             } else {
-                log.error("Invalid details for card: {}",newUserBankCard);
+                log.error("Invalid details for card: {}", newUserBankCard);
                 throw new IllegalArgumentException("Invalid card details");
             }
         }
@@ -173,12 +170,29 @@ public class UserService {
         log.info("Password updated successful for user with id: {}", user);
     }
 
-    public void setAutoRenewStatus(long phoneNumber, AutoRenewStatus status) {
-        User user = userRepository.findByPhoneNumber(phoneNumber);
-        if (user != null) {
-            user.setAutoRenew(AutoRenewStatus.YES);
-            userRepository.save(user);
-            log.info("Auto renew status set successfully for user with phone number: {}", phoneNumber);
+    public void updateEmail(long userPhoneNumber, UpdateEmailDTO updateEmailDTO) {
+        if (!userPhoneNumberExists(userPhoneNumber)) {
+            log.error("User with phone number: {} does not exists", updateEmailDTO.getUserPhoneNumber());
+            throw new IllegalArgumentException("Phone number not found");
         }
+        if (userRepository.existsByEmail(updateEmailDTO.getNewEmail())) {
+            log.error("Email: {} is already exists", updateEmailDTO.getNewEmail());
+            throw new IllegalArgumentException("Email is already exists");
+        }
+        User user = userRepository.findByPhoneNumber(userPhoneNumber);
+        user.setEmail(updateEmailDTO.getNewEmail());
+        userRepository.save(user);
+        log.info("Email updated successful for user with id: {}", user);
+    }
+
+    public void setAutoRenewStatus(long phoneNumber, SetAutoRenewDTO status) {
+        User user = userRepository.findByPhoneNumber(phoneNumber);
+        if (user == null) {
+            log.error("User with phone number: {} does not exists", status.getUserPhoneNumber());
+            throw new IllegalArgumentException("Phone number not found");
+        }
+        user.setAutoRenew(status.getAutoRenewStatus());
+        userRepository.save(user);
+        log.info("Auto renew status set successfully for user with phone number: {}", status.getUserPhoneNumber());
     }
 }

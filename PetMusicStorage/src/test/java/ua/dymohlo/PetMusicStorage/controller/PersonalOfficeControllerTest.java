@@ -16,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.*;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
+import ua.dymohlo.PetMusicStorage.dto.UpdateEmailDTO;
 import ua.dymohlo.PetMusicStorage.dto.UpdatePasswordDTO;
 import ua.dymohlo.PetMusicStorage.dto.UpdatePhoneNumberDTO;
 import ua.dymohlo.PetMusicStorage.dto.UpdateUserBankCardDTO;
@@ -132,6 +133,7 @@ public class PersonalOfficeControllerTest {
 
         verify(mockUserService, times(1)).updateBankCard(anyLong(), any(UpdateUserBankCardDTO.class));
     }
+
     @Test
     public void updatePassword_success() {
         PersonalOfficeController controller = new PersonalOfficeController(mockUserService, mockJwtService, mockDatabaseUserDetailsService);
@@ -140,10 +142,7 @@ public class PersonalOfficeControllerTest {
                 .newPassword("password")
                 .build();
         String jwtToken = "mockJwtToken";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", jwtToken);
-        HttpEntity<UpdatePasswordDTO> requestEntity = new HttpEntity<>(updatePasswordDTO, headers);
-        when(mockJwtService.generateJwtToken(any())).thenReturn("mockJwtToken");
+        when(mockJwtService.generateJwtToken(any())).thenReturn(jwtToken);
         when(mockDatabaseUserDetailsService.loadUserByUsername(anyString())).thenReturn(mockUserDetails);
         when(mockUserService.getCurrentUserPhoneNumber(jwtToken)).thenReturn(80996320011L);
         doNothing().when(mockUserService).updatePassword(anyLong(), any());
@@ -154,4 +153,40 @@ public class PersonalOfficeControllerTest {
         assertEquals("Password updated successful", response.getBody());
     }
 
+    @Test
+    public void updateEmail_success() {
+        PersonalOfficeController controller = new PersonalOfficeController(mockUserService, mockJwtService, mockDatabaseUserDetailsService);
+        UpdateEmailDTO updateEmailDTO = UpdateEmailDTO.builder()
+                .userPhoneNumber(80996320011L)
+                .newEmail("newEmail@example.com").build();
+        String jwtToken = "mockJwtToken";
+        when(mockJwtService.generateJwtToken(any())).thenReturn(jwtToken);
+        when(mockDatabaseUserDetailsService.loadUserByUsername(jwtToken)).thenReturn(mockUserDetails);
+        when(mockUserService.getCurrentUserPhoneNumber(jwtToken)).thenReturn(80996320011L);
+        doNothing().when(mockUserService).updateEmail(anyLong(), any());
+
+        ResponseEntity<String> response = controller.updateEmail(updateEmailDTO, jwtToken);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Email updated successful", response.getBody());
+    }
+
+    @Test
+    public void updateEmail_emailIsAlreadyExists() {
+        PersonalOfficeController controller = new PersonalOfficeController(mockUserService, mockJwtService, mockDatabaseUserDetailsService);
+        UpdateEmailDTO updateEmailDTO = UpdateEmailDTO.builder()
+                .userPhoneNumber(80996320011L)
+                .newEmail("newEmail@example.com").build();
+        String jwtToken = "mockJwtToken";
+        when(mockJwtService.generateJwtToken(any())).thenReturn(jwtToken);
+        when(mockDatabaseUserDetailsService.loadUserByUsername(jwtToken)).thenReturn(mockUserDetails);
+        when(mockUserService.getCurrentUserPhoneNumber(jwtToken)).thenReturn(80996320011L);
+        String errorMessage = "Email is already exists";
+        doThrow(new IllegalArgumentException(errorMessage)).when(mockUserService).updateEmail(anyLong(), any());
+
+        ResponseEntity<String> response = controller.updateEmail(updateEmailDTO, jwtToken);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Email is already exists", response.getBody());
+    }
 }

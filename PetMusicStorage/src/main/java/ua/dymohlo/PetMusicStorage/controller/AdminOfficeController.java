@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import ua.dymohlo.PetMusicStorage.dto.UpdateEmailDTO;
 import ua.dymohlo.PetMusicStorage.dto.UpdatePasswordDTO;
 import ua.dymohlo.PetMusicStorage.dto.UpdatePhoneNumberDTO;
 import ua.dymohlo.PetMusicStorage.dto.UpdateUserBankCardDTO;
@@ -44,6 +45,7 @@ public class AdminOfficeController {
     public ResponseEntity<String> updateUserBankCard(@RequestBody UpdateUserBankCardDTO request) {
         try {
             userService.updateBankCard(request.getUserPhoneNumber(), request);
+            log.info("Bank card updated successful");
             return ResponseEntity.ok("Bank card updated successful");
         } catch (IllegalArgumentException e) {
             log.warn("Invalid card details");
@@ -58,12 +60,28 @@ public class AdminOfficeController {
     public ResponseEntity<String> updateUserPassword(@RequestBody UpdatePasswordDTO request) {
         try {
             userService.updatePassword(request.getUserPhoneNumber(), request);
+            log.info("Password updated successful");
             return ResponseEntity.ok("Password updated successful");
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             log.warn("Phone number not found");
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             log.error("An error occurred while updating password");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping("/updateEmail")
+    public ResponseEntity<String> updateUserEmail(@RequestBody UpdateEmailDTO request) {
+        try {
+            userService.updateEmail(request.getUserPhoneNumber(), request);
+            log.info("Email updated successful");
+            return ResponseEntity.ok("Email updated successful");
+        } catch (IllegalArgumentException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            log.error("An error occurred while updating email");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
