@@ -6,10 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import ua.dymohlo.PetMusicStorage.dto.UpdateEmailDTO;
-import ua.dymohlo.PetMusicStorage.dto.UpdatePasswordDTO;
-import ua.dymohlo.PetMusicStorage.dto.UpdatePhoneNumberDTO;
-import ua.dymohlo.PetMusicStorage.dto.UpdateUserBankCardDTO;
+import ua.dymohlo.PetMusicStorage.dto.*;
 import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
 import ua.dymohlo.PetMusicStorage.service.JWTService;
 import ua.dymohlo.PetMusicStorage.service.UserService;
@@ -79,6 +76,20 @@ public class AdminOfficeController {
             return ResponseEntity.ok("Email updated successful");
         } catch (IllegalArgumentException e) {
             log.warn(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            log.error("An error occurred while updating email");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    @PutMapping("/setAutoRenew")
+    public ResponseEntity<String> setUserAutoRenewStatus(@RequestBody SetAutoRenewDTO request) {
+        try {
+            userService.setAutoRenewStatus(request.getUserPhoneNumber(), request);
+            log.info("Auto renew status set successfully for user with phone number: {}", request.getUserPhoneNumber());
+            return ResponseEntity.ok("Auto renew status set successfully");
+        } catch (IllegalArgumentException e) {
+            log.warn("Phone number not found");
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             log.error("An error occurred while updating email");

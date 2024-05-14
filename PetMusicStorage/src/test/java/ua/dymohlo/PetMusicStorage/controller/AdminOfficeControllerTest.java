@@ -12,10 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
-import ua.dymohlo.PetMusicStorage.dto.UpdateEmailDTO;
-import ua.dymohlo.PetMusicStorage.dto.UpdatePasswordDTO;
-import ua.dymohlo.PetMusicStorage.dto.UpdatePhoneNumberDTO;
-import ua.dymohlo.PetMusicStorage.dto.UpdateUserBankCardDTO;
+import ua.dymohlo.PetMusicStorage.Enum.AutoRenewStatus;
+import ua.dymohlo.PetMusicStorage.dto.*;
 import ua.dymohlo.PetMusicStorage.entity.UserBankCard;
 import ua.dymohlo.PetMusicStorage.repository.UserRepository;
 import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
@@ -165,5 +163,21 @@ public class AdminOfficeControllerTest {
 
         assert response.getStatusCode().equals(HttpStatus.BAD_REQUEST);
         assert response.getBody().equals("Email is already exists");
+    }
+
+    @Test
+    public void setUserAutoRenewStatus_success() {
+        AdminOfficeController controller = new AdminOfficeController(mockUserService, mockJwtService, mockDatabaseUserDetailsService);
+        doNothing().when(mockUserService).setAutoRenewStatus(anyLong(), any());
+        when(mockJwtService.generateJwtToken(any())).thenReturn("mockJwtToken");
+        when(mockDatabaseUserDetailsService.loadUserByUsername(any())).thenReturn(mockUserDetails);
+        SetAutoRenewDTO setAutoRenewDTO = SetAutoRenewDTO.builder()
+                .userPhoneNumber(80663256655L)
+                .autoRenewStatus(AutoRenewStatus.YES).build();
+
+        ResponseEntity<String> response = controller.setUserAutoRenewStatus(setAutoRenewDTO);
+
+        assert response.getStatusCode().equals(HttpStatus.OK);
+        assert response.getBody().equals("Auto renew status set successfully");
     }
 }

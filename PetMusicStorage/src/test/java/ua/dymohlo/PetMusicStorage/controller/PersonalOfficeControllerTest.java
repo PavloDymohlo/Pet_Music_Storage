@@ -16,10 +16,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.*;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
-import ua.dymohlo.PetMusicStorage.dto.UpdateEmailDTO;
-import ua.dymohlo.PetMusicStorage.dto.UpdatePasswordDTO;
-import ua.dymohlo.PetMusicStorage.dto.UpdatePhoneNumberDTO;
-import ua.dymohlo.PetMusicStorage.dto.UpdateUserBankCardDTO;
+import ua.dymohlo.PetMusicStorage.Enum.AutoRenewStatus;
+import ua.dymohlo.PetMusicStorage.dto.*;
 import ua.dymohlo.PetMusicStorage.entity.UserBankCard;
 import ua.dymohlo.PetMusicStorage.repository.UserRepository;
 import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
@@ -181,12 +179,29 @@ public class PersonalOfficeControllerTest {
         when(mockJwtService.generateJwtToken(any())).thenReturn(jwtToken);
         when(mockDatabaseUserDetailsService.loadUserByUsername(jwtToken)).thenReturn(mockUserDetails);
         when(mockUserService.getCurrentUserPhoneNumber(jwtToken)).thenReturn(80996320011L);
-        String errorMessage = "Email is already exists";
-        doThrow(new IllegalArgumentException(errorMessage)).when(mockUserService).updateEmail(anyLong(), any());
+        doThrow(new IllegalArgumentException("Email is already exists")).when(mockUserService).updateEmail(anyLong(), any());
 
         ResponseEntity<String> response = controller.updateEmail(updateEmailDTO, jwtToken);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Email is already exists", response.getBody());
+    }
+
+    @Test
+    public void setAutoRenewStatus_success() {
+        PersonalOfficeController controller = new PersonalOfficeController(mockUserService, mockJwtService, mockDatabaseUserDetailsService);
+        SetAutoRenewDTO setAutoRenewDTO = SetAutoRenewDTO.builder()
+                .userPhoneNumber(80996320011L)
+                .autoRenewStatus(AutoRenewStatus.YES).build();
+        String jwtToken = "mockJwtToken";
+        when(mockJwtService.generateJwtToken(any())).thenReturn(jwtToken);
+        when(mockDatabaseUserDetailsService.loadUserByUsername(jwtToken)).thenReturn(mockUserDetails);
+        when(mockUserService.getCurrentUserPhoneNumber(jwtToken)).thenReturn(80996320011L);
+        doNothing().when(mockUserService).setAutoRenewStatus(anyLong(), any());
+
+        ResponseEntity<String> response = controller.setAutoRenewStatus(setAutoRenewDTO, jwtToken);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Auto renew status set successfully", response.getBody());
     }
 }

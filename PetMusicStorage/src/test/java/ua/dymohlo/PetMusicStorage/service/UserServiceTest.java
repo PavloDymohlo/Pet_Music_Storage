@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import ua.dymohlo.PetMusicStorage.Enum.AutoRenewStatus;
 import ua.dymohlo.PetMusicStorage.dto.*;
 import ua.dymohlo.PetMusicStorage.entity.Subscription;
 import ua.dymohlo.PetMusicStorage.entity.User;
@@ -478,4 +479,17 @@ public class UserServiceTest {
 
         assert exception.getMessage().equals("Email is already exists");
     }
+
+    @Test
+    public void setAutoRenewStatus_success() {
+        long phoneNumber = 80998885566L;
+        AutoRenewStatus newStatus = AutoRenewStatus.YES;
+        when(mockUserRepository.findByPhoneNumber(phoneNumber)).thenReturn(mockUser);
+
+        userService.setAutoRenewStatus(phoneNumber, new SetAutoRenewDTO(phoneNumber, newStatus));
+
+        verify(mockUser, times(1)).setAutoRenew(newStatus);
+        verify(mockUserRepository, times(1)).save(mockUser);
+    }
+
 }
