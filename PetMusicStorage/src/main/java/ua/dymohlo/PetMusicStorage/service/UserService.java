@@ -185,14 +185,31 @@ public class UserService {
         log.info("Email updated successful for user with id: {}", user);
     }
 
-    public void setAutoRenewStatus(long phoneNumber, SetAutoRenewDTO status) {
-        User user = userRepository.findByPhoneNumber(phoneNumber);
-        if (user == null) {
+    public void setAutoRenewStatus(long userPhoneNumber, SetAutoRenewDTO status) {
+        if (!userPhoneNumberExists(userPhoneNumber)) {
             log.error("User with phone number: {} does not exists", status.getUserPhoneNumber());
             throw new IllegalArgumentException("Phone number not found");
         }
+        User user = userRepository.findByPhoneNumber(userPhoneNumber);
         user.setAutoRenew(status.getAutoRenewStatus());
         userRepository.save(user);
         log.info("Auto renew status set successfully for user with phone number: {}", status.getUserPhoneNumber());
+    }
+
+    public void updateSubscription(long userPhoneNumber, UpdateSubscriptionDTO updateSubscriptionDTO) {
+        if (!userRepository.existsByPhoneNumber(userPhoneNumber)) {
+            log.error("User with phone number: {} does not exist", userPhoneNumber);
+            throw new IllegalArgumentException("User with phone number " + userPhoneNumber + " not found");
+        }
+        Subscription newSubscription = updateSubscriptionDTO.getNewSubscription();
+        Subscription existingSubscription = subscriptionRepository.findBySubscriptionName(newSubscription.getSubscriptionName());
+        if (existingSubscription == null) {
+            log.error("Subscription with name: {} does not exist", newSubscription.getSubscriptionName());
+            throw new IllegalArgumentException("Subscription with name " + newSubscription.getSubscriptionName() + " not found");
+        }
+        User user = userRepository.findByPhoneNumber(userPhoneNumber);
+        user.setSubscription(existingSubscription);
+        userRepository.save(user);
+        log.info("Subscription updated successfully for user with phone number: {}", userPhoneNumber);
     }
 }

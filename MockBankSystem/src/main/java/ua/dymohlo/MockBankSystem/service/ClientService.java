@@ -41,8 +41,9 @@ public class ClientService {
         Date currentDate = new Date();
         if (clientRepository.existsByCardNumber(cardNumber)) {
             Client client = clientRepository.findByCardNumber(cardNumber);
-            if (cardExpirationDate(cardExpirationDate).after(currentDate)
-                && client.getCardExpirationDate().equals(cardExpirationDate)) {
+            Date clientCardExpirationDate = parseExpirationDate(client.getCardExpirationDate());
+            Date inputCardExpirationDate = parseExpirationDate(cardExpirationDate);
+            if (inputCardExpirationDate.after(currentDate) && inputCardExpirationDate.equals(clientCardExpirationDate)) {
                 if (client.getCvv() == cvv) {
                     return true;
                 }
@@ -50,17 +51,16 @@ public class ClientService {
             }
             throw new IllegalArgumentException("The card has expired, or not correct!");
         }
-        throw new IllegalArgumentException("Card with this number not found! ");
+        throw new IllegalArgumentException("Card with this number not found!");
     }
 
-    private Date cardExpirationDate(String cardExpirationDate) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/yy");
-        Date expirationDate;
+    private Date parseExpirationDate(String expirationDate) {
         try {
-            expirationDate = simpleDateFormat.parse(cardExpirationDate);
+            SimpleDateFormat formatter = new SimpleDateFormat("MM/yy");
+            formatter.setLenient(false);
+            return formatter.parse(expirationDate);
         } catch (ParseException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException("Invalid date format!");
         }
-        return expirationDate;
     }
 }

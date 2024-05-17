@@ -7,6 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import ua.dymohlo.PetMusicStorage.dto.*;
+import ua.dymohlo.PetMusicStorage.entity.Subscription;
+import ua.dymohlo.PetMusicStorage.entity.User;
+import ua.dymohlo.PetMusicStorage.repository.SubscriptionRepository;
+import ua.dymohlo.PetMusicStorage.repository.UserRepository;
 import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
 import ua.dymohlo.PetMusicStorage.service.JWTService;
 import ua.dymohlo.PetMusicStorage.service.UserService;
@@ -19,6 +23,9 @@ public class PersonalOfficeController {
     private final UserService userService;
     private final JWTService jwtService;
     private final DatabaseUserDetailsService databaseUserDetailsService;
+    private final PaymentController paymentController;
+    private final UserRepository userRepository;
+    private final SubscriptionRepository subscriptionRepository;
 
 
     @PutMapping("/updatePhoneNumber")
@@ -105,8 +112,42 @@ public class PersonalOfficeController {
             log.warn("Phone number not found");
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            log.error("An error occurred while updating email", e);
+            log.error("An error occurred while set auto renew", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping("/updateSubscription")
+    public ResponseEntity<String> updateSubscription(@RequestBody UpdateSubscriptionDTO request,
+                                                     @RequestHeader("Authorization") String jwtToken) {
+        long userPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
+        log.debug("Current user's phone number retrieved: {}", userPhoneNumber);
+        try {
+            User user = userRepository.findByPhoneNumber(userPhoneNumber);
+            Subscription subscription = subscriptionRepository.findBySubscriptionName(request.getNewSubscription().getSubscriptionName());
+            TransactionDTO transactionDTO = TransactionDTO.builder()
+                    .outputCardNumber(user.getUserBankCard().getCardNumber())
+                    .sum(subscription.getSubscriptionPrice())
+                    .cardExpirationDate(user.getUserBankCard().getCardExpirationDate())
+                    .cvv(user.getUserBankCard().getCvv()).build();
+            ResponseEntity<String> paymentResponse = paymentController.payment(transactionDTO);
+            if (paymentResponse.getStatusCode().is2xxSuccessful()) {
+                userService.updateSubscription(userPhoneNumber, request);
+                log.info("Subscription updated successful for user with phone number: {}", user.getPhoneNumber());
+                return ResponseEntity.ok("Subscription updated successful");
+            } else if (paymentResponse.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                String errorMessage = paymentResponse.getBody();
+                log.warn("Payment failed: {}", errorMessage);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment failed");
+            }
+        } catch (IllegalArgumentException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            log.error("An error occurred while updating subscription", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
         }
     }
 }

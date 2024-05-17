@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class TransactionDTO {
     private long outputCardNumber;
     private long targetCardNumber;
-    private int sum;
+    private BigDecimal sum;
     private String cardExpirationDate;
     private short cvv;
 }

@@ -14,6 +14,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.*;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import ua.dymohlo.PetMusicStorage.Enum.AutoRenewStatus;
@@ -69,6 +72,7 @@ public class PersonalOfficeControllerTest {
         verify(mockDatabaseUserDetailsService, times(1)).loadUserByUsername("80663256655");
         verify(mockJwtService, times(1)).generateJwtToken(mockUserDetails);
     }
+
 
     @Test
     public void updatePhoneNumber_phoneNumberAlreadyExists() throws Exception {

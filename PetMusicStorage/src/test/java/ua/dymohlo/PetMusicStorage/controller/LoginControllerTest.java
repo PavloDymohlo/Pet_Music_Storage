@@ -47,7 +47,7 @@ public class LoginControllerTest {
         UserLoginInDTO userLoginInDTO = UserLoginInDTO.builder()
                 .phoneNumber(80981213335L)
                 .password("password").build();
-        Subscription subscription = Subscription.builder().subscriptionName("ADMIN").build(); // Змінено на "ADMIN"
+        Subscription subscription = Subscription.builder().subscriptionName("ADMIN").build();
         User mockUser = User.builder()
                 .phoneNumber(userLoginInDTO.getPhoneNumber())
                 .password("encodedPassword")
@@ -79,7 +79,7 @@ public class LoginControllerTest {
         UserLoginInDTO userLoginInDTO = UserLoginInDTO.builder()
                 .phoneNumber(80981213335L)
                 .password("password").build();
-        Subscription subscription = Subscription.builder().subscriptionName("ADMIN").build(); // Змінено на "ADMIN"
+        Subscription subscription = Subscription.builder().subscriptionName("ADMIN").build();
         User mockUser = User.builder()
                 .phoneNumber(userLoginInDTO.getPhoneNumber())
                 .password("encodedPassword")
@@ -105,5 +105,4 @@ public class LoginControllerTest {
                 .andExpect(jsonPath("$.redirectUrl").value("/personal_office"))
                 .andExpect(jsonPath("$.jwtToken").value(jwtToken));
     }
-
 }
