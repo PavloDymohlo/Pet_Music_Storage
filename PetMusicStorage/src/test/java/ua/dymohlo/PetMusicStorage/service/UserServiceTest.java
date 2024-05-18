@@ -115,7 +115,7 @@ public class UserServiceTest {
             fail("Expected IllegalArgumentException was not thrown");
         } catch (IllegalArgumentException e) {
 
-            assertEquals("Phone number already exists", e.getMessage());
+            assertEquals("Phone number " + phoneNumber + " already exists", e.getMessage());
             verify(mockUserRepository, never()).save(any(User.class));
         }
     }
@@ -135,7 +135,7 @@ public class UserServiceTest {
             fail("Expected IllegalArgumentException was not thrown");
         } catch (IllegalArgumentException e) {
 
-            assertEquals("Email already exists", e.getMessage());
+            assertEquals("Email " + email + " already exists", e.getMessage());
             verify(mockUserRepository, never()).save(any(User.class));
         }
     }
@@ -212,7 +212,7 @@ public class UserServiceTest {
             userService.loginIn(userLoginInDTO);
         });
 
-        assert exception.getMessage().equals("This phone number not found!");
+        assert exception.getMessage().equals("Phone number " + userLoginInDTO.getPhoneNumber() + " not found");
     }
 
     @Test
@@ -231,7 +231,7 @@ public class UserServiceTest {
             userService.loginIn(userLoginInDTO);
         });
 
-        assert exception.getMessage().equals("Incorrect password!");
+        assert exception.getMessage().equals("Incorrect password for user with phone number " + userLoginInDTO.getPhoneNumber());
     }
 
     @Test
@@ -286,7 +286,7 @@ public class UserServiceTest {
             userService.updatePhoneNumber(currentPhoneNumber, newPhoneNumber);
         });
 
-        assert exception.getMessage().equals("Phone number not found");
+        assert exception.getMessage().equals("Phone number " + currentPhoneNumber + " not found");
     }
 
     @Test
@@ -300,7 +300,7 @@ public class UserServiceTest {
             userService.updatePhoneNumber(currentPhoneNumber, newPhoneNumber);
         });
 
-        assert exception.getMessage().equals("Phone number already exists");
+        assert exception.getMessage().equals("Phone number " + newPhoneNumber + " already exists");
     }
 
     @Test
@@ -335,7 +335,7 @@ public class UserServiceTest {
             userService.updateBankCard(currentPhoneNumber, mockUpdateUserBankCardDTO);
         });
 
-        assert exception.getMessage().equals("Phone number not found");
+        assert exception.getMessage().equals("Phone number " + currentPhoneNumber + " not found");
     }
 
     @Test
@@ -356,7 +356,7 @@ public class UserServiceTest {
             userService.updateBankCard(currentPhoneNumber, mockUpdateUserBankCardDTO);
         });
 
-        assert exception.getMessage().equals("Invalid card details");
+        assert exception.getMessage().equals("Invalid card details for user with phone number " + currentPhoneNumber);
     }
 
     @Test
@@ -443,7 +443,7 @@ public class UserServiceTest {
             userService.updatePassword(userPhoneNumber, updatePasswordDTO);
         });
 
-        assert exception.getMessage().equals("Phone number not found");
+        assert exception.getMessage().equals("Phone number " + userPhoneNumber + " not found");
     }
 
     @Test
@@ -477,13 +477,14 @@ public class UserServiceTest {
             userService.updateEmail(userPhoneNumber, updateEmailDTO);
         });
 
-        assert exception.getMessage().equals("Email is already exists");
+        assert exception.getMessage().equals("Email " + updateEmailDTO.getNewEmail() + " is already exists");
     }
 
     @Test
     public void setAutoRenewStatus_success() {
         long phoneNumber = 80998885566L;
         AutoRenewStatus newStatus = AutoRenewStatus.YES;
+        when(mockUserRepository.existsByPhoneNumber(phoneNumber)).thenReturn(true);
         when(mockUserRepository.findByPhoneNumber(phoneNumber)).thenReturn(mockUser);
 
         userService.setAutoRenewStatus(phoneNumber, new SetAutoRenewDTO(phoneNumber, newStatus));
@@ -492,4 +493,37 @@ public class UserServiceTest {
         verify(mockUserRepository, times(1)).save(mockUser);
     }
 
+    @Test
+    public void updateSubscription_success() {
+        long phoneNumber = 80998885566L;
+        Subscription newSubscription = Subscription.builder()
+                .subscriptionName("MAXIMUM").build();
+        UpdateSubscriptionDTO updateSubscriptionDTO = UpdateSubscriptionDTO.builder()
+                .newSubscription(newSubscription).build();
+        when(mockUserRepository.existsByPhoneNumber(phoneNumber)).thenReturn(true);
+        when(mockUserRepository.findByPhoneNumber(phoneNumber)).thenReturn(mockUser);
+        when(mockSubscriptionRepository.findBySubscriptionName(anyString())).thenReturn(newSubscription);
+
+        userService.updateSubscription(phoneNumber, updateSubscriptionDTO);
+
+        verify(mockUser, times(1)).setSubscription(newSubscription);
+        verify(mockUserRepository, times(1)).save(mockUser);
+    }
+
+    @Test
+    public void updateSubscription_subscriptionNotFound() {
+        long phoneNumber = 80998885566L;
+        Subscription newSubscription = Subscription.builder()
+                .subscriptionName("MAXIMUM").build();
+        UpdateSubscriptionDTO updateSubscriptionDTO = UpdateSubscriptionDTO.builder()
+                .newSubscription(newSubscription).build();
+        when(mockUserRepository.existsByPhoneNumber(phoneNumber)).thenReturn(true);
+        when(mockSubscriptionRepository.findBySubscriptionName(anyString())).thenReturn(null);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.updateSubscription(phoneNumber, updateSubscriptionDTO);
+        });
+
+        assert exception.getMessage().equals("Subscription with name " + newSubscription.getSubscriptionName() + " not found");
+    }
 }

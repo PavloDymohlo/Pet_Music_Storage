@@ -37,7 +37,7 @@ public class PersonalOfficeController {
             userService.updatePhoneNumber(currentUserPhoneNumber, request.getNewPhoneNumber());
             UserDetails userDetails = databaseUserDetailsService.loadUserByUsername(String.valueOf(request.getNewPhoneNumber()));
             String newJwtToken = jwtService.generateJwtToken(userDetails);
-            log.info("Phone number updated successfully!");
+            log.info("Phone number {} updated successfully!", request.getNewPhoneNumber());
             return ResponseEntity.ok().body(newJwtToken);
         } catch (IllegalArgumentException e) {
             log.error("Failed to update phone number: {}", e.getMessage());
@@ -55,10 +55,10 @@ public class PersonalOfficeController {
         log.debug("Current user's phone number retrieved: {}", userPhoneNumber);
         try {
             userService.updateBankCard(userPhoneNumber, request);
-            log.info("Bank card updated successful");
-            return ResponseEntity.ok("Bank card updated successful");
+            log.info("Bank card for user with phone number {} updated successful", request.getUserPhoneNumber());
+            return ResponseEntity.ok("Bank card for user with phone number " + request.getUserPhoneNumber() + " updated successful");
         } catch (IllegalArgumentException e) {
-            log.warn("Invalid card details");
+            log.warn("Invalid card details for user with phone number {}", request.getUserPhoneNumber());
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             log.error("An error occurred while updating bank card", e);
@@ -73,8 +73,8 @@ public class PersonalOfficeController {
         log.debug("Current user's phone number retrieved: {}", userPhoneNumber);
         try {
             userService.updatePassword(userPhoneNumber, request);
-            log.info("Password updated successful");
-            return ResponseEntity.ok("Password updated successful");
+            log.info("Password for user with phone number {} updated successful", request.getUserPhoneNumber());
+            return ResponseEntity.ok("Password for user with phone number " + request.getUserPhoneNumber() + " updated successful");
         } catch (Exception e) {
             log.error("An error occurred while updating bank card", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -88,10 +88,10 @@ public class PersonalOfficeController {
         log.debug("Current user's phone number retrieved: {}", userPhoneNumber);
         try {
             userService.updateEmail(userPhoneNumber, request);
-            log.info("Email updated successful");
-            return ResponseEntity.ok("Email updated successful");
+            log.info("Email for user with phone number {} updated successful", request.getUserPhoneNumber());
+            return ResponseEntity.ok("Email for user with phone number " + request.getUserPhoneNumber() + " updated successful");
         } catch (IllegalArgumentException e) {
-            log.warn("Email is already exists");
+            log.warn("Email {} is already exists", request.getNewEmail());
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             log.error("An error occurred while updating email", e);
@@ -106,10 +106,10 @@ public class PersonalOfficeController {
         log.debug("Current user's phone number retrieved: {}", userPhoneNumber);
         try {
             userService.setAutoRenewStatus(userPhoneNumber, request);
-            log.info("Auto renew status set successfully for user with phone number: {}", request.getUserPhoneNumber());
-            return ResponseEntity.ok("Auto renew status set successfully");
+            log.info("Auto renew status for user with phone number {} set successfully", request.getUserPhoneNumber());
+            return ResponseEntity.ok("Auto renew status for user with phone number " + request.getUserPhoneNumber() + " set successfully");
         } catch (IllegalArgumentException e) {
-            log.warn("Phone number not found");
+            log.warn("Phone number {} not found", request.getUserPhoneNumber());
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             log.error("An error occurred while set auto renew", e);
@@ -133,8 +133,8 @@ public class PersonalOfficeController {
             ResponseEntity<String> paymentResponse = paymentController.payment(transactionDTO);
             if (paymentResponse.getStatusCode().is2xxSuccessful()) {
                 userService.updateSubscription(userPhoneNumber, request);
-                log.info("Subscription updated successful for user with phone number: {}", user.getPhoneNumber());
-                return ResponseEntity.ok("Subscription updated successful");
+                log.info("Subscription for user with phone number {} updated successful", user.getPhoneNumber());
+                return ResponseEntity.ok("Subscription for user with phone number " + request.getUserPhoneNumber() + " updated successful");
             } else if (paymentResponse.getStatusCode() == HttpStatus.BAD_REQUEST) {
                 String errorMessage = paymentResponse.getBody();
                 log.warn("Payment failed: {}", errorMessage);

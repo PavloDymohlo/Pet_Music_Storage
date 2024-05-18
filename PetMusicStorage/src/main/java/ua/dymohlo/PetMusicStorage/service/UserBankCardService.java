@@ -15,9 +15,9 @@ public class UserBankCardService {
     public boolean validateBankCard(UserBankCard userBankCard) {
         UserBankCard existingCard = userBankCardRepository.findByCardNumber(userBankCard.getCardNumber());
         if (!existingCard.getCardExpirationDate().equals(userBankCard.getCardExpirationDate())) {
-            throw new IllegalArgumentException("Bank card with this number already exists, but card expiration date is invalid");
+            throw new IllegalArgumentException("Bank card with number "+existingCard.getCardNumber()+" already exists, but card expiration date is invalid");
         } else if (existingCard.getCvv() != userBankCard.getCvv()) {
-            throw new IllegalArgumentException("Bank card with this number already exists, but card cvv is invalid");
+            throw new IllegalArgumentException("Bank card with number "+existingCard.getCardNumber()+" already exists, but card cvv is invalid");
         }
         return true;
     }

@@ -41,17 +41,17 @@ public class UserService {
     public User registerUser(UserRegistrationDTO userDTO) {
         if (userPhoneNumberExists(userDTO.getPhoneNumber())) {
             log.error("Phone number {} already exists ", userDTO.getPhoneNumber());
-            throw new IllegalArgumentException("Phone number already exists");
+            throw new IllegalArgumentException("Phone number " + userDTO.getPhoneNumber() + " already exists");
         }
         if (userEmailExists(userDTO.getEmail())) {
             log.error("Email {} already exists", userDTO.getEmail());
-            throw new IllegalArgumentException("Email already exists");
+            throw new IllegalArgumentException("Email " + userDTO.getEmail() + " already exists");
         }
         UserBankCard userBankCard = UserBankCard.builder()
                 .cardNumber(userDTO.getUserBankCard().getCardNumber())
                 .cvv(userDTO.getUserBankCard().getCvv())
                 .cardExpirationDate(userDTO.getUserBankCard().getCardExpirationDate()).build();
-        UserBankCard existingCard = userBankCardRepository.findByCardNumber(userBankCard.getCardNumber());//(UserBankCard) перед userBankCardRepository
+        UserBankCard existingCard = userBankCardRepository.findByCardNumber(userBankCard.getCardNumber());
         if (existingCard == null) {
             userBankCardRepository.save(userBankCard);
         } else {
@@ -89,12 +89,12 @@ public class UserService {
     public String loginIn(UserLoginInDTO userLoginInDTO) {
         if (!userPhoneNumberExists(userLoginInDTO.getPhoneNumber())) {
             log.error("Invalid phone number: {}", userLoginInDTO.getPhoneNumber());
-            throw new IllegalArgumentException("This phone number not found!");
+            throw new IllegalArgumentException("Phone number " + userLoginInDTO.getPhoneNumber() + " not found");
         }
         User user = userRepository.findByPhoneNumber(userLoginInDTO.getPhoneNumber());
         if (!passwordEncoder.matches(userLoginInDTO.getPassword(), user.getPassword())) {
             log.error("Incorrect password for user with phone number: {}", userLoginInDTO.getPhoneNumber());
-            throw new IllegalArgumentException("Incorrect password!");
+            throw new IllegalArgumentException("Incorrect password for user with phone number " + userLoginInDTO.getPhoneNumber());
         }
         log.info("User login successful: {}", userLoginInDTO.getPhoneNumber());
         return "Success";
@@ -109,11 +109,11 @@ public class UserService {
     public void updatePhoneNumber(long currentPhoneNumber, long newPhoneNumber) {
         if (!userPhoneNumberExists(currentPhoneNumber)) {
             log.error("User with phone number: {} does not exists", currentPhoneNumber);
-            throw new IllegalArgumentException("Phone number not found");
+            throw new IllegalArgumentException("Phone number " + currentPhoneNumber + " not found");
         }
         if (userPhoneNumberExists(newPhoneNumber)) {
             log.error("Phone number {} already exists ", newPhoneNumber);
-            throw new IllegalArgumentException("Phone number already exists");
+            throw new IllegalArgumentException("Phone number " + newPhoneNumber + " already exists");
         }
         User user = userRepository.findByPhoneNumber(currentPhoneNumber);
         user.setPhoneNumber(newPhoneNumber);
@@ -136,7 +136,7 @@ public class UserService {
     public void updateBankCard(long userPhoneNumber, UpdateUserBankCardDTO updateUserBankCardDTO) {
         if (!userPhoneNumberExists(userPhoneNumber)) {
             log.error("User with phone number: {} does not exists", updateUserBankCardDTO.getUserPhoneNumber());
-            throw new IllegalArgumentException("Phone number not found");
+            throw new IllegalArgumentException("Phone number " + userPhoneNumber + " not found");
         }
         UserBankCard newUserBankCard = UserBankCard.builder()
                 .cardNumber(updateUserBankCardDTO.getNewUserBankCard().getCardNumber())
@@ -150,7 +150,7 @@ public class UserService {
                 newUserBankCard = existingCard;
             } else {
                 log.error("Invalid details for card: {}", newUserBankCard);
-                throw new IllegalArgumentException("Invalid card details");
+                throw new IllegalArgumentException("Invalid card details for user with phone number " + userPhoneNumber);
             }
         }
         User user = userRepository.findByPhoneNumber(userPhoneNumber);
@@ -162,7 +162,7 @@ public class UserService {
     public void updatePassword(long userPhoneNumber, UpdatePasswordDTO updatePasswordDTO) {
         if (!userPhoneNumberExists(userPhoneNumber)) {
             log.error("User with phone number: {} does not exists", updatePasswordDTO.getUserPhoneNumber());
-            throw new IllegalArgumentException("Phone number not found");
+            throw new IllegalArgumentException("Phone number " + userPhoneNumber + " not found");
         }
         User user = userRepository.findByPhoneNumber(userPhoneNumber);
         user.setPassword(passwordEncoder.encode(updatePasswordDTO.getNewPassword()));
@@ -173,11 +173,11 @@ public class UserService {
     public void updateEmail(long userPhoneNumber, UpdateEmailDTO updateEmailDTO) {
         if (!userPhoneNumberExists(userPhoneNumber)) {
             log.error("User with phone number: {} does not exists", updateEmailDTO.getUserPhoneNumber());
-            throw new IllegalArgumentException("Phone number not found");
+            throw new IllegalArgumentException("Phone number " + userPhoneNumber + " not found");
         }
         if (userRepository.existsByEmail(updateEmailDTO.getNewEmail())) {
             log.error("Email: {} is already exists", updateEmailDTO.getNewEmail());
-            throw new IllegalArgumentException("Email is already exists");
+            throw new IllegalArgumentException("Email " + updateEmailDTO.getNewEmail() + " is already exists");
         }
         User user = userRepository.findByPhoneNumber(userPhoneNumber);
         user.setEmail(updateEmailDTO.getNewEmail());
@@ -188,7 +188,7 @@ public class UserService {
     public void setAutoRenewStatus(long userPhoneNumber, SetAutoRenewDTO status) {
         if (!userPhoneNumberExists(userPhoneNumber)) {
             log.error("User with phone number: {} does not exists", status.getUserPhoneNumber());
-            throw new IllegalArgumentException("Phone number not found");
+            throw new IllegalArgumentException("Phone number " + userPhoneNumber + " not found");
         }
         User user = userRepository.findByPhoneNumber(userPhoneNumber);
         user.setAutoRenew(status.getAutoRenewStatus());
