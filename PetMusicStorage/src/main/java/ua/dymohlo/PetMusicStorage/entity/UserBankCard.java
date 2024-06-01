@@ -1,6 +1,7 @@
 package ua.dymohlo.PetMusicStorage.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -24,5 +25,6 @@ public class UserBankCard {
     @Column(name = "card_expiration_date")
     private String cardExpirationDate;
     @OneToMany(mappedBy = "userBankCard", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<User> users;
 }

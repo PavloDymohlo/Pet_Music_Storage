@@ -19,6 +19,10 @@ import ua.dymohlo.PetMusicStorage.repository.UserBankCardRepository;
 import ua.dymohlo.PetMusicStorage.repository.UserRepository;
 import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -525,5 +529,147 @@ public class UserServiceTest {
         });
 
         assert exception.getMessage().equals("Subscription with name " + newSubscription.getSubscriptionName() + " not found");
+    }
+
+    @Test
+    public void findAllUsers_success() {
+        User firstUser = User.builder().phoneNumber(80996653200L).build();
+        User secondUser = User.builder().phoneNumber(80996653277L).build();
+        List<User> mockUsers = new ArrayList<>();
+        mockUsers.add(firstUser);
+        mockUsers.add(secondUser);
+        when(userService.findAllUsers()).thenReturn(mockUsers);
+
+        List<User> result = userService.findAllUsers();
+
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    public void findUserByPhoneNumber_returnUser() {
+        User user = User.builder().phoneNumber(80996653200L).build();
+        when(userService.findUserByPhoneNumber(anyLong())).thenReturn(user);
+
+        User findUser = userService.findUserByPhoneNumber(80996653200L);
+
+        assertEquals(user, findUser);
+    }
+
+    @Test
+    public void findUserByPhoneNumber_returnNull() {
+        User user = User.builder().phoneNumber(80996653200L).build();
+        when(mockUserRepository.findByPhoneNumber(user.getPhoneNumber())).thenReturn(null);
+
+        User findUser = userService.findUserByPhoneNumber(80996653200L);
+
+        assertNull(findUser);
+    }
+
+    @Test
+    public void findUserByBankCard_returnUser() {
+        long bankCardNumber = 2225698763250124L;
+        UserBankCard userBankCard = UserBankCard.builder()
+                .cardNumber(bankCardNumber).build();
+        User user = User.builder()
+                .userBankCard(userBankCard).build();
+        List<User> users = Collections.singletonList(user);
+        userBankCard.setUsers(users);
+        when(mockUserBankCardRepository.findByCardNumber(anyLong())).thenReturn(userBankCard);
+
+        List<User> result = userService.findUserByBankCard(bankCardNumber);
+
+        assertEquals(1, result.size());
+        assertEquals(user, result.get(0));
+    }
+
+    @Test
+    public void findUserByBankCard_returnNull() {
+        long bankCardNumber = 2225698763250124L;
+        when(mockUserBankCardRepository.findByCardNumber(anyLong())).thenReturn(null);
+
+        List<User> result = userService.findUserByBankCard(bankCardNumber);
+
+        assertNull(result);
+    }
+
+    @Test
+    public void findUserBySubscription_returnUser() {
+        String userSubscription = "FREE";
+        Subscription subscription = Subscription.builder()
+                .subscriptionName(userSubscription).build();
+        User user = User.builder()
+                .subscription(subscription).build();
+        List<User> users = Collections.singletonList(user);
+        subscription.setUsers(users);
+        when(mockSubscriptionRepository.findBySubscriptionName(anyString())).thenReturn(subscription);
+
+        List<User> result = userService.findUserBySubscription(userSubscription);
+
+        assertEquals(1, result.size());
+        assertEquals(user, result.get(0));
+    }
+
+    @Test
+    public void findUserBySubscription_subscriptionNotFound() {
+        String userSubscription = "FREE";
+        when(mockSubscriptionRepository.findBySubscriptionName(anyString())).thenReturn(null);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.findUserBySubscription(userSubscription);
+        });
+
+        assert exception.getMessage().equals("Subscription " + userSubscription + " not found");
+    }
+
+    @Test
+    public void findUserBySubscription_usersNotFound() {
+        String userSubscription = "FREE";
+        Subscription subscription = Subscription.builder()
+                .subscriptionName("FREE")
+                .users(Collections.emptyList())
+                .build();
+        when(mockSubscriptionRepository.findBySubscriptionName(anyString())).thenReturn(subscription);
+
+        List<User> results = userService.findUserBySubscription(userSubscription);
+
+        assertNull(results);
+    }
+
+    @Test
+    public void findUserByEmail_returnUser() {
+        User user = User.builder().email("example@email.com").build();
+        when(mockUserRepository.findByEmail(anyString())).thenReturn(user);
+
+        User findUser = userService.findUserByEmail("example@email.com");
+
+        assertEquals(user, findUser);
+    }
+
+    @Test
+    public void findUserByEmail_userNotFound() {
+        when(mockUserRepository.findByEmail(anyString())).thenReturn(null);
+
+        User findUser = userService.findUserByEmail("example@email.com");
+
+        assertNull(findUser);
+    }
+
+    @Test
+    public void findUserById_returnUser() {
+        User user = User.builder().id(1).build();
+        when(mockUserRepository.findById(anyLong())).thenReturn(user);
+
+        User findUser = userService.findUserById(1);
+
+        assertEquals(user, findUser);
+    }
+
+    @Test
+    public void findUserById_userNotFound() {
+        when(mockUserRepository.findById(anyLong())).thenReturn(null);
+
+        User findUser = userService.findUserById(1);
+
+        assertNull(findUser);
     }
 }

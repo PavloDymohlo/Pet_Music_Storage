@@ -15,6 +15,9 @@ import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
 import ua.dymohlo.PetMusicStorage.service.JWTService;
 import ua.dymohlo.PetMusicStorage.service.UserService;
 
+import java.util.Collections;
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -28,7 +31,7 @@ public class AdminOfficeController {
     private final SubscriptionRepository subscriptionRepository;
 
 
-    @PutMapping("/updatePhoneNumber")
+    @PutMapping("/update_phone_number")
     public ResponseEntity<String> updateUserPhoneNumber(@RequestBody UpdatePhoneNumberDTO request) {
         try {
             userService.updatePhoneNumber(request.getCurrentPhoneNumber(), request.getNewPhoneNumber());
@@ -45,7 +48,7 @@ public class AdminOfficeController {
         }
     }
 
-    @PutMapping("/updateBankCard")
+    @PutMapping("/update_bank_card")
     public ResponseEntity<String> updateUserBankCard(@RequestBody UpdateUserBankCardDTO request) {
         try {
             userService.updateBankCard(request.getUserPhoneNumber(), request);
@@ -60,7 +63,7 @@ public class AdminOfficeController {
         }
     }
 
-    @PutMapping("/updatePassword")
+    @PutMapping("/update_password")
     public ResponseEntity<String> updateUserPassword(@RequestBody UpdatePasswordDTO request) {
         try {
             userService.updatePassword(request.getUserPhoneNumber(), request);
@@ -75,7 +78,7 @@ public class AdminOfficeController {
         }
     }
 
-    @PutMapping("/updateEmail")
+    @PutMapping("/update_email")
     public ResponseEntity<String> updateUserEmail(@RequestBody UpdateEmailDTO request) {
         try {
             userService.updateEmail(request.getUserPhoneNumber(), request);
@@ -90,7 +93,7 @@ public class AdminOfficeController {
         }
     }
 
-    @PutMapping("/setAutoRenew")
+    @PutMapping("/set_auto_renew")
     public ResponseEntity<String> setUserAutoRenewStatus(@RequestBody SetAutoRenewDTO request) {
         try {
             userService.setAutoRenewStatus(request.getUserPhoneNumber(), request);
@@ -105,7 +108,7 @@ public class AdminOfficeController {
         }
     }
 
-    @PutMapping("/updateSubscription")
+    @PutMapping("/update_subscription")
     public ResponseEntity<String> updateUserSubscription(@RequestBody UpdateSubscriptionDTO request) {
         try {
             User user = userRepository.findByPhoneNumber(request.getUserPhoneNumber());
@@ -133,6 +136,112 @@ public class AdminOfficeController {
         } catch (Exception e) {
             log.error("An error occurred while updating subscription", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
+        }
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> findAllUsers() {
+        try {
+            List<User> users = userService.findAllUsers();
+            log.info("Fetched all user successful");
+            return ResponseEntity.ok(users);
+        } catch (Exception e) {
+            log.error("An error occurred while fetching all users");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/user_by_phone")
+    public ResponseEntity<Object> findUserByPhoneNumber(@RequestParam("phoneNumber") long phoneNumber) {
+        try {
+            User user = userService.findUserByPhoneNumber(phoneNumber);
+            if (user != null) {
+                log.info("Fetched user by phone number successful.");
+                return ResponseEntity.ok(user);
+            } else {
+                log.warn("user with phone number {} not found", phoneNumber);
+                String errorMessage = "User with phone number " + phoneNumber + " not found";
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+            }
+        } catch (Exception e) {
+            log.error("Error finding user by phone number", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/user_by_bank_card")
+    public ResponseEntity<List<?>> findUserByBankCard(@RequestParam("bankCardNumber") long bankCardNumber) {
+        try {
+            List<User> users = userService.findUserByBankCard(bankCardNumber);
+            if (users != null) {
+                log.info("Fetched users by bank card number successful");
+                return ResponseEntity.ok(users);
+            } else {
+                log.warn("Users with bank card {} not found", bankCardNumber);
+                String errorMessage = "Users with bank card number " + bankCardNumber + " not found";
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonList(errorMessage));
+            }
+        } catch (Exception e) {
+            log.error("Error finding user by bank card", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/user_by_subscription")
+    public ResponseEntity<List<?>> findUserBySubscription(@RequestParam("subscription") String userSubscription) {
+        try {
+            List<User> users = userService.findUserBySubscription(userSubscription);
+            if (users != null) {
+                log.info("Fetched users by subscription successful");
+                return ResponseEntity.ok(users);
+            } else {
+                log.warn("Users with subscription :{} not found ", userSubscription);
+                String errorMessage = "Users with subscription: " + userSubscription + " not found";
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonList(errorMessage));
+            }
+        } catch (IllegalArgumentException e) {
+            log.error("Subscription not found: {}", userSubscription, e);
+            String subscriptionErrorMessage = "Subscription " + userSubscription + " not found";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonList(subscriptionErrorMessage));
+        } catch (Exception e) {
+            log.error("Error finding user by subscription", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/user_by_email")
+    public ResponseEntity<Object> findUserByEmail(@RequestParam("email") String userEmail) {
+        try {
+            User user = userService.findUserByEmail(userEmail);
+            if (user != null) {
+                log.info("Fetched users by email successful");
+                return ResponseEntity.ok(user);
+            } else {
+                log.warn("User with email :{} not found", userEmail);
+                String errorMessage = "User with email " + userEmail + " not found";
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+            }
+        } catch (Exception e) {
+            log.error("Error finding user by email", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/user_by_id")
+    public ResponseEntity<Object> findUserById(@RequestParam("id") long userId) {
+        try {
+            User user = userService.findUserById(userId);
+            if (user != null) {
+                log.info("Fetched users by id successful");
+                return ResponseEntity.ok(user);
+            } else {
+                log.warn("User with id :{} not found", userId);
+                String errorMessage = "User with id " + userId + " not found";
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+            }
+        } catch (Exception e) {
+            log.error("Error finding user by id", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 }

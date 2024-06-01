@@ -16,6 +16,8 @@ import ua.dymohlo.PetMusicStorage.repository.UserBankCardRepository;
 import ua.dymohlo.PetMusicStorage.repository.UserRepository;
 import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -211,5 +213,37 @@ public class UserService {
         user.setSubscription(existingSubscription);
         userRepository.save(user);
         log.info("Subscription updated successfully for user with phone number: {}", userPhoneNumber);
+    }
+
+    public List<User> findAllUsers() {
+        return userRepository.findAll();
+    }
+
+    public User findUserByPhoneNumber(long userPhoneNumber) {
+        return userRepository.findByPhoneNumber(userPhoneNumber);
+    }
+
+    public List<User> findUserByBankCard(long userBankCardNumber) {
+        UserBankCard userBankCard = userBankCardRepository.findByCardNumber(userBankCardNumber);
+        if (userBankCard == null) {
+            return null;
+        }
+        return userBankCard.getUsers();
+    }
+
+    public List<User> findUserBySubscription(String userSubscription) {
+        Subscription subscription = subscriptionRepository.findBySubscriptionName(userSubscription);
+        if (subscription == null) {
+            throw new IllegalArgumentException("Subscription " + userSubscription + " not found");
+        }
+        return (subscription.getUsers().isEmpty()) ? null : subscription.getUsers();
+    }
+
+    public User findUserByEmail(String userEmail) {
+        return userRepository.findByEmail(userEmail);
+    }
+
+    public User findUserById(long userId) {
+        return userRepository.findById(userId);
     }
 }

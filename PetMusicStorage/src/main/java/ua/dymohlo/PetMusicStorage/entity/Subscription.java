@@ -28,6 +28,7 @@ public class Subscription {
     @JsonIgnore
     @OneToMany(mappedBy = "subscription", cascade = CascadeType.ALL)
     private List<MusicFile> musicFiles;
+    @JsonIgnore
     @OneToMany(mappedBy = "subscription", cascade = CascadeType.ALL)
     private List<User> users;
 }

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ua.dymohlo.PetMusicStorage.dto.TransactionDTO;
 import ua.dymohlo.PetMusicStorage.dto.UserRegistrationDTO;
-import ua.dymohlo.PetMusicStorage.repository.UserRepository;
+import ua.dymohlo.PetMusicStorage.repository.SubscriptionRepository;
 import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
 import ua.dymohlo.PetMusicStorage.service.JWTService;
 import ua.dymohlo.PetMusicStorage.service.UserService;
@@ -26,8 +26,8 @@ public class RegisterController {
     private final UserService userService;
     private final DatabaseUserDetailsService databaseUserDetailsService;
     private final JWTService jwtService;
-    private final UserRepository userRepository;
     private final PaymentController paymentController;
+    private final SubscriptionRepository subscriptionRepository;
 
     @PostMapping
     public ResponseEntity<String> registerUser(@RequestBody UserRegistrationDTO request) {
@@ -41,7 +41,7 @@ public class RegisterController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with email " + request.getEmail() + " already exists");
             }
 
-            BigDecimal bonusPrice = BigDecimal.valueOf(1);
+            BigDecimal bonusPrice = subscriptionRepository.findBySubscriptionName("REGISTRATION").getSubscriptionPrice();
             TransactionDTO transactionDTO = TransactionDTO.builder()
                     .outputCardNumber(request.getUserBankCard().getCardNumber())
                     .sum(bonusPrice)

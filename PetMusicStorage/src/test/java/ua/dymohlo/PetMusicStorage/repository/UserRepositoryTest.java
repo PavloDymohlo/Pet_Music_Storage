@@ -9,6 +9,7 @@ import ua.dymohlo.PetMusicStorage.entity.User;
 import ua.dymohlo.PetMusicStorage.entity.UserBankCard;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @DataJpaTest
@@ -39,12 +40,16 @@ public class UserRepositoryTest {
         when(mockSubscriptionRepository.save(mockSubscription)).thenReturn(mockSubscription);
 
         mockUser = User.builder()
+                .id(1)
                 .phoneNumber(80663698520L)
+                .email("mockUser@mail.com")
                 .password("password")
                 .userBankCard(mockUserBankCard)
                 .subscription(mockSubscription).build();
         when(mockUserRepository.save(mockUser)).thenReturn(mockUser);
         when(mockUserRepository.findByPhoneNumber(80663698520L)).thenReturn(mockUser);
+        when(mockUserRepository.findByEmail("mockUser@mail.com")).thenReturn(mockUser);
+        when(mockUserRepository.findById(1)).thenReturn(mockUser);
     }
 
     @Test
@@ -99,5 +104,31 @@ public class UserRepositoryTest {
         boolean emailExists = mockUserRepository.existsByEmail(email);
 
         assertFalse(emailExists, "User with email should not exist");
+    }
+
+    @Test
+    public void findByEmail_emailExists_returnEmail() {
+        User byEmail = mockUserRepository.findByEmail("mockUser@mail.com");
+        assertNotNull(byEmail);
+        assertEquals("mockUser@mail.com", byEmail.getEmail());
+    }
+
+    @Test
+    public void findByEmail_emailNotExists_returnNull() {
+        User byEmail = mockUserRepository.findByEmail("mockUser2@mail.com");
+        assertNull(byEmail);
+    }
+
+    @Test
+    public void findById_idExists_returnId() {
+        User byId = mockUserRepository.findById(1);
+        assertNotNull(byId);
+        assertEquals(1, byId.getId());
+    }
+
+    @Test
+    public void findById_idNoExists_returnNull() {
+        User byId = mockUserRepository.findById(2);
+        assertNull(byId);
     }
 }

@@ -28,7 +28,7 @@ public class PersonalOfficeController {
     private final SubscriptionRepository subscriptionRepository;
 
 
-    @PutMapping("/updatePhoneNumber")
+    @PutMapping("/update_phone_number")
     public ResponseEntity<String> updatePhoneNumber(@RequestBody UpdatePhoneNumberDTO request,
                                                     @RequestHeader("Authorization") String jwtToken) {
         long currentUserPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
@@ -48,7 +48,7 @@ public class PersonalOfficeController {
         }
     }
 
-    @PutMapping("/updateBankCard")
+    @PutMapping("/update_bank_card")
     public ResponseEntity<String> updateBankCard(@RequestBody UpdateUserBankCardDTO request,
                                                  @RequestHeader("Authorization") String jwtToken) {
         long userPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
@@ -66,7 +66,7 @@ public class PersonalOfficeController {
         }
     }
 
-    @PutMapping("/updatePassword")
+    @PutMapping("/update_password")
     public ResponseEntity<String> updatePassword(@RequestBody UpdatePasswordDTO request,
                                                  @RequestHeader("Authorization") String jwtToken) {
         long userPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
@@ -81,7 +81,7 @@ public class PersonalOfficeController {
         }
     }
 
-    @PutMapping("/updateEmail")
+    @PutMapping("/update_email")
     public ResponseEntity<String> updateEmail(@RequestBody UpdateEmailDTO request,
                                               @RequestHeader("Authorization") String jwtToken) {
         long userPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
@@ -99,7 +99,7 @@ public class PersonalOfficeController {
         }
     }
 
-    @PutMapping("/setAutoRenew")
+    @PutMapping("/set_auto_renew")
     public ResponseEntity<String> setAutoRenewStatus(@RequestBody SetAutoRenewDTO request,
                                                      @RequestHeader("Authorization") String jwtToken) {
         long userPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
@@ -117,7 +117,7 @@ public class PersonalOfficeController {
         }
     }
 
-    @PutMapping("/updateSubscription")
+    @PutMapping("/update_subscription")
     public ResponseEntity<String> updateSubscription(@RequestBody UpdateSubscriptionDTO request,
                                                      @RequestHeader("Authorization") String jwtToken) {
         long userPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
