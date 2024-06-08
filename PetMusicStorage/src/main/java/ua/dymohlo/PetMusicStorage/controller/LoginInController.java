@@ -16,6 +16,8 @@ import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
 import ua.dymohlo.PetMusicStorage.service.JWTService;
 import ua.dymohlo.PetMusicStorage.service.UserService;
 
+import java.util.NoSuchElementException;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -40,10 +42,13 @@ public class LoginInController {
                 log.info("User with phone number {} redirected to personal_office page", request.getPhoneNumber());
                 redirectUrl = "/personal_office";
             }
-            return ResponseEntity.ok().body(new LoginResponseDTO(redirectUrl,jwtToken));
-        } catch (IllegalArgumentException e) {
+            return ResponseEntity.ok().body(new LoginResponseDTO(redirectUrl, jwtToken));
+        } catch (NoSuchElementException e) {
             log.error("Login attempt failed for user with phone number {}: {}", request.getPhoneNumber(), e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorLoginDTO(e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            log.error("Login attempt failed for user with phone number {}: {}", request.getPhoneNumber(), e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorLoginDTO(e.getMessage()));
         }
     }
 }

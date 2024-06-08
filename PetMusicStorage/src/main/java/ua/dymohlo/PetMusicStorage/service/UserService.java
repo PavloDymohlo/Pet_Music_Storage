@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ua.dymohlo.PetMusicStorage.Enum.AutoRenewStatus;
 import ua.dymohlo.PetMusicStorage.dto.*;
 import ua.dymohlo.PetMusicStorage.entity.Subscription;
@@ -17,6 +18,8 @@ import ua.dymohlo.PetMusicStorage.repository.UserRepository;
 import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -91,7 +94,7 @@ public class UserService {
     public String loginIn(UserLoginInDTO userLoginInDTO) {
         if (!userPhoneNumberExists(userLoginInDTO.getPhoneNumber())) {
             log.error("Invalid phone number: {}", userLoginInDTO.getPhoneNumber());
-            throw new IllegalArgumentException("Phone number " + userLoginInDTO.getPhoneNumber() + " not found");
+            throw new NoSuchElementException("Phone number " + userLoginInDTO.getPhoneNumber() + " not found");
         }
         User user = userRepository.findByPhoneNumber(userLoginInDTO.getPhoneNumber());
         if (!passwordEncoder.matches(userLoginInDTO.getPassword(), user.getPassword())) {
@@ -111,7 +114,7 @@ public class UserService {
     public void updatePhoneNumber(long currentPhoneNumber, long newPhoneNumber) {
         if (!userPhoneNumberExists(currentPhoneNumber)) {
             log.error("User with phone number: {} does not exists", currentPhoneNumber);
-            throw new IllegalArgumentException("Phone number " + currentPhoneNumber + " not found");
+            throw new NoSuchElementException("Phone number " + currentPhoneNumber + " not found");
         }
         if (userPhoneNumberExists(newPhoneNumber)) {
             log.error("Phone number {} already exists ", newPhoneNumber);
@@ -216,19 +219,31 @@ public class UserService {
     }
 
     public List<User> findAllUsers() {
-        return userRepository.findAll();
+        List<User> users = userRepository.findAll();
+        if (users.isEmpty()) {
+            throw new IllegalArgumentException("users not found");
+        }
+        return users;
     }
 
     public User findUserByPhoneNumber(long userPhoneNumber) {
-        return userRepository.findByPhoneNumber(userPhoneNumber);
+        User user = userRepository.findByPhoneNumber(userPhoneNumber);
+        if (user == null) {
+            throw new IllegalArgumentException("User with phone Number " + userPhoneNumber + " not found");
+        }
+        return user;
     }
 
     public List<User> findUserByBankCard(long userBankCardNumber) {
         UserBankCard userBankCard = userBankCardRepository.findByCardNumber(userBankCardNumber);
         if (userBankCard == null) {
-            return null;
+            throw new IllegalArgumentException("Bank card with number " + userBankCardNumber + " not found");
         }
-        return userBankCard.getUsers();
+        List<User> users = userBankCard.getUsers();
+        if (users.isEmpty()) {
+            throw new IllegalArgumentException("No users with bank card " + userBankCardNumber);
+        }
+        return users;
     }
 
     public List<User> findUserBySubscription(String userSubscription) {
@@ -236,14 +251,117 @@ public class UserService {
         if (subscription == null) {
             throw new IllegalArgumentException("Subscription " + userSubscription + " not found");
         }
-        return (subscription.getUsers().isEmpty()) ? null : subscription.getUsers();
+        List<User> users = subscription.getUsers();
+        if (users.isEmpty()) {
+            throw new IllegalArgumentException("No users with subscription " + subscription.getSubscriptionName());
+        }
+        return users;
     }
 
     public User findUserByEmail(String userEmail) {
-        return userRepository.findByEmail(userEmail);
+        User user = userRepository.findByEmail(userEmail);
+        if (user == null) {
+            throw new IllegalArgumentException("User with email " + userEmail + " not found");
+        }
+        return user;
     }
 
     public User findUserById(long userId) {
-        return userRepository.findById(userId);
+        User user = userRepository.findById(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("User with id " + userId + " not found");
+        }
+        return user;
+    }
+
+    @Transactional
+    public void deleteUserById(long userId) {
+        User user = userRepository.findById(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("User with id " + userId + " not found");
+        }
+        deleteUserFromDataBase(user);
+    }
+
+    /*
+    This method removes all users except the admin who performed this operation.
+    */
+    @Transactional
+    public void deleteAllUsers(long phoneNumber) {
+        User adminUser = userRepository.findByPhoneNumber(phoneNumber);
+        List<User> users = userRepository.findAll().stream()
+                .filter(user -> user != adminUser)
+                .toList();
+        userRepository.deleteAll(users);
+
+        List<UserBankCard> userBankCards = users.stream()
+                .map(User::getUserBankCard)
+                .filter(userBankCard -> userBankCard != null && !userBankCard.equals(adminUser.getUserBankCard()))
+                .distinct()
+                .collect(Collectors.toList());
+        userBankCardRepository.deleteAll(userBankCards);
+    }
+
+    @Transactional
+    public void deleteUserByPhoneNumber(long phoneNumber) {
+        User user = userRepository.findByPhoneNumber(phoneNumber);
+        if (user == null) {
+            throw new IllegalArgumentException("User with phone number " + phoneNumber + " not found");
+        }
+        deleteUserFromDataBase(user);
+    }
+
+    @Transactional
+    public void deleteUserByBankCardNumber(long bankCardNumber, long phoneNumber) {
+        User adminUser = userRepository.findByPhoneNumber(phoneNumber);
+        UserBankCard findUserBankCard = userBankCardRepository.findByCardNumber(bankCardNumber);
+        if (findUserBankCard == null) {
+            throw new IllegalArgumentException("Bank card with number " + bankCardNumber + " not found");
+        }
+        List<User> users = findUserBankCard.getUsers().stream()
+                .filter(user -> user != adminUser)
+                .toList();
+        users.forEach(this::deleteUserFromDataBase);
+    }
+
+    private void deleteUserFromDataBase(User user) {
+        if (userBankCardService.checkBankCardUsers(user.getUserBankCard().getCardNumber()) == 1) {
+            userBankCardService.deleteBankCard(user.getUserBankCard().getCardNumber());
+        } else {
+            UserBankCard userBankCard = user.getUserBankCard();
+            if (userBankCard != null) {
+                userBankCard.getUsers().remove(user);
+                if (userBankCard.getUsers().isEmpty()) {
+                    userBankCardService.deleteBankCard(userBankCard.getCardNumber());
+                }
+            }
+            userRepository.deleteById(user.getId());
+        }
+    }
+
+    @Transactional
+    public void deleteUsersBySubscription(long phoneNumber, String userSubscription) {
+        User adminUser = userRepository.findByPhoneNumber(phoneNumber);
+        Subscription subscription = subscriptionRepository.findBySubscriptionName(userSubscription);
+        if (subscription == null) {
+            throw new IllegalArgumentException("Subscription with name " + userSubscription + " not found");
+        }
+        List<User> users = subscription.getUsers().stream()
+                .filter(user -> user != adminUser)
+                .toList();
+        if (subscription.getUsers().isEmpty()) {
+            throw new IllegalArgumentException("Users with subscription " + userSubscription + " not found");
+        }
+        subscription.getUsers().removeAll(users);
+        users.forEach(this::deleteUserFromDataBase);
+    }
+
+    @Transactional
+    public void deleteUserByEmail(String userEmail) {
+        User user = userRepository.findByEmail(userEmail);
+        if (user == null) {
+            throw new IllegalArgumentException("User with email " + userEmail + " not found");
+        }
+        deleteUserFromDataBase(user);
     }
 }

@@ -8,9 +8,11 @@ import ua.dymohlo.PetMusicStorage.entity.Subscription;
 import ua.dymohlo.PetMusicStorage.entity.User;
 import ua.dymohlo.PetMusicStorage.entity.UserBankCard;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @DataJpaTest
 public class UserRepositoryTest {
@@ -130,5 +132,27 @@ public class UserRepositoryTest {
     public void findById_idNoExists_returnNull() {
         User byId = mockUserRepository.findById(2);
         assertNull(byId);
+    }
+
+    @Test
+    public void deleteById_idExists_deleteUser() {
+        long userId = 10L;
+
+        mockUserRepository.deleteById(userId);
+
+        verify(mockUserRepository, times(1)).deleteById(userId);
+    }
+
+    @Test
+    public void deleteById__idNoExists_doNothing() {
+        long userId = 11L;
+        when(mockUserRepository.findById(userId)).thenReturn(null);
+        Optional<User> userOptional = Optional.ofNullable(mockUserRepository.findById(userId));
+
+        if (userOptional.isPresent()) {
+            mockUserRepository.deleteById(userId);
+        }
+
+        verify(mockUserRepository, never()).deleteById(userId);
     }
 }

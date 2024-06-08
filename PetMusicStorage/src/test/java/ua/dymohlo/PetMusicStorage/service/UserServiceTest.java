@@ -5,7 +5,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.verification.VerificationMode;
+import org.powermock.api.mockito.PowerMockito;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,12 +22,18 @@ import ua.dymohlo.PetMusicStorage.repository.UserBankCardRepository;
 import ua.dymohlo.PetMusicStorage.repository.UserRepository;
 import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.powermock.api.mockito.PowerMockito.verifyPrivate;
+import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -538,17 +547,27 @@ public class UserServiceTest {
         List<User> mockUsers = new ArrayList<>();
         mockUsers.add(firstUser);
         mockUsers.add(secondUser);
-        when(userService.findAllUsers()).thenReturn(mockUsers);
+        when(mockUserRepository.findAll()).thenReturn(mockUsers);
 
         List<User> result = userService.findAllUsers();
 
         assertEquals(2, result.size());
     }
+    @Test
+    public void findAllUsers_returnException_usersNotFound(){
+        when(mockUserRepository.findAll()).thenReturn(new ArrayList<>());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, ()->{
+            userService.findAllUsers();
+        });
+
+        assert exception.getMessage().equals("users not found");
+    }
 
     @Test
     public void findUserByPhoneNumber_returnUser() {
         User user = User.builder().phoneNumber(80996653200L).build();
-        when(userService.findUserByPhoneNumber(anyLong())).thenReturn(user);
+        when(mockUserRepository.findByPhoneNumber(80996653200L)).thenReturn(user);
 
         User findUser = userService.findUserByPhoneNumber(80996653200L);
 
@@ -556,13 +575,15 @@ public class UserServiceTest {
     }
 
     @Test
-    public void findUserByPhoneNumber_returnNull() {
+    public void findUserByPhoneNumber_returnException() {
         User user = User.builder().phoneNumber(80996653200L).build();
         when(mockUserRepository.findByPhoneNumber(user.getPhoneNumber())).thenReturn(null);
 
-        User findUser = userService.findUserByPhoneNumber(80996653200L);
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.findUserByPhoneNumber(user.getPhoneNumber());
+        });
 
-        assertNull(findUser);
+        assert exception.getMessage().equals("User with phone Number " + user.getPhoneNumber() + " not found");
     }
 
     @Test
@@ -583,13 +604,31 @@ public class UserServiceTest {
     }
 
     @Test
-    public void findUserByBankCard_returnNull() {
+    public void findUserByBankCard_returnException_bankCardNotFound() {
         long bankCardNumber = 2225698763250124L;
         when(mockUserBankCardRepository.findByCardNumber(anyLong())).thenReturn(null);
 
-        List<User> result = userService.findUserByBankCard(bankCardNumber);
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.findUserByBankCard(bankCardNumber);
+        });
 
-        assertNull(result);
+        assert exception.getMessage().equals("Bank card with number " + bankCardNumber + " not found");
+    }
+
+    @Test
+    public void findUserByBankCard_returnException_usersNotFound() {
+        long bankCardNumber = 2225698763250124L;
+        when(mockUserBankCardRepository.findByCardNumber(anyLong())).thenReturn(mockUserBankCard);
+        when(mockUserBankCard.getUsers()).thenReturn(null);
+        List<User> users = mock(List.class);
+        when(mockUserBankCard.getUsers()).thenReturn(users);
+        when(users.isEmpty()).thenReturn(true);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.findUserByBankCard(bankCardNumber);
+        });
+
+        assert exception.getMessage().equals("No users with bank card " + bankCardNumber);
     }
 
     @Test
@@ -610,7 +649,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void findUserBySubscription_subscriptionNotFound() {
+    public void findUserBySubscription_returnException_subscriptionNotFound() {
         String userSubscription = "FREE";
         when(mockSubscriptionRepository.findBySubscriptionName(anyString())).thenReturn(null);
 
@@ -622,18 +661,20 @@ public class UserServiceTest {
     }
 
     @Test
-    public void findUserBySubscription_usersNotFound() {
+    public void findUserBySubscription_returnException_usersNotFound() {
         String userSubscription = "FREE";
-        Subscription subscription = Subscription.builder()
-                .subscriptionName("FREE")
-                .users(Collections.emptyList())
-                .build();
-        when(mockSubscriptionRepository.findBySubscriptionName(anyString())).thenReturn(subscription);
+        when(mockSubscription.getSubscriptionName()).thenReturn(userSubscription);
+        when(mockSubscriptionRepository.findBySubscriptionName(userSubscription))
+                .thenReturn(mockSubscription);
 
-        List<User> results = userService.findUserBySubscription(userSubscription);
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.findUserBySubscription(userSubscription);
+        });
 
-        assertNull(results);
+        assertEquals("No users with subscription " + userSubscription, exception.getMessage());
     }
+
+
 
     @Test
     public void findUserByEmail_returnUser() {
@@ -646,12 +687,15 @@ public class UserServiceTest {
     }
 
     @Test
-    public void findUserByEmail_userNotFound() {
+    public void findUserByEmail_returnException_userNotFound() {
+        String userEmail = "example.email";
         when(mockUserRepository.findByEmail(anyString())).thenReturn(null);
 
-        User findUser = userService.findUserByEmail("example@email.com");
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->{
+            userService.findUserByEmail(userEmail);
+        });
 
-        assertNull(findUser);
+        assert exception.getMessage().equals("User with email " + userEmail + " not found");
     }
 
     @Test
@@ -665,11 +709,56 @@ public class UserServiceTest {
     }
 
     @Test
-    public void findUserById_userNotFound() {
+    public void findUserById_returnException_userNotFound() {
+        long userId = 1l;
         when(mockUserRepository.findById(anyLong())).thenReturn(null);
 
-        User findUser = userService.findUserById(1);
+       IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->{
+           userService.findUserById(userId);
+       });
 
-        assertNull(findUser);
+       assert exception.getMessage().equals("User with id " + userId + " not found");
+    }
+
+    @Test
+    public void deleteUserFromDatabase_success() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        when(mockUser.getUserBankCard()).thenReturn(mockUserBankCard);
+        when(mockUser.getUserBankCard().getCardNumber()).thenReturn(2356897412356895L);
+
+        Method method = UserService.class.getDeclaredMethod("deleteUserFromDataBase", User.class);
+        method.setAccessible(true);
+        method.invoke(userService, mockUser);
+
+        verify(mockUserRepository, times(1)).deleteById(anyLong());
+    }
+
+    @Test
+    public void deleteAllUsers_success() {
+        UserBankCard userBankCard = UserBankCard.builder()
+                .cardNumber(89652301256987456L).build();
+        User adminUser = User.builder()
+                .phoneNumber(80996665588L).build();
+        long adminUserPhoneNumber = 80996665588L;
+        User firstUser = User.builder()
+                .userBankCard(userBankCard)
+                .build();
+        User secondUser = User.builder()
+                .userBankCard(userBankCard)
+                .build();
+        List<User> users = new ArrayList<>();
+        users.add(firstUser);
+        users.add(secondUser);
+        when(mockUserRepository.findByPhoneNumber(anyLong())).thenReturn(adminUser);
+        when(mockUserRepository.findAll()).thenReturn(users);
+
+        userService.deleteAllUsers(adminUserPhoneNumber);
+
+        verify(mockUserRepository, times(1)).deleteAll(users);
+        List<UserBankCard> userBankCardsToDelete = users.stream()
+                .map(User::getUserBankCard)
+                .filter(mockUserBankCard -> userBankCard != null && !userBankCard.equals(adminUser.getUserBankCard()))
+                .distinct()
+                .collect(Collectors.toList());
+        verify(mockUserBankCardRepository, times(1)).deleteAll(userBankCardsToDelete);
     }
 }

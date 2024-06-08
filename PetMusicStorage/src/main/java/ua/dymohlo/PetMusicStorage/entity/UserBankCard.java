@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,5 +27,5 @@ public class UserBankCard {
     private String cardExpirationDate;
     @OneToMany(mappedBy = "userBankCard", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<User> users;
+    private List<User> users = new ArrayList<>();
 }

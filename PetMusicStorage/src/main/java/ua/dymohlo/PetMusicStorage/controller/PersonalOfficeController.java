@@ -13,7 +13,12 @@ import ua.dymohlo.PetMusicStorage.repository.SubscriptionRepository;
 import ua.dymohlo.PetMusicStorage.repository.UserRepository;
 import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
 import ua.dymohlo.PetMusicStorage.service.JWTService;
+import ua.dymohlo.PetMusicStorage.service.SubscriptionService;
 import ua.dymohlo.PetMusicStorage.service.UserService;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,6 +31,7 @@ public class PersonalOfficeController {
     private final PaymentController paymentController;
     private final UserRepository userRepository;
     private final SubscriptionRepository subscriptionRepository;
+    private final SubscriptionService subscriptionService;
 
 
     @PutMapping("/update_phone_number")
@@ -39,9 +45,12 @@ public class PersonalOfficeController {
             String newJwtToken = jwtService.generateJwtToken(userDetails);
             log.info("Phone number {} updated successfully!", request.getNewPhoneNumber());
             return ResponseEntity.ok().body(newJwtToken);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (IllegalArgumentException e) {
-            log.error("Failed to update phone number: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             log.error("An unexpected error occurred: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -148,6 +157,60 @@ public class PersonalOfficeController {
         } catch (Exception e) {
             log.error("An error occurred while updating subscription", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
+        }
+    }
+
+    @GetMapping("/subscriptions")
+    public ResponseEntity<?> findAllSubscriptions() {
+        try {
+            List<Subscription> subscriptions = subscriptionService.findAllSubscription();
+            subscriptions.remove(subscriptionRepository.findBySubscriptionName("ADMIN"));
+            subscriptions.remove(subscriptionRepository.findBySubscriptionName("REGISTRATION"));
+            log.info("Fetched all subscription successful");
+            return ResponseEntity.ok(subscriptions);
+        } catch (IllegalArgumentException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("Error finding all subscriptions");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/subscription_by_price")
+    public ResponseEntity<?> findSubscriptionsByPrice(@RequestBody FindSubscriptionsByPriceDTO request) {
+        try {
+            List<Subscription> subscriptions = subscriptionService.findSubscriptionsByPrice(request.getMinPrice(),
+                    request.getMaxPrice());
+            subscriptions.removeIf(subscription -> "ADMIN".equals(subscription.getSubscriptionName()));
+            subscriptions.removeIf(subscription -> "REGISTRATION".equals(subscription.getSubscriptionName()));
+
+            log.info("Fetched subscription between price " + request.getMinPrice() + " and " + request.getMaxPrice());
+            return ResponseEntity.ok(subscriptions);
+        } catch (IllegalArgumentException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("Error finding subscription between price " + request.getMinPrice() + " and " + request.getMaxPrice());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/subscription_by_name")
+    public ResponseEntity<?> findSubscriptionBySubscriptionName(@RequestParam("subscriptionName") String subscriptionName) {
+        try {
+            Subscription subscription = subscriptionService.findSubscriptionBySubscriptionName(subscriptionName);
+            if ("ADMIN".equals(subscription.getSubscriptionName()) || "REGISTRATION".equals(subscription.getSubscriptionName())) {
+                throw new IllegalArgumentException("Subscription with subscriptionName " + subscriptionName + " not found");
+            }
+            log.info("Fetched subscription by subscriptionName");
+            return ResponseEntity.ok(subscription);
+        } catch (IllegalArgumentException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("Error finding subscription by subscriptionName");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 }

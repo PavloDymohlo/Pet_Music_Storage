@@ -6,6 +6,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -30,5 +31,5 @@ public class Subscription {
     private List<MusicFile> musicFiles;
     @JsonIgnore
     @OneToMany(mappedBy = "subscription", cascade = CascadeType.ALL)
-    private List<User> users;
+    private List<User> users = new ArrayList<>();
 }
