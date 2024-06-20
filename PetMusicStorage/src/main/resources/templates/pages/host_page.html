@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Host Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .welcome {
+            text-align: center;
+        }
+        .form-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: stretch;
+        }
+        form {
+            width: 45%;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+        }
+        h2 {
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .error {
+            color: red;
+            font-size: 14px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .form-group label {
+            display: block;
+        }
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 5px;
+        }
+        .form-group .half-width {
+            width: calc(50% - 5px);
+            display: inline-block;
+            vertical-align: top;
+        }
+        .form-group .half-width label {
+            display: block;
+        }
+        .form-group .half-width input[type="text"] {
+            width: calc(100% - 10px);
+            margin-bottom: 0;
+        }
+    </style>
+<!--    <script>-->
+<!--        function submitRegistrationForm(event) {-->
+<!--            event.preventDefault();-->
+
+<!--            var phoneNumber = document.getElementById('regPhoneNumber').value;-->
+<!--            var email = document.getElementById('regEmail').value;-->
+<!--            var bankCardNumber = document.getElementById('regBankCardNumber').value;-->
+<!--            var cardExpirationDate = document.getElementById('cardExpirationDate').value;-->
+<!--            var cvv = document.getElementById('cvv').value;-->
+<!--            var password = document.getElementById('regPassword').value;-->
+
+<!--            var userBankCard = {-->
+<!--                cardNumber: bankCardNumber,-->
+<!--                cardExpirationDate: cardExpirationDate,-->
+<!--                cvv: cvv-->
+<!--            };-->
+
+<!--            var userData = {-->
+<!--                phoneNumber: phoneNumber,-->
+<!--                email: email,-->
+<!--                userBankCard: userBankCard,-->
+<!--                password: password-->
+<!--            };-->
+
+<!--            var xhr = new XMLHttpRequest();-->
+<!--            xhr.open("POST", "/register");-->
+<!--            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");-->
+<!--            xhr.onload = function() {-->
+<!--                var errorMessageContainer = document.getElementById('registrationErrorMessages');-->
+<!--                if (xhr.status === 200) {-->
+<!--                    var response = JSON.parse(xhr.responseText);-->
+<!--                    localStorage.setItem('jwtToken', response.jwtToken);-->
+<!--                    window.location.href = response.redirectUrl;-->
+<!--                } else {-->
+<!--                    errorMessageContainer.innerText = xhr.responseText;-->
+<!--                    errorMessageContainer.style.display = 'block';-->
+<!--                }-->
+<!--            };-->
+<!--            xhr.send(JSON.stringify(userData));-->
+<!--        }-->
+
+<!--        function submitLoginForm(event) {-->
+<!--            event.preventDefault();-->
+
+<!--            var phoneNumber = document.getElementById('loginPhoneNumber').value;-->
+<!--            var password = document.getElementById('loginPassword').value;-->
+
+<!--            var loginData = {-->
+<!--                phoneNumber: phoneNumber,-->
+<!--                password: password-->
+<!--            };-->
+
+<!--            var xhr = new XMLHttpRequest();-->
+<!--            xhr.open("POST", "/login");-->
+<!--            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");-->
+<!--            xhr.onload = function() {-->
+<!--                var errorMessageContainer = document.getElementById('loginErrorMessages');-->
+<!--                if (xhr.status === 200) {-->
+<!--                    var response = JSON.parse(xhr.responseText);-->
+<!--&lt;!&ndash;                    localStorage.setItem('jwtToken', response.jwtToken);  // Збереження токену в локальному сховищі&ndash;&gt;-->
+<!--                    window.location.href = response.redirectUrl;  // Перенаправлення на особистий кабінет-->
+<!--                } else {-->
+<!--                    errorMessageContainer.innerText = xhr.responseText;-->
+<!--                    errorMessageContainer.style.display = 'block';-->
+<!--                }-->
+<!--            };-->
+<!--            xhr.send(JSON.stringify(loginData));-->
+<!--        }-->
+<!--    </script>-->
+</head>
+<body>
+<h1 class="welcome">Welcome to Host Page</h1>
+<div class="form-container">
+    <form id="registrationForm" onsubmit="submitRegistrationForm(event)" method="post">
+        <h2>Registration Form</h2>
+        <div class="form-border">
+            <div class="form-group">
+                <label for="regPhoneNumber">Phone Number:</label>
+                <input type="text" id="regPhoneNumber" name="phoneNumber" required>
+            </div>
+            <div class="form-group">
+                <label for="regEmail">Email:</label>
+                <input type="text" id="regEmail" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="regBankCardNumber">Bank Card Number:</label>
+                <input type="text" id="regBankCardNumber" name="bankCardNumber" required>
+            </div>
+            <div class="form-group">
+                <div class="half-width">
+                    <label for="cardExpirationDate">Card Expiration Date:</label>
+                    <input type="text" id="cardExpirationDate" name="cardExpirationDate" required>
+                </div>
+                <div class="half-width">
+                    <label for="cvv">CVV:</label>
+                    <input type="text" id="cvv" name="cvv" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="regPassword">Password:</label>
+                <input type="password" id="regPassword" name="password" required>
+            </div>
+            <div class="error" id="registrationErrorMessages" style="display: none;"></div>
+            <input type="submit" value="Register">
+        </div>
+    </form>
+
+    <form id="loginForm" onsubmit="submitLoginForm(event)" method="post">
+        <h2>Login Form</h2>
+        <div class="form-border">
+            <div class="form-group">
+                <label for="loginPhoneNumber">Phone Number:</label>
+                <input type="text" id="loginPhoneNumber" name="phoneNumber" required>
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password:</label>
+                <input type="password" id="loginPassword" name="password" required>
+            </div>
+            <div class="error" id="loginErrorMessages" style="display: none;"></div>
+            <input type="submit" value="Login">
+        </div>
+    </form>
+</div>
+</body>
+</html>

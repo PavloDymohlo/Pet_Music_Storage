@@ -28,7 +28,7 @@ public class Subscription {
     private int subscriptionDurationTime;
     @JsonIgnore
     @OneToMany(mappedBy = "subscription", cascade = CascadeType.ALL)
-    private List<MusicFile> musicFiles;
+    private List<MusicFile> musicFiles = new ArrayList<>();
     @JsonIgnore
     @OneToMany(mappedBy = "subscription", cascade = CascadeType.ALL)
     private List<User> users = new ArrayList<>();

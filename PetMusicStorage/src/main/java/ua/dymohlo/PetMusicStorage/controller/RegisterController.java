@@ -5,10 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import ua.dymohlo.PetMusicStorage.dto.RedirectResponseDTO;
 import ua.dymohlo.PetMusicStorage.dto.TransactionDTO;
 import ua.dymohlo.PetMusicStorage.dto.UserRegistrationDTO;
 import ua.dymohlo.PetMusicStorage.repository.SubscriptionRepository;
@@ -30,7 +28,7 @@ public class RegisterController {
     private final SubscriptionRepository subscriptionRepository;
 
     @PostMapping
-    public ResponseEntity<String> registerUser(@RequestBody UserRegistrationDTO request) {
+    public ResponseEntity<?> registerUser(@RequestBody UserRegistrationDTO request) {
         try {
             if (userService.isPhoneNumberRegistered(request.getPhoneNumber())) {
                 log.error("User with phone number {} already exists", request.getPhoneNumber());
@@ -54,7 +52,7 @@ public class RegisterController {
                 String jwtToken = jwtService.generateJwtToken(userDetails);
                 log.info("User with phone number {} registered successfully ", request.getPhoneNumber());
                 log.info("Generated JWT token: {}", jwtToken);
-                return ResponseEntity.ok(jwtToken);
+                return ResponseEntity.ok(new RedirectResponseDTO("/personal_office", jwtToken));
             } else if (paymentResponse.getStatusCode() == HttpStatus.BAD_REQUEST) {
                 String errorMessage = paymentResponse.getBody();
                 log.warn("Payment failed: {}", errorMessage);

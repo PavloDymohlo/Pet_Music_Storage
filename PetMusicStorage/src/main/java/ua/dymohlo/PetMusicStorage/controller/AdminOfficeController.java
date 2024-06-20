@@ -6,17 +6,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import ua.dymohlo.PetMusicStorage.dto.*;
+import ua.dymohlo.PetMusicStorage.entity.MusicFile;
 import ua.dymohlo.PetMusicStorage.entity.Subscription;
 import ua.dymohlo.PetMusicStorage.entity.User;
+import ua.dymohlo.PetMusicStorage.repository.MusicFileRepository;
 import ua.dymohlo.PetMusicStorage.repository.SubscriptionRepository;
 import ua.dymohlo.PetMusicStorage.repository.UserRepository;
 import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
 import ua.dymohlo.PetMusicStorage.service.JWTService;
+import ua.dymohlo.PetMusicStorage.service.MusicFileService;
 import ua.dymohlo.PetMusicStorage.service.SubscriptionService;
 import ua.dymohlo.PetMusicStorage.service.UserService;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -32,7 +35,13 @@ public class AdminOfficeController {
     private final UserRepository userRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionService subscriptionService;
+    private final MusicFileService musicFileService;
+    private final MusicFileRepository musicFileRepository;
 
+    @GetMapping
+    public ModelAndView adminOfficePage() {
+        return new ModelAndView("pages/admin_page");
+    }
 
     @PutMapping("/update_phone_number")
     public ResponseEntity<String> updateUserPhoneNumber(@RequestBody UpdatePhoneNumberDTO request) {
@@ -42,7 +51,7 @@ public class AdminOfficeController {
             String newJwtToken = jwtService.generateJwtToken(userDetails);
             log.info("Phone number {} updated successfully!", request.getNewPhoneNumber());
             return ResponseEntity.ok().body(newJwtToken);
-        }catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (IllegalArgumentException e) {
@@ -61,9 +70,12 @@ public class AdminOfficeController {
             log.info("Bank card for user with phone number {} updated successful", request.getUserPhoneNumber());
             String responseMessage = "Bank card for user with phone number " + request.getUserPhoneNumber() + " updated successful";
             return ResponseEntity.ok(responseMessage);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (IllegalArgumentException e) {
             log.warn(e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             log.error("An error occurred while updating bank card");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -77,9 +89,9 @@ public class AdminOfficeController {
             log.info("Password for user with phone number {} updated successful", request.getUserPhoneNumber());
             String responseMessage = "Password for user with phone number " + request.getUserPhoneNumber() + " updated successful";
             return ResponseEntity.ok(responseMessage);
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
             log.error("An error occurred while updating password");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -93,9 +105,12 @@ public class AdminOfficeController {
             log.info("Email for user with phone number {} updated successful", request.getUserPhoneNumber());
             String responseMessage = "Email for user with phone number " + request.getUserPhoneNumber() + " updated successful";
             return ResponseEntity.ok(responseMessage);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (IllegalArgumentException e) {
             log.warn(e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             log.error("An error occurred while updating email");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -109,9 +124,9 @@ public class AdminOfficeController {
             log.info("Auto renew status for user with phone number {} set successfully for user with phone number", request.getUserPhoneNumber());
             String responseMessage = "Auto renew status for user with phone number " + request.getUserPhoneNumber() + " set successfully";
             return ResponseEntity.ok(responseMessage);
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
             log.error("An error occurred while set auto renew status");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -141,9 +156,9 @@ public class AdminOfficeController {
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment failed");
             }
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
             log.error("An error occurred while updating subscription", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
@@ -151,11 +166,14 @@ public class AdminOfficeController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<User>> findAllUsers() {
+    public ResponseEntity<?> findAllUsers() {
         try {
             List<User> users = userService.findAllUsers();
             log.info("Fetched all user successful");
             return ResponseEntity.ok(users);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
             log.error("An error occurred while fetching all users");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -168,7 +186,7 @@ public class AdminOfficeController {
             User user = userService.findUserByPhoneNumber(phoneNumber);
             log.info("Fetched user by phone number successful.");
             return ResponseEntity.ok(user);
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
@@ -183,7 +201,7 @@ public class AdminOfficeController {
             List<User> users = userService.findUserByBankCard(bankCardNumber);
             log.info("Fetched users by bank card number successful");
             return ResponseEntity.ok(users);
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
@@ -198,7 +216,7 @@ public class AdminOfficeController {
             List<User> users = userService.findUserBySubscription(userSubscription);
             log.info("Fetched users by subscription successful");
             return ResponseEntity.ok(users);
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
@@ -213,7 +231,7 @@ public class AdminOfficeController {
             User user = userService.findUserByEmail(userEmail);
             log.info("Fetched users by email successful");
             return ResponseEntity.ok(user);
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
@@ -228,7 +246,7 @@ public class AdminOfficeController {
             User user = userService.findUserById(userId);
             log.info("Fetched users by id successful");
             return ResponseEntity.ok(user);
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
@@ -244,7 +262,7 @@ public class AdminOfficeController {
             log.info("User with id :{} deleted successful", userId);
             String responseMessage = "User with id " + userId + " delete successful";
             return ResponseEntity.ok(responseMessage);
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             log.error("User with id {} not found: {}", userId, e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
@@ -276,7 +294,7 @@ public class AdminOfficeController {
             log.info("User with phoneNumber {} delete successful", phoneNumber);
             String responseMessage = "User with phoneNumber " + phoneNumber + " delete successful";
             return ResponseEntity.ok(responseMessage);
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             log.error("User with phone number {} not found {}", phoneNumber, e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
@@ -295,7 +313,7 @@ public class AdminOfficeController {
             log.info("Users with bankCardNumber {} delete successful", bankCardNumber);
             String responseMessage = "Users with bankCardNumber " + bankCardNumber + " delete successful";
             return ResponseEntity.ok(responseMessage);
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
@@ -314,7 +332,7 @@ public class AdminOfficeController {
             log.info("Users with subscription {} delete successful", subscription);
             String responseMessage = "Users with subscription " + subscription + " delete successful";
             return ResponseEntity.ok(responseMessage);
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
@@ -331,7 +349,7 @@ public class AdminOfficeController {
             log.info("User with email {} delete successful", userEmail);
             String responseMessage = "User with email " + userEmail + " delete successful";
             return ResponseEntity.ok(responseMessage);
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
@@ -364,7 +382,7 @@ public class AdminOfficeController {
             Subscription subscription = subscriptionService.findSubscriptionById(subscriptionId);
             log.info("fetched subscription by id successful");
             return ResponseEntity.ok(subscription);
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
@@ -379,7 +397,7 @@ public class AdminOfficeController {
             List<Subscription> subscriptions = subscriptionService.findAllSubscription();
             log.info("Fetched all subscription");
             return ResponseEntity.ok(subscriptions);
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
@@ -395,7 +413,7 @@ public class AdminOfficeController {
                     request.getMaxPrice());
             log.info("Fetched subscriptions by price");
             return ResponseEntity.ok(subscriptions);
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
@@ -410,7 +428,7 @@ public class AdminOfficeController {
             Subscription subscription = subscriptionService.findSubscriptionBySubscriptionName(subscriptionName);
             log.info("Fetched subscription by subscriptionName");
             return ResponseEntity.ok(subscription);
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
@@ -426,7 +444,7 @@ public class AdminOfficeController {
             log.info("Subscription with new subscriptionName {} updated successful", request.getNewSubscriptionName());
             String responseMessage = "Subscription with new subscriptionName " + request.getNewSubscriptionName() + " updated successful";
             return ResponseEntity.ok(responseMessage);
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
@@ -442,7 +460,7 @@ public class AdminOfficeController {
             log.info("Subscription with subscriptionName {} has updated price", request.getSubscriptionName());
             String responseMessage = "Subscription with subscriptionName " + request.getSubscriptionName() + " has updated price";
             return ResponseEntity.ok(responseMessage);
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
@@ -458,23 +476,148 @@ public class AdminOfficeController {
             log.info("Subscription with subscriptionName {} has updated duration time", request.getSubscriptionName());
             String responseMessage = "Subscription with subscriptionName " + request.getSubscriptionName() + " has updated duration time";
             return ResponseEntity.ok(responseMessage);
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
             log.error("An error occurred while subscription duration time updated");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-    }@DeleteMapping("/delete_subscription_by_id")
-    public ResponseEntity<String> deleteSubscriptionById(@RequestParam("id")long subscriptionId){
-        try{
+    }
+
+    @DeleteMapping("/delete_subscription_by_id")
+    public ResponseEntity<String> deleteSubscriptionById(@RequestParam("id") long subscriptionId) {
+        try {
             subscriptionService.deleteSubscriptionById(subscriptionId);
-            log.info("Subscription with id {} delete successful",subscriptionId);
-            String responseMessage = "Subscription with id "+subscriptionId+" delete successful";
+            log.info("Subscription with id {} delete successful", subscriptionId);
+            String responseMessage = "Subscription with id " + subscriptionId + " delete successful";
             return ResponseEntity.ok(responseMessage);
-        }catch (IllegalArgumentException e){
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("An error occurred while deleting subscription by id");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @DeleteMapping("/delete_subscription_by_subscription_name")
+    public ResponseEntity<String> deleteSubscriptionBySubscriptionName(@RequestParam("subscriptionName") String subscriptionName) {
+        try {
+            subscriptionService.deleteSubscriptionBySubscriptionName(subscriptionName);
+            log.info("Subscription with subscriptionName {} deleted successful", subscriptionName);
+            String responseMessage = "Subscription with subscriptionName " + subscriptionName + " deleted successful";
+            return ResponseEntity.ok(responseMessage);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("An error occurred while deleting subscription by subscriptionName");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/delete_all_subscriptions")
+    public ResponseEntity<String> deleteAllSubscriptions() {
+        try {
+            String report = subscriptionService.deleteAllSubscription();
+            log.info(report);
+            return ResponseEntity.ok(report);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("An error occurred while deleting all subscriptions");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping("/add_music_file")
+    public ResponseEntity<String> addNewMusicFile(@RequestBody NewMusicFileDTO request) {
+        try {
+            musicFileService.addMusicFile(request);
+            log.info("New music file {} add in data base", request.getMusicFileName());
+            String responseMessage = "New music file " + request.getMusicFileName() + " add in data base";
+            return ResponseEntity.ok(responseMessage);
+        } catch (IllegalArgumentException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("Error adding new music file");
+            String errorMessage = "Error adding new music file " + request.getMusicFileName();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
+        }
+    }
+
+    @GetMapping("/all_music_files")
+    public ResponseEntity<?> findAllMusicFiles() {
+        try {
+            List<MusicFile> musicFiles = musicFileService.findAllMusicFiles();
+            log.info("All music files found successful");
+            return ResponseEntity.ok(musicFiles);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("Error finding all music files");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/music_file_by_id")
+    public ResponseEntity<Object> findMusicFileById(@RequestParam("id") long musicFileId) {
+        try {
+            MusicFile musicFile = musicFileService.findMusicFileById(musicFileId);
+            log.info("Music file by id {} found successful", musicFileId);
+            return ResponseEntity.ok(musicFile);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("Error finding music file by id");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/music_file_by_name")
+    public ResponseEntity<Object> findMusicFileByName(@RequestParam("name") String musicFileName) {
+        try {
+            MusicFile musicFile = musicFileService.findMusicFileByMusicFileName(musicFileName);
+            log.info("Music file with name {} found successful", musicFileName);
+            return ResponseEntity.ok(musicFile);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("Error finding music file by name");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/music_files_by_subscription")
+    public ResponseEntity<?> findMusicFilesBySubscription(@RequestParam("subscription_name") String subscriptionName) {
+        try {
+            List<MusicFile> musicFiles = musicFileService.findMusicFilesBySubscription(subscriptionName);
+            log.info("Music file successful found by subscription {}", subscriptionName);
+            return ResponseEntity.ok(musicFiles);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("Error finding music file by subscription");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 }

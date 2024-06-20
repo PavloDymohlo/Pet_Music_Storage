@@ -1,6 +1,7 @@
 package ua.dymohlo.PetMusicStorage.security;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -15,6 +16,7 @@ import javax.servlet.Filter;
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
+@Slf4j
 public class WebSecurityConfig {
     private final JWTTokenConfig jwtTokenConfig;
 
@@ -23,10 +25,12 @@ public class WebSecurityConfig {
         http.csrf().disable()
                 .cors().disable()
                 .authorizeRequests(authorize -> authorize
-                        .antMatchers("/host_page", "/register", "/login").permitAll()
+                        .antMatchers("/host_page", "/register", "/login", "/music_files").permitAll()
                         .antMatchers("/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-                        .antMatchers("/personal_office/**").authenticated()
+                        //.antMatchers("/personal_office/**").authenticated()
                         .antMatchers(HttpMethod.GET, "/main").permitAll()
+                        //.antMatchers("/personal_office/**").permitAll()
+                        .antMatchers("/personal_office/**").hasAnyRole("FREE", "OPTIMAL", "MAXIMUM", "ADMIN")
                         .antMatchers("/free_subscription").hasAnyRole("FREE", "OPTIMAL", "MAXIMUM", "ADMIN")
                         .antMatchers("/optimal_subscription").hasAnyRole("MAXIMUM", "OPTIMAL", "ADMIN")
                         .antMatchers("/maximum_subscription").hasAnyRole("MAXIMUM", "ADMIN")
@@ -36,7 +40,6 @@ public class WebSecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilterBefore((Filter) jwtTokenConfig, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 }

@@ -28,6 +28,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -221,7 +222,7 @@ public class UserServiceTest {
         UserLoginInDTO userLoginInDTO = UserLoginInDTO.builder()
                 .phoneNumber(80966584100L).build();
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
             userService.loginIn(userLoginInDTO);
         });
 
@@ -295,7 +296,7 @@ public class UserServiceTest {
         long newPhoneNumber = 80663210022L;
         when(mockUserRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(false);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
             userService.updatePhoneNumber(currentPhoneNumber, newPhoneNumber);
         });
 
@@ -344,7 +345,7 @@ public class UserServiceTest {
 
         when(mockUserRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(false);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
             userService.updateBankCard(currentPhoneNumber, mockUpdateUserBankCardDTO);
         });
 
@@ -452,7 +453,7 @@ public class UserServiceTest {
                 .newPassword(newPassword)
                 .userPhoneNumber(userPhoneNumber).build();
         when(mockUserRepository.existsByPhoneNumber(userPhoneNumber)).thenReturn(false);
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
             userService.updatePassword(userPhoneNumber, updatePasswordDTO);
         });
 
@@ -533,7 +534,7 @@ public class UserServiceTest {
         when(mockUserRepository.existsByPhoneNumber(phoneNumber)).thenReturn(true);
         when(mockSubscriptionRepository.findBySubscriptionName(anyString())).thenReturn(null);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
             userService.updateSubscription(phoneNumber, updateSubscriptionDTO);
         });
 
@@ -557,7 +558,7 @@ public class UserServiceTest {
     public void findAllUsers_returnException_usersNotFound(){
         when(mockUserRepository.findAll()).thenReturn(new ArrayList<>());
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, ()->{
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class, ()->{
             userService.findAllUsers();
         });
 
@@ -579,7 +580,7 @@ public class UserServiceTest {
         User user = User.builder().phoneNumber(80996653200L).build();
         when(mockUserRepository.findByPhoneNumber(user.getPhoneNumber())).thenReturn(null);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
             userService.findUserByPhoneNumber(user.getPhoneNumber());
         });
 
@@ -608,7 +609,7 @@ public class UserServiceTest {
         long bankCardNumber = 2225698763250124L;
         when(mockUserBankCardRepository.findByCardNumber(anyLong())).thenReturn(null);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
             userService.findUserByBankCard(bankCardNumber);
         });
 
@@ -624,7 +625,7 @@ public class UserServiceTest {
         when(mockUserBankCard.getUsers()).thenReturn(users);
         when(users.isEmpty()).thenReturn(true);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
             userService.findUserByBankCard(bankCardNumber);
         });
 
@@ -653,7 +654,7 @@ public class UserServiceTest {
         String userSubscription = "FREE";
         when(mockSubscriptionRepository.findBySubscriptionName(anyString())).thenReturn(null);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
             userService.findUserBySubscription(userSubscription);
         });
 
@@ -667,7 +668,7 @@ public class UserServiceTest {
         when(mockSubscriptionRepository.findBySubscriptionName(userSubscription))
                 .thenReturn(mockSubscription);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
             userService.findUserBySubscription(userSubscription);
         });
 
@@ -691,7 +692,7 @@ public class UserServiceTest {
         String userEmail = "example.email";
         when(mockUserRepository.findByEmail(anyString())).thenReturn(null);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->{
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class,()->{
             userService.findUserByEmail(userEmail);
         });
 
@@ -713,7 +714,7 @@ public class UserServiceTest {
         long userId = 1l;
         when(mockUserRepository.findById(anyLong())).thenReturn(null);
 
-       IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->{
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class,()->{
            userService.findUserById(userId);
        });
 

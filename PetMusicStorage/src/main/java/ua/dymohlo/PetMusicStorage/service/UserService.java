@@ -17,6 +17,7 @@ import ua.dymohlo.PetMusicStorage.repository.UserBankCardRepository;
 import ua.dymohlo.PetMusicStorage.repository.UserRepository;
 import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -71,6 +72,7 @@ public class UserService {
                 .email(userDTO.getEmail())
                 .subscription(firstSubscription)
                 .userBankCard(userBankCard)
+                .endTime(LocalDateTime.now().plusMinutes(firstSubscription.getSubscriptionDurationTime()))
                 .build();
         return userRepository.save(user);
     }
@@ -141,7 +143,7 @@ public class UserService {
     public void updateBankCard(long userPhoneNumber, UpdateUserBankCardDTO updateUserBankCardDTO) {
         if (!userPhoneNumberExists(userPhoneNumber)) {
             log.error("User with phone number: {} does not exists", updateUserBankCardDTO.getUserPhoneNumber());
-            throw new IllegalArgumentException("Phone number " + userPhoneNumber + " not found");
+            throw new NoSuchElementException("Phone number " + userPhoneNumber + " not found");
         }
         UserBankCard newUserBankCard = UserBankCard.builder()
                 .cardNumber(updateUserBankCardDTO.getNewUserBankCard().getCardNumber())
@@ -167,7 +169,7 @@ public class UserService {
     public void updatePassword(long userPhoneNumber, UpdatePasswordDTO updatePasswordDTO) {
         if (!userPhoneNumberExists(userPhoneNumber)) {
             log.error("User with phone number: {} does not exists", updatePasswordDTO.getUserPhoneNumber());
-            throw new IllegalArgumentException("Phone number " + userPhoneNumber + " not found");
+            throw new NoSuchElementException("Phone number " + userPhoneNumber + " not found");
         }
         User user = userRepository.findByPhoneNumber(userPhoneNumber);
         user.setPassword(passwordEncoder.encode(updatePasswordDTO.getNewPassword()));
@@ -178,7 +180,7 @@ public class UserService {
     public void updateEmail(long userPhoneNumber, UpdateEmailDTO updateEmailDTO) {
         if (!userPhoneNumberExists(userPhoneNumber)) {
             log.error("User with phone number: {} does not exists", updateEmailDTO.getUserPhoneNumber());
-            throw new IllegalArgumentException("Phone number " + userPhoneNumber + " not found");
+            throw new NoSuchElementException("Phone number " + userPhoneNumber + " not found");
         }
         if (userRepository.existsByEmail(updateEmailDTO.getNewEmail())) {
             log.error("Email: {} is already exists", updateEmailDTO.getNewEmail());
@@ -193,7 +195,7 @@ public class UserService {
     public void setAutoRenewStatus(long userPhoneNumber, SetAutoRenewDTO status) {
         if (!userPhoneNumberExists(userPhoneNumber)) {
             log.error("User with phone number: {} does not exists", status.getUserPhoneNumber());
-            throw new IllegalArgumentException("Phone number " + userPhoneNumber + " not found");
+            throw new NoSuchElementException("Phone number " + userPhoneNumber + " not found");
         }
         User user = userRepository.findByPhoneNumber(userPhoneNumber);
         user.setAutoRenew(status.getAutoRenewStatus());
@@ -204,16 +206,17 @@ public class UserService {
     public void updateSubscription(long userPhoneNumber, UpdateSubscriptionDTO updateSubscriptionDTO) {
         if (!userRepository.existsByPhoneNumber(userPhoneNumber)) {
             log.error("User with phone number: {} does not exist", userPhoneNumber);
-            throw new IllegalArgumentException("User with phone number " + userPhoneNumber + " not found");
+            throw new NoSuchElementException("User with phone number " + userPhoneNumber + " not found");
         }
         Subscription newSubscription = updateSubscriptionDTO.getNewSubscription();
         Subscription existingSubscription = subscriptionRepository.findBySubscriptionName(newSubscription.getSubscriptionName());
         if (existingSubscription == null) {
             log.error("Subscription with name: {} does not exist", newSubscription.getSubscriptionName());
-            throw new IllegalArgumentException("Subscription with name " + newSubscription.getSubscriptionName() + " not found");
+            throw new NoSuchElementException("Subscription with name " + newSubscription.getSubscriptionName() + " not found");
         }
         User user = userRepository.findByPhoneNumber(userPhoneNumber);
         user.setSubscription(existingSubscription);
+        user.setEndTime(LocalDateTime.now().plusMinutes(existingSubscription.getSubscriptionDurationTime()));
         userRepository.save(user);
         log.info("Subscription updated successfully for user with phone number: {}", userPhoneNumber);
     }
@@ -221,7 +224,7 @@ public class UserService {
     public List<User> findAllUsers() {
         List<User> users = userRepository.findAll();
         if (users.isEmpty()) {
-            throw new IllegalArgumentException("users not found");
+            throw new NoSuchElementException("users not found");
         }
         return users;
     }
@@ -229,7 +232,7 @@ public class UserService {
     public User findUserByPhoneNumber(long userPhoneNumber) {
         User user = userRepository.findByPhoneNumber(userPhoneNumber);
         if (user == null) {
-            throw new IllegalArgumentException("User with phone Number " + userPhoneNumber + " not found");
+            throw new NoSuchElementException("User with phone Number " + userPhoneNumber + " not found");
         }
         return user;
     }
@@ -237,11 +240,11 @@ public class UserService {
     public List<User> findUserByBankCard(long userBankCardNumber) {
         UserBankCard userBankCard = userBankCardRepository.findByCardNumber(userBankCardNumber);
         if (userBankCard == null) {
-            throw new IllegalArgumentException("Bank card with number " + userBankCardNumber + " not found");
+            throw new NoSuchElementException("Bank card with number " + userBankCardNumber + " not found");
         }
         List<User> users = userBankCard.getUsers();
         if (users.isEmpty()) {
-            throw new IllegalArgumentException("No users with bank card " + userBankCardNumber);
+            throw new NoSuchElementException("No users with bank card " + userBankCardNumber);
         }
         return users;
     }
@@ -249,11 +252,11 @@ public class UserService {
     public List<User> findUserBySubscription(String userSubscription) {
         Subscription subscription = subscriptionRepository.findBySubscriptionName(userSubscription);
         if (subscription == null) {
-            throw new IllegalArgumentException("Subscription " + userSubscription + " not found");
+            throw new NoSuchElementException("Subscription " + userSubscription + " not found");
         }
         List<User> users = subscription.getUsers();
         if (users.isEmpty()) {
-            throw new IllegalArgumentException("No users with subscription " + subscription.getSubscriptionName());
+            throw new NoSuchElementException("No users with subscription " + subscription.getSubscriptionName());
         }
         return users;
     }
@@ -261,7 +264,7 @@ public class UserService {
     public User findUserByEmail(String userEmail) {
         User user = userRepository.findByEmail(userEmail);
         if (user == null) {
-            throw new IllegalArgumentException("User with email " + userEmail + " not found");
+            throw new NoSuchElementException("User with email " + userEmail + " not found");
         }
         return user;
     }
@@ -269,7 +272,7 @@ public class UserService {
     public User findUserById(long userId) {
         User user = userRepository.findById(userId);
         if (user == null) {
-            throw new IllegalArgumentException("User with id " + userId + " not found");
+            throw new NoSuchElementException("User with id " + userId + " not found");
         }
         return user;
     }
@@ -278,7 +281,7 @@ public class UserService {
     public void deleteUserById(long userId) {
         User user = userRepository.findById(userId);
         if (user == null) {
-            throw new IllegalArgumentException("User with id " + userId + " not found");
+            throw new NoSuchElementException("User with id " + userId + " not found");
         }
         deleteUserFromDataBase(user);
     }
@@ -306,7 +309,7 @@ public class UserService {
     public void deleteUserByPhoneNumber(long phoneNumber) {
         User user = userRepository.findByPhoneNumber(phoneNumber);
         if (user == null) {
-            throw new IllegalArgumentException("User with phone number " + phoneNumber + " not found");
+            throw new NoSuchElementException("User with phone number " + phoneNumber + " not found");
         }
         deleteUserFromDataBase(user);
     }
@@ -316,7 +319,7 @@ public class UserService {
         User adminUser = userRepository.findByPhoneNumber(phoneNumber);
         UserBankCard findUserBankCard = userBankCardRepository.findByCardNumber(bankCardNumber);
         if (findUserBankCard == null) {
-            throw new IllegalArgumentException("Bank card with number " + bankCardNumber + " not found");
+            throw new NoSuchElementException("Bank card with number " + bankCardNumber + " not found");
         }
         List<User> users = findUserBankCard.getUsers().stream()
                 .filter(user -> user != adminUser)
@@ -344,13 +347,13 @@ public class UserService {
         User adminUser = userRepository.findByPhoneNumber(phoneNumber);
         Subscription subscription = subscriptionRepository.findBySubscriptionName(userSubscription);
         if (subscription == null) {
-            throw new IllegalArgumentException("Subscription with name " + userSubscription + " not found");
+            throw new NoSuchElementException("Subscription with name " + userSubscription + " not found");
         }
         List<User> users = subscription.getUsers().stream()
                 .filter(user -> user != adminUser)
                 .toList();
         if (subscription.getUsers().isEmpty()) {
-            throw new IllegalArgumentException("Users with subscription " + userSubscription + " not found");
+            throw new NoSuchElementException("Users with subscription " + userSubscription + " not found");
         }
         subscription.getUsers().removeAll(users);
         users.forEach(this::deleteUserFromDataBase);
@@ -360,8 +363,22 @@ public class UserService {
     public void deleteUserByEmail(String userEmail) {
         User user = userRepository.findByEmail(userEmail);
         if (user == null) {
-            throw new IllegalArgumentException("User with email " + userEmail + " not found");
+            throw new NoSuchElementException("User with email " + userEmail + " not found");
         }
         deleteUserFromDataBase(user);
+    }
+
+    public void setFreeSubscription(long userPhoneNumber) {
+        User user = userRepository.findByPhoneNumber(userPhoneNumber);
+        if (user == null) {
+            throw new NoSuchElementException("User with phone number " + userPhoneNumber + " not found");
+        }
+        String subscriptionName = "FREE";
+        Subscription subscription = subscriptionRepository.findBySubscriptionName(subscriptionName);
+        if (subscription == null) {
+            throw new NoSuchElementException("Subscription with subscriptionName " + subscriptionName + " not found");
+        }
+        user.setSubscription(subscription);
+        userRepository.save(user);
     }
 }

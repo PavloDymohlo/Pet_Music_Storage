@@ -16,4 +16,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     Subscription findById(long subscriptionId);
 
     List<Subscription> findBySubscriptionPriceBetween(BigDecimal minPrice, BigDecimal maxPrice);
+
+    void deleteBySubscriptionName(String subscriptionName);
 }

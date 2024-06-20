@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import ua.dymohlo.PetMusicStorage.dto.*;
 import ua.dymohlo.PetMusicStorage.entity.Subscription;
 import ua.dymohlo.PetMusicStorage.entity.User;
@@ -16,7 +17,6 @@ import ua.dymohlo.PetMusicStorage.service.JWTService;
 import ua.dymohlo.PetMusicStorage.service.SubscriptionService;
 import ua.dymohlo.PetMusicStorage.service.UserService;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -33,6 +33,10 @@ public class PersonalOfficeController {
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionService subscriptionService;
 
+    @GetMapping
+    public ModelAndView personalOfficePage() {
+        return new ModelAndView("pages/personal_office");
+    }
 
     @PutMapping("/update_phone_number")
     public ResponseEntity<String> updatePhoneNumber(@RequestBody UpdatePhoneNumberDTO request,
@@ -65,10 +69,14 @@ public class PersonalOfficeController {
         try {
             userService.updateBankCard(userPhoneNumber, request);
             log.info("Bank card for user with phone number {} updated successful", request.getUserPhoneNumber());
-            return ResponseEntity.ok("Bank card for user with phone number " + request.getUserPhoneNumber() + " updated successful");
+            String responseMessage = "Bank card for user with phone number " + userPhoneNumber + " updated successful";
+            return ResponseEntity.ok(responseMessage);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (IllegalArgumentException e) {
-            log.warn("Invalid card details for user with phone number {}", request.getUserPhoneNumber());
-            return ResponseEntity.badRequest().body(e.getMessage());
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             log.error("An error occurred while updating bank card", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -83,7 +91,11 @@ public class PersonalOfficeController {
         try {
             userService.updatePassword(userPhoneNumber, request);
             log.info("Password for user with phone number {} updated successful", request.getUserPhoneNumber());
-            return ResponseEntity.ok("Password for user with phone number " + request.getUserPhoneNumber() + " updated successful");
+            String responseMessage = "Password for user with phone number " + userPhoneNumber + " updated successful";
+            return ResponseEntity.ok(responseMessage);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
             log.error("An error occurred while updating bank card", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -98,10 +110,14 @@ public class PersonalOfficeController {
         try {
             userService.updateEmail(userPhoneNumber, request);
             log.info("Email for user with phone number {} updated successful", request.getUserPhoneNumber());
-            return ResponseEntity.ok("Email for user with phone number " + request.getUserPhoneNumber() + " updated successful");
+            String responseMessage = "Email for user with phone number " + userPhoneNumber + " updated successful";
+            return ResponseEntity.ok(responseMessage);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (IllegalArgumentException e) {
-            log.warn("Email {} is already exists", request.getNewEmail());
-            return ResponseEntity.badRequest().body(e.getMessage());
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             log.error("An error occurred while updating email", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -116,10 +132,11 @@ public class PersonalOfficeController {
         try {
             userService.setAutoRenewStatus(userPhoneNumber, request);
             log.info("Auto renew status for user with phone number {} set successfully", request.getUserPhoneNumber());
-            return ResponseEntity.ok("Auto renew status for user with phone number " + request.getUserPhoneNumber() + " set successfully");
-        } catch (IllegalArgumentException e) {
-            log.warn("Phone number {} not found", request.getUserPhoneNumber());
-            return ResponseEntity.badRequest().body(e.getMessage());
+            String responseMessage = "Auto renew status for user with phone number " + userPhoneNumber + " set successfully";
+            return ResponseEntity.ok(responseMessage);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
             log.error("An error occurred while set auto renew", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -143,7 +160,8 @@ public class PersonalOfficeController {
             if (paymentResponse.getStatusCode().is2xxSuccessful()) {
                 userService.updateSubscription(userPhoneNumber, request);
                 log.info("Subscription for user with phone number {} updated successful", user.getPhoneNumber());
-                return ResponseEntity.ok("Subscription for user with phone number " + request.getUserPhoneNumber() + " updated successful");
+                String responseMessage = "Subscription for user with phone number " + request.getUserPhoneNumber() + " updated successful";
+                return ResponseEntity.ok(responseMessage);
             } else if (paymentResponse.getStatusCode() == HttpStatus.BAD_REQUEST) {
                 String errorMessage = paymentResponse.getBody();
                 log.warn("Payment failed: {}", errorMessage);
@@ -151,9 +169,9 @@ public class PersonalOfficeController {
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment failed");
             }
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
             log.error("An error occurred while updating subscription", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
@@ -168,7 +186,7 @@ public class PersonalOfficeController {
             subscriptions.remove(subscriptionRepository.findBySubscriptionName("REGISTRATION"));
             log.info("Fetched all subscription successful");
             return ResponseEntity.ok(subscriptions);
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
@@ -187,7 +205,7 @@ public class PersonalOfficeController {
 
             log.info("Fetched subscription between price " + request.getMinPrice() + " and " + request.getMaxPrice());
             return ResponseEntity.ok(subscriptions);
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
@@ -201,11 +219,11 @@ public class PersonalOfficeController {
         try {
             Subscription subscription = subscriptionService.findSubscriptionBySubscriptionName(subscriptionName);
             if ("ADMIN".equals(subscription.getSubscriptionName()) || "REGISTRATION".equals(subscription.getSubscriptionName())) {
-                throw new IllegalArgumentException("Subscription with subscriptionName " + subscriptionName + " not found");
+                throw new NoSuchElementException("Subscription with subscriptionName " + subscriptionName + " not found");
             }
             log.info("Fetched subscription by subscriptionName");
             return ResponseEntity.ok(subscription);
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Музичний плеєр</title>
+</head>
+<body>
+
+<div id="playlist"></div>
+
+<script>
+  async function fetchMusicFiles() {
+    try {
+      const response = await fetch('/music-files');
+      if (!response.ok) {
+        throw new Error('Network response was not ok ' + response.statusText);
+      }
+      const musicFiles = await response.json();
+      return musicFiles;
+    } catch (error) {
+      console.error('There has been a problem with your fetch operation:', error);
+    }
+  }
+
+  async function createAudioElement(file) {
+    try {
+      const audio = document.createElement('audio');
+      audio.controls = true;
+
+      // Завантажуємо аудіо файл за адресою, яка вказана у полі filePath
+      const response = await fetch(file.filePath);
+      const blob = await response.blob();
+      audio.src = URL.createObjectURL(blob);
+
+      const div = document.createElement('div');
+      div.textContent = file.musicFileName + ' ';
+      div.appendChild(audio);
+      return div;
+    } catch (error) {
+      console.error('There has been a problem with creating audio element:', error);
+      return null;
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const playlistContainer = document.getElementById('playlist');
+    const musicFiles = await fetchMusicFiles();
+
+    if (musicFiles && musicFiles.length > 0) {
+      musicFiles.forEach(async file => {
+        try {
+          const audioElement = await createAudioElement(file);
+          if (audioElement) {
+            playlistContainer.appendChild(audioElement);
+          } else {
+            console.log('Failed to create audio element for:', file.musicFileName);
+          }
+        } catch (error) {
+          console.error('An error occurred while creating audio element:', error);
+        }
+      });
+    } else {
+      console.log('No music files found or failed to load.');
+    }
+  });
+</script>
+
+</body>
+</html>
