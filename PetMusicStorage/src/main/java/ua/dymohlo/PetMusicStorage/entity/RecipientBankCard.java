@@ -1,5 +1,6 @@
 package ua.dymohlo.PetMusicStorage.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -9,14 +10,21 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Data
 @Builder
-@ToString
+@ToString(exclude = "paymentRecipientData")
 @Table(name = "recipient_bank_card")
 public class RecipientBankCard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(name = "bank_card_name")
+
+    @Column(name = "bank_card_name", unique = true, nullable = false)
     private String bankCardName;
-    @Column(name = "bank_card_number")
+
+    @Column(name = "bank_card_number", unique = true, nullable = false)
     private long bankCardNumber;
+
+    @OneToOne(mappedBy = "recipientBankCard")
+    @JsonIgnore
+    private PaymentRecipientData paymentRecipientData;
 }
+

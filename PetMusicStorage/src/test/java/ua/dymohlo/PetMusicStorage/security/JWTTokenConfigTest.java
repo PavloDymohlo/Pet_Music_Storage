@@ -46,12 +46,12 @@ class JWTTokenConfigTest {
         UserDetailsService userDetailsServiceMock = mock(UserDetailsService.class);
         when(userDetailsServiceMock.loadUserByUsername("username")).thenReturn(userDetails);
         when(userService.userDetailsService()).thenReturn(userDetailsServiceMock);
-        when(jwtService.isTokenValid(anyString(), any(UserDetails.class))).thenReturn(true);
+        when(jwtService.validateToken(anyString(), any(UserDetails.class))).thenReturn(true);
 
         jwtTokenConfig.doFilterInternal(request, response, filterChain);
 
         verify(userService, times(1)).userDetailsService();
-        verify(jwtService, times(1)).isTokenValid(anyString(), any(UserDetails.class));
+        verify(jwtService, times(1)).validateToken(anyString(), any(UserDetails.class));
         verify(filterChain, times(1)).doFilter(request, response);
     }
 

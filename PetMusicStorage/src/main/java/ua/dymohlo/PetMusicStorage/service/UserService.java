@@ -110,7 +110,8 @@ public class UserService {
     public boolean isAdminSubscription(long phoneNumber) {
         User user = userRepository.findByPhoneNumber(phoneNumber);
         Subscription subscription = user.getSubscription();
-        return subscription == subscriptionRepository.findBySubscriptionName("ADMIN");
+        String adminSubscription = "ADMIN";
+        return subscription == subscriptionRepository.findBySubscriptionName(adminSubscription);
     }
 
     public void updatePhoneNumber(long currentPhoneNumber, long newPhoneNumber) {

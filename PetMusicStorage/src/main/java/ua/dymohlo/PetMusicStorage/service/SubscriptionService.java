@@ -4,11 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ua.dymohlo.PetMusicStorage.dto.NewSubscriptionDTO;
-import ua.dymohlo.PetMusicStorage.dto.UpdateSubscriptionDurationTimeDTO;
-import ua.dymohlo.PetMusicStorage.dto.UpdateSubscriptionNameDTO;
-import ua.dymohlo.PetMusicStorage.dto.UpdateSubscriptionPriceDTO;
+import ua.dymohlo.PetMusicStorage.dto.*;
+import ua.dymohlo.PetMusicStorage.entity.MusicFile;
 import ua.dymohlo.PetMusicStorage.entity.Subscription;
+import ua.dymohlo.PetMusicStorage.repository.MusicFileRepository;
 import ua.dymohlo.PetMusicStorage.repository.SubscriptionRepository;
 
 import java.math.BigDecimal;
@@ -21,6 +20,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
+    private final MusicFileRepository musicFileRepository;
 
     public void addNewSubscription(NewSubscriptionDTO newSubscriptionDTO) {
         if (subscriptionRepository.existsBySubscriptionName(newSubscriptionDTO.getSubscriptionName())) {
@@ -93,6 +93,7 @@ public class SubscriptionService {
         subscriptionRepository.save(subscription);
     }
 
+    @Transactional
     public void deleteSubscriptionById(long subscriptionId) {
         Subscription subscription = subscriptionRepository.findById(subscriptionId);
         if (subscription == null) {
@@ -101,7 +102,24 @@ public class SubscriptionService {
         if (!subscription.getUsers().isEmpty()) {
             throw new IllegalArgumentException("Subscription with id " + subscriptionId + " has users and cannot be deleted");
         }
-        subscriptionRepository.deleteById(subscriptionId);
+        if (!subscription.getMusicFiles().isEmpty()) {
+            transferMusicFiles(subscription);
+        }
+        subscriptionRepository.delete(subscription);
+    }
+
+    @Transactional
+    private void transferMusicFiles(Subscription subscription) {
+        Subscription newSubscription = subscriptionRepository.findBySubscriptionName("ADMIN");
+        if (newSubscription == null) {
+            throw new NoSuchElementException("Subscription with name 'FREE' not found");
+        }
+        List<MusicFile> musicFiles = subscription.getMusicFiles();
+        musicFiles.stream()
+                .peek(musicFile -> musicFile.setSubscription(newSubscription))
+                .forEach(musicFileRepository::save);
+        subscription.getMusicFiles().clear();
+        subscriptionRepository.save(subscription);
     }
 
     @Transactional
@@ -112,6 +130,9 @@ public class SubscriptionService {
         }
         if (!subscription.getUsers().isEmpty()) {
             throw new IllegalArgumentException("Subscription with subscriptionName " + subscriptionName + " has users and cannot be deleted");
+        }
+        if (!subscription.getMusicFiles().isEmpty()) {
+            transferMusicFiles(subscription);
         }
         subscriptionRepository.deleteBySubscriptionName(subscriptionName);
     }
@@ -134,7 +155,10 @@ public class SubscriptionService {
                 .filter(subscription -> !subscription.getUsers().isEmpty())
                 .collect(Collectors.toList());
 
-        deletableSubscriptions.forEach(subscriptionRepository::delete);
+        deletableSubscriptions.forEach(subscription -> {
+            transferMusicFiles(subscription);
+            subscriptionRepository.delete(subscription);
+        });
 
         String deletedSubscriptions = deletableSubscriptions.stream()
                 .map(Subscription::getSubscriptionName)

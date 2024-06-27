@@ -31,7 +31,7 @@ public class JWTService {
     public String generateJwtToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         List<String> rolesList = userDetails.getAuthorities().stream()
-                .map(authority -> "ROLE_" + authority.getAuthority()) // Додавання префіксу "ROLE_"
+                .map(authority ->"ROLE_" +authority.getAuthority())
                 .collect(Collectors.toList());
         claims.put("roles", rolesList);
         Date issuedDate = new Date();
@@ -59,7 +59,17 @@ public class JWTService {
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser()
                 .setSigningKey(jwtSigningKey)
+
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    private boolean isTokenExpired(String token) {
+        final Date expiration = getAllClaimsFromToken(token).getExpiration();
+        return expiration.before(new Date());
+    }
+    public boolean validateToken(String jwtToken, UserDetails userDetails) {
+        final String username = extractUserName(jwtToken);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(jwtToken));
     }
 }

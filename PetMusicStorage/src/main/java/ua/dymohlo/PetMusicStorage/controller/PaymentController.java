@@ -6,13 +6,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import ua.dymohlo.PetMusicStorage.dto.TransactionDTO;
+import ua.dymohlo.PetMusicStorage.entity.BankTransactionData;
+import ua.dymohlo.PetMusicStorage.repository.PaymentRecipientDataRepository;
 
 import java.math.BigDecimal;
 
@@ -22,15 +21,19 @@ import java.math.BigDecimal;
 @RequestMapping("/payment")
 public class PaymentController {
     private final WebClient.Builder webClientBuilder;
+    private final PaymentRecipientDataRepository paymentRecipientDataRepository;
 
     @PostMapping
     public ResponseEntity<String> payment(@RequestBody TransactionDTO request) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            long recipientBankCardNumber = 1234567890123456L;
+            String currentTransactionData = "current_transaction";
+            long recipientBankCardNumber = paymentRecipientDataRepository.findByTransactionalName(currentTransactionData)
+                    .getRecipientBankCard().getBankCardNumber();
             BigDecimal paymentPrice = request.getSum();
-            String bankUrlTransaction = "http://localhost:8081/transaction";
+            String bankUrlTransaction = paymentRecipientDataRepository.findByTransactionalName(currentTransactionData)
+                    .getBankTransactionData().getBankUrlTransaction();
             TransactionDTO transactionDTO = TransactionDTO.builder()
                     .outputCardNumber(request.getOutputCardNumber())
                     .targetCardNumber(recipientBankCardNumber)

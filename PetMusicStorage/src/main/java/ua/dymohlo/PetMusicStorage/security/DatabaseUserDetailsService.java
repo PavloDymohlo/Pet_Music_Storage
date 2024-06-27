@@ -24,11 +24,11 @@ public class DatabaseUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(
-                        String.format("Пользователь '%s' не найден", username)
+                        String.format("User "+ username+" not found.")
                 ));
         String phoneNumber = String.valueOf(user.getPhoneNumber());
         String password = user.getPassword();
-        String subscriptionName = "ROLE_" + user.getSubscription().getSubscriptionName();
+        String subscriptionName = user.getSubscription().getSubscriptionName();
         log.info("Loading user with phone number: {}, subscription: {}", phoneNumber, subscriptionName);
         return new org.springframework.security.core.userdetails.User(
                 phoneNumber,

@@ -11,14 +11,10 @@ import ua.dymohlo.PetMusicStorage.dto.*;
 import ua.dymohlo.PetMusicStorage.entity.MusicFile;
 import ua.dymohlo.PetMusicStorage.entity.Subscription;
 import ua.dymohlo.PetMusicStorage.entity.User;
-import ua.dymohlo.PetMusicStorage.repository.MusicFileRepository;
 import ua.dymohlo.PetMusicStorage.repository.SubscriptionRepository;
 import ua.dymohlo.PetMusicStorage.repository.UserRepository;
 import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
-import ua.dymohlo.PetMusicStorage.service.JWTService;
-import ua.dymohlo.PetMusicStorage.service.MusicFileService;
-import ua.dymohlo.PetMusicStorage.service.SubscriptionService;
-import ua.dymohlo.PetMusicStorage.service.UserService;
+import ua.dymohlo.PetMusicStorage.service.*;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -36,7 +32,7 @@ public class AdminOfficeController {
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionService subscriptionService;
     private final MusicFileService musicFileService;
-    private final MusicFileRepository musicFileRepository;
+    private final BankTransactionDataService bankTransactionDataService;
 
     @GetMapping
     public ModelAndView adminOfficePage() {
@@ -617,6 +613,136 @@ public class AdminOfficeController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
             log.error("Error finding music file by subscription");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/update_music_file_name")
+    public ResponseEntity<String> updateMusicFileName(@RequestBody UpdateMusicFileNameDTO request) {
+        try {
+            musicFileService.updateMusicFileName(request);
+            log.info("The music file named {}  has been renamed to {}", request.getCurrentMusicFileName(), request.getNewMusicFileName());
+            String responseMessage = "The music file named " + request.getCurrentMusicFileName() + " has been renamed to " + request.getNewMusicFileName();
+            return ResponseEntity.ok(responseMessage);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/update_music_file_subscription")
+    public ResponseEntity<String> updateMusicFileSubscription(@RequestBody UpdateMusicFileSubscriptionDTO request) {
+        try {
+            musicFileService.updateMusicFileSubscription(request);
+            log.info("Music file with name {} has received a new subscription {}", request.getMusicFileName(), request.getNewMusicFileSubscription());
+            String responseMessage = "Music file with name " + request.getMusicFileName() + " has received a new subscription " + request.getNewMusicFileSubscription();
+            return ResponseEntity.ok(responseMessage);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/transfer_music_files_to_another_subscription")
+    public ResponseEntity<String> transferMusicFilesToAnotherSubscription(@RequestBody TransferMusicFilesToAnotherSubscription request) {
+        try {
+            musicFileService.transferMusicFilesToAnotherSubscription(request);
+            log.info("All music files have been successfully transferred from the {} subscription to the {} subscription",
+                    request.getCurrentMusicFilesSubscription(), request.getNewMusicFileSubscription());
+            String responseMessage = "All music files have been successfully transferred from the " + request.getCurrentMusicFilesSubscription() +
+                    " subscription to the " + request.getNewMusicFileSubscription() + " subscription";
+            return ResponseEntity.ok(responseMessage);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/delete_all_music_files")
+    public ResponseEntity<String> deleteAllMusicFiles() {
+        try {
+            musicFileService.deleteAllMusicFiles();
+            log.info("All music files delete successful");
+            String responseMessage = "All music files delete successful";
+            return ResponseEntity.ok(responseMessage);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/delete_music_file_by_music_file_name")
+    public ResponseEntity<String> deleteMusicFilesByMusicFileName(@RequestParam("musicFileName") String musicFileName) {
+        try {
+            musicFileService.deleteMusicFilesByMusicFileName(musicFileName);
+            log.info("Music file with name {} delete successful", musicFileName);
+            String responseMessage = "Music file with name " + musicFileName + " delete successful";
+            return ResponseEntity.ok().body(responseMessage);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/delete_music_file_by_id")
+    public ResponseEntity<String> deleteMusicFilesById(@RequestParam("musicFileId") long musicFileId) {
+        try {
+            musicFileService.deleteMusicFilesById(musicFileId);
+            log.info("Music file with id {} delete successful", musicFileId);
+            String responseMessage = "Music file with id " + musicFileId + " delete successful";
+            return ResponseEntity.ok().body(responseMessage);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/delete_music_files_by_subscription")
+    public ResponseEntity<String> deleteMusicFilesBySubscription(@RequestParam("subscription") String subscription) {
+        try {
+            musicFileService.deleteMusicFilesBySubscription(subscription);
+            log.info("Music files with subscription {} delete successful", subscription);
+            String responseMessage = "Music file with subscription " + subscription + " delete successful";
+            return ResponseEntity.ok().body(responseMessage);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/add_new_bank_transactional_data")
+    public ResponseEntity<Object> addBankTransactionData(@RequestBody NewBankTransactionDataDTO request) {
+        try {
+            bankTransactionDataService.addBankTransactionData(request);
+            log.info("New transactional data successful added in database");
+            String responseMessage = "New transactional data successful added in database";
+            return ResponseEntity.ok(responseMessage);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }

@@ -1,10 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>Your personal pages</title>
+    <title>Ваш Особистий Кабінет</title>
 </head>
 <body>
+<h1>Ласкаво просимо до Вашого Особистого Кабінету</h1>
+<div id="userData"></div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/personal_office_data', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('jwtToken')  // припускаючи, що JWT токен зберігається у localStorage
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('userData').textContent = JSON.stringify(data);
+        })
+        .catch(error => {
+            console.error('Помилка отримання даних користувача:', error);
+        });
+    });
+</script>
 </body>
 </html>
+>

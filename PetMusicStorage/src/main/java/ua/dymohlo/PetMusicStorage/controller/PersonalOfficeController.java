@@ -39,7 +39,7 @@ public class PersonalOfficeController {
     }
 
     @PutMapping("/update_phone_number")
-    public ResponseEntity<String> updatePhoneNumber(@RequestBody UpdatePhoneNumberDTO request,
+    public ResponseEntity<String> updatePhoneNumber(@RequestBody UpdatePhoneNumberDTO request,//UpdatePhoneNumberDTO request
                                                     @RequestHeader("Authorization") String jwtToken) {
         long currentUserPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
         log.debug("Current user's phone number retrieved: {}", currentUserPhoneNumber);

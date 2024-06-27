@@ -30,12 +30,16 @@ public class JWTTokenConfig extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        log.info("Filter starts");
         String authHeader = request.getHeader("Authorization");
+        log.info("Jwt Token: "+authHeader);
         String username = null;
         String jwt = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7);
+
+            log.info("Received JWT token: {}", jwt);
 
             try {
                 username = jwtService.extractUserName(jwt);
@@ -49,7 +53,7 @@ public class JWTTokenConfig extends OncePerRequestFilter {
         }
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             List<GrantedAuthority> authorities = jwtService.getRoles(jwt).stream()
-                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                    .map(role -> new SimpleGrantedAuthority(role))
                     .collect(Collectors.toList());
             log.info("User {} with roles {}", username, authorities);
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
