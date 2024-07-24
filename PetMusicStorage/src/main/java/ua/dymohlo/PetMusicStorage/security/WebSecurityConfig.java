@@ -26,15 +26,15 @@ public class WebSecurityConfig {
         http.csrf().disable()
                 .cors().disable()
                 .authorizeRequests(authorize -> authorize
-                        .antMatchers("/register", "/login", "/music_files").permitAll()
+                        .antMatchers("/register","/host_page", "/login", "/music_files").permitAll()
+                        .antMatchers("/static/**","/background.jpg").permitAll()
                         .antMatchers("/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .antMatchers("/personal_office/**").authenticated()
-                        .antMatchers(HttpMethod.GET, "/host_page").permitAll()
+                        .antMatchers(HttpMethod.GET, "/main").permitAll()
                         .antMatchers("/free_subscription").hasAnyRole("FREE", "OPTIMAL", "MAXIMUM", "ADMIN")
                         .antMatchers("/optimal_subscription").hasAnyRole("MAXIMUM", "OPTIMAL", "ADMIN")
                         .antMatchers("/maximum_subscription").hasAnyRole("MAXIMUM", "ADMIN")
-                        .antMatchers("/admin_office/**").permitAll()
-                        //.antMatchers("/admin_office/**").hasRole("ADMIN")
+                        .antMatchers("/admin_office/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -43,6 +43,5 @@ public class WebSecurityConfig {
         return http.build();
     }
 }
-//.antMatchers("/admin_office/**").permitAll()
 //.antMatchers("/personal_office/**").permitAll()
 //.antMatchers("/personal_office/**").hasAnyRole("FREE", "OPTIMAL", "MAXIMUM", "ADMIN")

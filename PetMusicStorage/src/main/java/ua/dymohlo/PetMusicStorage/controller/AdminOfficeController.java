@@ -133,7 +133,7 @@ public class AdminOfficeController {
     public ResponseEntity<String> updateUserSubscription(@RequestBody UpdateSubscriptionDTO request) {
         try {
             User user = userRepository.findByPhoneNumber(request.getUserPhoneNumber());
-            Subscription subscription = subscriptionRepository.findBySubscriptionName(request.getNewSubscription().getSubscriptionName());
+            Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(request.getNewSubscription().getSubscriptionName());
             TransactionDTO transactionDTO = TransactionDTO.builder()
                     .outputCardNumber(user.getUserBankCard().getCardNumber())
                     .sum(subscription.getSubscriptionPrice())

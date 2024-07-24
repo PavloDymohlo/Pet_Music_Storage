@@ -6,5 +6,5 @@ import ua.dymohlo.PetMusicStorage.entity.PaymentRecipientData;
 
 @Repository
 public interface PaymentRecipientDataRepository extends JpaRepository<PaymentRecipientData, Long> {
-    PaymentRecipientData findByTransactionalName(String transactionalName);
+    PaymentRecipientData findByTransactionalNameIgnoreCase(String transactionalName);
 }

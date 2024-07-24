@@ -1,30 +1,1012 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Ваш Особистий Кабінет</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal office</title>
+    <style>
+    body {
+            background-image: url(background.jpg);
+            background-size: cover;
+            background-position: center -100px;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+    .sidebarMargin {
+            margin-top: 10px;
+            margin-left: 50px;
+            margin-bottom: 5px;
+            margin-right: 50px;
+        }
+
+    .sidebarText {
+            font-style: normal;
+            font-style: italic;
+            font-style: oblique;
+            font-style: oblique 10deg;
+            font-weight: bold;
+            font-size: 25px;
+            color: #8B008B;
+            margin-bottom: 10px;
+            text-shadow:
+                -0.2px -0.2px 0 #000,
+                0.2px -0.2px 0 #000,
+                -0.2px  0.2px 0 #000,
+                0.2px  0.2px 0 #000;
+        }
+
+    .sidebarText p {
+            margin-bottom:5px;
+            margin-top: 5px;
+        }
+
+        .AutoRenewText {
+            font-style: normal;
+            font-style: italic;
+            font-style: oblique;
+            font-style: oblique 10deg;
+            font-weight: bold;
+            font-size: 22px;
+            color: #8B008B;
+            margin-bottom: 50px;
+            width: 225px;
+            background-color: #E6E6FA;
+            margin-bottom: 50px;
+            text-shadow:
+                -0.1px -0.1px 0 #000,
+                0.1px -0.1px 0 #000,
+                -0.1px  0.1px 0 #000,
+                0.1px  0.1px 0 #000;
+            border-width: 1px;
+            border-style: solid;
+            border-color: #8B008B;
+            padding:5px 10px;
+            border-radius: 10px;
+        }
+
+        .AutoRenewText label[for="YES"],
+        .AutoRenewText input#YES {
+            margin-right: 20px;
+            cursor: pointer;
+        }
+
+        .AutoRenewText label[for="NO"],
+        .AutoRenewText input#NO {
+            margin-left: 20px;
+            cursor: pointer;
+        }
+
+        .AutoRenewText input[type="radio"] {
+            display: none;
+        }
+
+        .AutoRenewText label[for="YES"]::before,
+        .AutoRenewText label[for="NO"]::before {
+            content: "";
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 1px solid #8B008B;
+            border-radius: 50%;
+            margin-right: 10px;
+            vertical-align: middle;
+            transition: background-color 0.3s ease;
+        }
+
+        .AutoRenewText input[type="radio"]:checked + label::before {
+            background-color: #8B008B;
+        }
+
+        .button {
+            background-color: #8B008B;
+            color: white;
+            padding: 15px 30px;
+            display: block;
+            text-decoration: none;
+            cursor: pointer;
+            border-radius: 25px;
+            margin: 5px 0;
+            font-size: 18px;
+            width: 265px;
+    height: 50px;
+    box-sizing: border-box;
+    margin-bottom: 50px;
+        }
+        .button:hover {
+            background-color: #8A2BE2;
+        }
+        .main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+        .button-container {
+        position: relative;
+        display: inline-block;
+    }
+    .submenu-subscription {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 100%;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+        background-color: #E6E6FA;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            cursor: pointer;
+            border-radius: 25px;
+            margin: 5px 0;
+            font-size: 18px;
+            width: 265px;
+    height: auto;
+    box-sizing: border-box;
+    margin-bottom: 50px;
+    }
+
+    .submenu-subscription ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .submenu-subscription ul li {
+        padding: 8px 12px;
+        cursor: pointer;
+    }
+
+    .submenu-subscription-button{
+        background-color: #8B008B;
+            color: white;
+            padding: 15px 30px;
+            display: block;
+            text-decoration: none;
+            cursor: pointer;
+            border-radius: 25px;
+            margin: 5px 0;
+            font-size: 16px;
+            width: 245px;
+    height: 50px;
+    box-sizing: border-box;
+    margin-left: -20px;
+    margin-bottom: 10px;
+    }
+
+    .submenu-subscription-button:hover {
+        background-color: #8A2BE2;
+    }
+
+    .input{
+        border-radius: 25px;
+    border: 1px solid #ccc;
+    padding: 10px 15px;
+    width: 175px;
+    margin-left: -20px;
+    }
+
+    .input-form {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .input-button {
+        border-radius: 25px;
+    padding: 10px 20px;
+    border: none;
+    background-color: #8B008B;
+    color: white;
+    text-align: center;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+}
+
+.input-button:hover {
+        background-color: #8A2BE2;
+    }
+
+    .submenu-personal-data {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 100%;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+        background-color: #E6E6FA;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            cursor: pointer;
+            border-radius: 25px;
+            margin: 5px 0;
+            font-size: 18px;
+            width: 265px;
+    height: 230px;
+    box-sizing: border-box;
+    margin-bottom: 50px;
+    }
+    .submenu-personal-data ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .submenu-personal-data ul li {
+        padding: 0px 0px;
+        cursor: pointer;
+    }
+
+    .submenu-personal-data-button{
+        background-color: #8B008B;
+            color: white;
+            padding: 15px 30px;
+            display: block;
+            text-decoration: none;
+            cursor: pointer;
+            border-radius: 25px;
+            margin: 0px 0;
+            font-size: 16px;
+            width: 245px;
+    height: 30px;
+    box-sizing: border-box;
+    margin-left: -20px;
+    margin-bottom: 10px;
+    text-align: center;
+    line-height: 2px;
+    }
+
+    .submenu-personal-data-button:hover {
+        background-color: #8A2BE2;
+    }
+
+    .subscription-details {
+    width: 260px;
+    height: 220px;
+    background-color: #E6E6FA;
+    color: #8B008B;
+    padding: 10px;
+    border-radius: 25px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.subscription-details .submenu-subscription-button {
+    width: 225px;
+    text-align: center;
+    margin: 0 auto;
+}
+
+ .submenu-all-subscriptions-button {
+    background-color: #8B008B;
+    color: white;
+    padding: 5px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 25px;
+    margin: 0;
+    font-size: 16px;
+    width: 40;
+    height: 16;
+    box-sizing: border-box;
+}
+
+.submenu-all-subscriptions-button:hover {
+        background-color: #8A2BE2;
+    }
+
+.submenu-all-subscriptions-item {
+    list-style-type: none;
+    color: #8B008B;
+     font-weight: bold;
+    margin-bottom: 10px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+     justify-content: space-between;
+    gap: 5px;
+}
+
+.submenu-all-subscriptions-name{
+ margin: 0;
+}
+
+ .allSubscription-details {
+    width: 300px;
+    height: 220px;
+    background-color:#E6E6FA;
+    color: #8B008B;
+    padding: 10px;
+    border-radius: 25px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+     left: 100%;
+}
+
+
+.input-form-price {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.input-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.input-price, .input-phone-number {
+    width: 100px;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+}
+
+.submenu-subscription-button-price {
+     padding: 5px 30px;
+    border-radius: 5px;
+    background-color: #8B008B;
+   color: white;
+    border: none;
+    cursor: pointer;
+    width: 240px;
+     display: flex;
+      align-items: center;
+  justify-content: center;
+   text-decoration: none;
+    cursor: pointer;
+    border-radius: 25px;
+    margin: 0;
+    font-size: 16px;
+    height: 16;
+    box-sizing: border-box;
+}
+.submenu-subscription-button-price:hover {
+        background-color: #8A2BE2;
+    }
+
+.submenu-personal-data-form {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 100%;
+    border: 1px solid #ccc;
+    padding: 15px;
+    background-color: #f9f9f9;
+    margin-top: 5px;
+    width: auto;
+    height: auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+     text-align: center;
+      background-color:#E6E6FA;
+    border-radius: 25px;
+      button {
+        display: block;
+        margin: 10px auto;
+    }
+}
+
+ .input-new-personal-data {
+    width: 130px;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+}
+.update-button {
+    background-color: #8B008B;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    display: block;
+    width: 150px;
+}
+
+.update-button:hover {
+    background-color: #8A2BE2;
+}
+
+    .submenu-text {
+            font-style: normal;
+            font-style: italic;
+            font-style: oblique;
+            font-style: oblique 10deg;
+            font-weight: bold;
+            font-size: 24px;
+            color: #8B008B;
+            margin-bottom: 0px;
+            text-shadow:
+                -0.1px -0.1px 0 #000,
+                0.1px -0.1px 0 #000,
+                -0.1px  0.1px 0 #000,
+                0.1px  0.1px 0 #000;
+        }
+
+    .submenu-text p {
+            margin-bottom:0px;
+            margin-top: 0px;
+        }
+
+
+
+    </style>
 </head>
 <body>
-<h1>Ласкаво просимо до Вашого Особистого Кабінету</h1>
-<div id="userData"></div>
+<aside class="sidebarMargin">
+    <div class="sidebarText">
+        <p>Your subscription: <span id="subscriptionDetails">Loading...</span> </p>
+        <p>Subscription expired: <span id="subscriptionExpiry">Loading...</span> </p>
+    </div>
+    <div>
+        <button class="button" >Listen to music</button>
+    </div>
+    <div class="AutoRenewText">
+        <p>Auto-renew subscription</p>
+        <input name="Auto-renew" id="YES" type="radio" onclick="changeUsersAutoRenewStatus('YES')" checked>
+        <label for="YES">YES</label>
+        <label>/</label>
+        <input name="Auto-renew" id="NO" type="radio" onclick="changeUsersAutoRenewStatus('NO')">
+        <label for="NO">NO</label>
+    </div>
+    <div class="main-container">
+        <div class="button-container" style="position: relative;">
+            <button class="button" onclick="toggleSubMenu('submenuSubscribe')">Choose new subscription</button>
+            <div class="submenu-subscription" id="submenuSubscribe">
+                <ul>
+                    <form class="input-form"  onsubmit="submitSubscriptionForm(event)">
+                        <input id="subscriptionNameInput" class="input" placeholder="Enter subscription name" type="text" required>
+                        <button class="input-button" type="submit">OK</button>
+                    </form>
+                    <button id="AllSubscriptionsButton" class="submenu-subscription-button" type="button" onclick="submitAllSubscriptions()">All subscriptions</button>
+                    <form class="input-form-price" onsubmit="submitSubscriptionPriceForm(event)">
+                        <div class="input-row">
+                            <input id="minSubscribePrice" class="input-price" placeholder="minimal price" type="number" required>
+                            <input id="maxSubscribePrice" class="input-price" placeholder="maximal price" type="number" required>
+                        </div>
+                        <button class="submenu-subscription-button-price" type="submit">Find subscription by price</button>
+                    </form>
+                </ul>
+            </div>
+        </div>
+        <div class="button-container" style="position: relative;">
+            <button class="button" onclick="toggleSubMenu('submenuPersonalData')">Personal data</button>
+            <div class="submenu-personal-data" id="submenuPersonalData">
+                <ul>
+                    <button class="submenu-personal-data-button" onclick="toggleSubMenu('updatePhoneNumber')">Change phone number</button>
+                    <div class="submenu-personal-data-form" id="updatePhoneNumber">
+                        <form id="updatePhoneNumberForm" onsubmit="updatePhoneNumber(event)">
+                            <input id="newPhoneNumber" class="input-new-personal-data" placeholder="New phone number" type="number" required>
+                            <button type="submit" class="update-button">Update</button>
+                        </form>
+                    </div>
+                    <button class="submenu-personal-data-button" onclick="toggleSubMenu('updatePassword')">Change password</button>
+                    <div class="submenu-personal-data-form" id="updatePassword">
+                        <form id="updatePasswordForm" onsubmit="updatePassword(event)">
+                            <input id="newPassword" class="input-new-personal-data" placeholder="New password" type="text" required>
+                            <button type="submit" class="update-button">Update</button>
+                        </form>
+                    </div>
+                    <button class="submenu-personal-data-button" onclick="toggleSubMenu('updateBankCardData')">Change bank card</button>
+                    <div class="submenu-personal-data-form" id="updateBankCardData">
+                        <form id="updateBankCardDataForm" onsubmit="updateBankCardData(event)">
+                            <input id="newBankCardNumber" class="input-new-personal-data" placeholder="Bank card number" type="number" required>
+                            <input id="newBankCardExpirationDate" class="input-new-personal-data" placeholder="Expiration date" type="text" required>
+                            <input id="newBankCardCVV" class="input-new-personal-data" placeholder="CVV  " type="number" required>
+                            <button type="submit" class="update-button">Update</button>
+                        </form>
+                    </div>
+                    <button class="submenu-personal-data-button" onclick="toggleSubMenu('updateEmail')">Change email</button>
+                    <div class="submenu-personal-data-form" id="updateEmail">
+                        <form id="updateEmailForm" onsubmit="updateEmail(event)">
+                            <input id="newEmail" class="input-new-personal-data" placeholder="New Email" type="text" required>
+                            <button type="submit" class="update-button">Update</button>
+                        </form>
+                    </div>
+                    <button class="submenu-personal-data-button" onclick="toggleSubMenu('deleteAccount')">Delete account</button>
+                    <div class="submenu-personal-data-form" id="deleteAccount">
+                        <p class="submenu-text">Are you sure?</p>
+                        <button type="submit" class="update-button">Delete account</button>
+                    </div>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div>
+        <button class="button" >Exit</button>
+        <div class="submenu-personal-data-form" id="Exit">
+            <p class="submenu-text">Are you sure?</p>
+            <button type="submit" class="update-button">Exit</button>
+        </div>
+    </div>
+
+</aside>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        fetch('/personal_office_data', {
-            method: 'GET',
+const submenuSubscribe = document.getElementById("submenuSubscribe");
+const submenuPersonalData = document.getElementById("submenuPersonalData");
+
+function toggleSubMenu(submenuId) {
+    const submenu = document.getElementById(submenuId);
+    const allSubmenus = document.querySelectorAll('.submenu-subscription, .submenu-personal-data');
+    allSubmenus.forEach(submenu => submenu.style.display = 'none');
+    submenu.style.display = 'block';
+}
+
+// Обробник для кнопок відкриття підменю
+document.querySelector('.button-container:nth-child(1) .button').addEventListener('click', function(event) {
+    toggleSubMenu('submenuSubscribe');
+});
+
+
+document.querySelector('.button-container:nth-child(2) .button').addEventListener('click', function(event) {
+    toggleSubMenu('submenuPersonalData');
+});
+
+// Обробник для натискань поза межами підменю
+document.addEventListener('click', function(event) {
+    const target = event.target;
+    const isClickInsideButton = target.closest('.button-container .button');
+    const isClickInsideSubmenu = target.closest('.submenu-subscription, .submenu-personal-data');
+
+    if (!isClickInsideButton && !isClickInsideSubmenu) {
+        // Закриває всі підменю, якщо клік відбувається поза межами
+        const allSubmenus = document.querySelectorAll('.submenu-subscription, .submenu-personal-data');
+        allSubmenus.forEach(submenu => submenu.style.display = 'none');
+    }
+});
+
+
+
+
+
+
+
+
+function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+function showSubscriptionOnScreen() {
+        const jwtToken = getCookie('JWT_TOKEN');
+        if (!jwtToken) {
+            console.error('JWT token not found');
+            return;
+        }
+        fetch('/personal_office/subscription', {
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('jwtToken')  // припускаючи, що JWT токен зберігається у localStorage
+                'Authorization': `Bearer ${jwtToken}`
             }
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
-            document.getElementById('userData').textContent = JSON.stringify(data);
+            const subscriptionDetails = document.getElementById('subscriptionDetails');
+            subscriptionDetails.innerText = data.subscriptionName;
         })
         .catch(error => {
-            console.error('Помилка отримання даних користувача:', error);
+            console.error('Failed to fetch subscription details: ', error);
         });
+    }
+
+function showSubscriptionEndTimeOnScreen() {
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    fetch('/personal_office/subscription_end_time', {
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.text();
+    })
+    .then(data => {
+        const subscriptionExpiry = document.getElementById('subscriptionExpiry');
+        const trimmedData = data.trim();
+        if (trimmedData === '0') {
+            subscriptionExpiry.innerText = 'infinity';
+        } else {
+            const expiryDate = new Date(trimmedData);
+            const currentDate = new Date();
+            if (isNaN(expiryDate.getTime())) {
+                console.error('Invalid date format:', trimmedData);
+                subscriptionExpiry.innerText = 'Invalid date';
+                return;
+            }
+            if (expiryDate <= currentDate) {
+                subscriptionExpiry.innerText = 'Infinity';
+            } else {
+                subscriptionExpiry.innerText = trimmedData;
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Failed to fetch subscription details: ', error);
     });
+}
+
+function checkUsersAutoRenewStatus() {
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    fetch('/personal_office/auto_renew_status', {
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.text();
+    })
+    .then(status => {
+        if (status === "YES") {
+            document.getElementById('YES').checked = true;
+        } else {
+            document.getElementById('NO').checked = true;
+        }
+    })
+    .catch(error => {
+        console.error('Failed to fetch auto-renew status: ', error);
+    });
+}
+
+function changeUsersAutoRenewStatus(newStatus) {
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    const requestData = {
+        autoRenewStatus: newStatus
+    };
+    fetch('/personal_office/set_auto_renew', {
+        method: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to update auto-renew status');
+        }
+        return response.text();
+    })
+    .then(responseMessage => {
+        console.log(responseMessage);
+    })
+    .catch(error => {
+        console.error('Failed to update auto-renew status: ', error);
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+//find subscription by name
+function submitSubscriptionForm(event, subscriptionName) {
+    event.preventDefault();
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    if (!subscriptionName) {
+        const subscriptionNameInput = document.getElementById('subscriptionNameInput');
+        if (subscriptionNameInput) {
+            subscriptionName = subscriptionNameInput.value;
+        }
+    }
+    if (!subscriptionName) {
+        console.error('Subscription name is not provided');
+        return;
+    }
+    fetch(`/personal_office/subscription_by_name?subscriptionName=${encodeURIComponent(subscriptionName)}`, {
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(errorMessage => {
+                throw new Error(errorMessage);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        displaySubscriptionDetails(data);
+    })
+    .catch(error => {
+        console.error('Failed to fetch subscription details: ', error);
+        displayErrorMessage(error.message);
+    });
+}
+
+//show subscription details
+function displaySubscriptionDetails(subscription) {
+    const submenu1 = document.getElementById('submenu1');
+    submenu1.innerHTML = `
+        <p>Subscription Name: ${subscription.subscriptionName}</p>
+        <p>Subscription Price: ${subscription.subscriptionPrice}</p>
+        <p>Subscription Duration Time: ${subscription.subscriptionDurationTime}</p>
+        <button class="submenu-subscription-button" onclick="updateSubscription('${subscription.subscriptionName}')">Subscribe</button>
+    `;
+    submenu1.classList.add('subscription-details');
+    submenu1.style.display = 'block';
+}
+
+function displayErrorMessage(message) {
+    const submenu1 = document.getElementById('submenu1');
+    submenu1.innerHTML = `
+        <p style="
+          display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 70%;
+         text-align: center;
+        color: #8B008B;">${message}</p>
+    `;
+    submenu1.style.display = 'block';
+}
+
+//update subscription for user
+function updateSubscription(subscriptionName) {
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    const requestData = {
+        newSubscription: {
+            subscriptionName: subscriptionName
+        }
+    };
+    fetch('/personal_office/update_subscription', {
+        method: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(text);
+            });
+        }
+        return response.text();
+    })
+    .then(responseMessage => {
+        displayMessage(responseMessage, 'success');
+       showSubscriptionOnScreen();
+        showSubscriptionEndTimeOnScreen();
+    })
+    .catch(error => {
+        console.error('Failed to update subscription: ', error);
+        displayMessage(error.message, 'error');
+    });
+}
+
+function displayMessage(message, type) {
+    const submenu1 = document.getElementById('submenu1');
+    submenu1.innerHTML = `
+        <div style="
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 175px;
+            color: ${type === 'success' ? 'green' : 'red'};
+            background-color: ${type === 'success' ? '#d4edda' : '#f8d7da'};
+            border: 1px solid ${type === 'success' ? '#c3e6cb' : '#f5c6cb'};
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 20px;
+            text-align: center;
+        ">
+            ${message}
+        </div>
+    `;
+    submenu1.style.display = 'block';
+}
+
+function startUpdatingSubscriptionInfo(intervalMinutes) {
+    function updateSubscriptionInfo() {
+        showSubscriptionOnScreen();
+        showSubscriptionEndTimeOnScreen();
+    }
+    const intervalMilliseconds = intervalMinutes * 60 * 1000;
+    setInterval(updateSubscriptionInfo, intervalMilliseconds);
+}
+
+function submitAllSubscriptions() {
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    fetch('/personal_office/subscriptions', {
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(errorMessage => {
+                throw new Error(errorMessage);
+            });
+        }
+        return response.json();
+    })
+    .then(subscriptions => {
+        const submenu1 = document.getElementById('submenu1');
+        submenu1.innerHTML = '<ul>';
+        subscriptions.forEach(subscription => {
+            submenu1.innerHTML += `
+                <li class="submenu-all-subscriptions-item">
+                    <p class="submenu-all-subscriptions-name">${subscription.subscriptionName}</p>
+                    <button class="submenu-all-subscriptions-button" onclick="submitSubscriptionForm(event, '${subscription.subscriptionName}')">Show details</button>
+                </li>
+            `;
+        });
+        submenu1.innerHTML += '</ul>';
+        submenu1.classList.add('allSubscription-details');
+        submenu1.style.display = 'block';
+    })
+    .catch(error => {
+        console.error('Failed to fetch subscription details: ', error);
+        displayErrorMessage(error.message);
+    });
+}
+
+function submitSubscriptionPriceForm(event) {
+    event.preventDefault();
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    const minPrice = document.getElementById('minSubscribePrice').value;
+    const maxPrice = document.getElementById('maxSubscribePrice').value;
+    if (minPrice === '' || maxPrice === '') {
+        console.error('Both price fields are required');
+        return;
+    }
+    fetch(`/personal_office/subscription_by_price?minPrice=${encodeURIComponent(minPrice)}&maxPrice=${encodeURIComponent(maxPrice)}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`
+        }
+    })
+    .then(response => response.text())
+    .then(text => {
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            data = text;
+        }
+        const submenu1 = document.getElementById('submenu1');
+        submenu1.innerHTML = '';
+        if (typeof data === 'string') {
+            submenu1.innerHTML = `<p>${data}</p>`;
+        } else if (Array.isArray(data)) {
+            submenu1.innerHTML = '<ul>';
+            data.forEach(subscription => {
+                submenu1.innerHTML += `
+                    <li class="submenu-all-subscriptions-item">
+                        <p class="submenu-all-subscriptions-name">${subscription.subscriptionName}</p>
+                        <button class="submenu-all-subscriptions-button" onclick="submitSubscriptionForm(event, '${subscription.subscriptionName}')">Show details</button>
+                    </li>
+                `;
+            });
+            submenu1.innerHTML += '</ul>';
+        } else {
+            submenu1.innerHTML = `<p>Unexpected response format: ${text}</p>`;
+        }
+        submenu1.classList.add('allSubscription-details');
+        submenu1.style.display = 'block';
+    })
+    .catch(error => {
+        console.error('Failed to fetch subscriptions:', error);
+    });
+}
+
+function updatePhoneNumber(event) {
+    event.preventDefault();
+    const newPhoneNumber = document.getElementById('newPhoneNumber').value;
+    if (!newPhoneNumber) {
+        console.error('Phone number is required');
+        return;
+    }
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    const requestData = {
+        newPhoneNumber: newPhoneNumber
+    };
+    fetch('/personal_office/update_phone_number', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwtToken}`
+        },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.text();
+        } else {
+            return response.text().then(text => Promise.reject(text));
+        }
+    })
+    .then(newJwtToken => {
+        setCookie('JWT_TOKEN', newJwtToken);
+    })
+    .catch(error => {
+        console.error('Failed to update phone number:', error);
+    });
+}
+
+
+
+    // Call the function to fetch and display the subscription details
+    showSubscriptionOnScreen();
+    showSubscriptionEndTimeOnScreen()
+    checkUsersAutoRenewStatus();
+    startUpdatingSubscriptionInfo(3);
 </script>
 </body>
 </html>
->

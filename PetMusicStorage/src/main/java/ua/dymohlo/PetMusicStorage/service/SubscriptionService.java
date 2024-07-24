@@ -23,7 +23,7 @@ public class SubscriptionService {
     private final MusicFileRepository musicFileRepository;
 
     public void addNewSubscription(NewSubscriptionDTO newSubscriptionDTO) {
-        if (subscriptionRepository.existsBySubscriptionName(newSubscriptionDTO.getSubscriptionName())) {
+        if (subscriptionRepository.existsBySubscriptionNameIgnoreCase(newSubscriptionDTO.getSubscriptionName())) {
             throw new IllegalArgumentException("Subscription with name " + newSubscriptionDTO.getSubscriptionName() + " already exists");
         }
         Subscription newSubscription = Subscription.builder()
@@ -59,7 +59,7 @@ public class SubscriptionService {
     }
 
     public Subscription findSubscriptionBySubscriptionName(String subscriptionName) {
-        Subscription subscription = subscriptionRepository.findBySubscriptionName(subscriptionName);
+        Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(subscriptionName);
         if (subscription == null) {
             throw new NoSuchElementException("Subscription with subscriptionName " + subscriptionName + " not found");
         }
@@ -67,7 +67,7 @@ public class SubscriptionService {
     }
 
     public void updateSubscriptionName(UpdateSubscriptionNameDTO updateSubscriptionNameDTO) {
-        Subscription subscription = subscriptionRepository.findBySubscriptionName(updateSubscriptionNameDTO.getCurrentSubscriptionName());
+        Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(updateSubscriptionNameDTO.getCurrentSubscriptionName());
         if (subscription == null) {
             throw new NoSuchElementException("Subscription with subscriptionName " + updateSubscriptionNameDTO.getCurrentSubscriptionName() + " not found");
         }
@@ -76,7 +76,7 @@ public class SubscriptionService {
     }
 
     public void updateSubscriptionPrice(UpdateSubscriptionPriceDTO updateSubscriptionPriceDTO) {
-        Subscription subscription = subscriptionRepository.findBySubscriptionName(updateSubscriptionPriceDTO.getSubscriptionName());
+        Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(updateSubscriptionPriceDTO.getSubscriptionName());
         if (subscription == null) {
             throw new NoSuchElementException("Subscription with subscriptionName " + updateSubscriptionPriceDTO.getSubscriptionName() + " not found");
         }
@@ -85,7 +85,7 @@ public class SubscriptionService {
     }
 
     public void updateSubscriptionDurationTime(UpdateSubscriptionDurationTimeDTO updateSubscriptionDurationTimeDTO) {
-        Subscription subscription = subscriptionRepository.findBySubscriptionName(updateSubscriptionDurationTimeDTO.getSubscriptionName());
+        Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(updateSubscriptionDurationTimeDTO.getSubscriptionName());
         if (subscription == null) {
             throw new NoSuchElementException("Subscription with subscriptionName " + updateSubscriptionDurationTimeDTO.getSubscriptionName() + " not found");
         }
@@ -110,7 +110,7 @@ public class SubscriptionService {
 
     @Transactional
     private void transferMusicFiles(Subscription subscription) {
-        Subscription newSubscription = subscriptionRepository.findBySubscriptionName("ADMIN");
+        Subscription newSubscription = subscriptionRepository.findBySubscriptionNameIgnoreCase("ADMIN");
         if (newSubscription == null) {
             throw new NoSuchElementException("Subscription with name 'FREE' not found");
         }
@@ -124,7 +124,7 @@ public class SubscriptionService {
 
     @Transactional
     public void deleteSubscriptionBySubscriptionName(String subscriptionName) {
-        Subscription subscription = subscriptionRepository.findBySubscriptionName(subscriptionName);
+        Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(subscriptionName);
         if (subscription == null) {
             throw new NoSuchElementException("Subscription with subscriptionName " + subscriptionName + " not found");
         }
@@ -134,7 +134,7 @@ public class SubscriptionService {
         if (!subscription.getMusicFiles().isEmpty()) {
             transferMusicFiles(subscription);
         }
-        subscriptionRepository.deleteBySubscriptionName(subscriptionName);
+        subscriptionRepository.deleteBySubscriptionNameIgnoreCase(subscriptionName);
     }
 
     /*

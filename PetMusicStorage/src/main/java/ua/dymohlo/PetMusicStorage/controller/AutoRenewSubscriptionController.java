@@ -31,7 +31,7 @@ public class AutoRenewSubscriptionController {
     public ResponseEntity<String> autoRenewSubscription(@RequestBody User user) {
         try {
             if (user.getAutoRenew().equals(AutoRenewStatus.YES)) {
-                Subscription subscription = subscriptionRepository.findBySubscriptionName(user.getSubscription().getSubscriptionName());
+                Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(user.getSubscription().getSubscriptionName());
                 TransactionDTO transactionDTO = TransactionDTO.builder()
                         .outputCardNumber(user.getUserBankCard().getCardNumber())
                         .sum(subscription.getSubscriptionPrice())

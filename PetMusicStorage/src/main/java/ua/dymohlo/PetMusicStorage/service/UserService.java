@@ -18,7 +18,9 @@ import ua.dymohlo.PetMusicStorage.repository.UserRepository;
 import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
@@ -63,8 +65,8 @@ public class UserService {
         } else {
             userBankCard = existingCard;
         }
-        Subscription firstSubscription = subscriptionRepository.findBySubscriptionName("MAXIMUM");
-        subscriptionRepository.existsBySubscriptionName(String.valueOf(firstSubscription));
+        Subscription firstSubscription = subscriptionRepository.findBySubscriptionNameIgnoreCase("MAXIMUM");
+        subscriptionRepository.existsBySubscriptionNameIgnoreCase(String.valueOf(firstSubscription));
         User user = User.builder()
                 .phoneNumber(userDTO.getPhoneNumber())
                 .password(passwordEncoder.encode(userDTO.getPassword()))
@@ -82,7 +84,7 @@ public class UserService {
     }
 
     private boolean userEmailExists(String email) {
-        return userRepository.existsByEmail(email);
+        return userRepository.existsByEmailIgnoreCase(email);
     }
 
     public boolean isPhoneNumberRegistered(long phoneNumber) {
@@ -111,7 +113,7 @@ public class UserService {
         User user = userRepository.findByPhoneNumber(phoneNumber);
         Subscription subscription = user.getSubscription();
         String adminSubscription = "ADMIN";
-        return subscription == subscriptionRepository.findBySubscriptionName(adminSubscription);
+        return subscription == subscriptionRepository.findBySubscriptionNameIgnoreCase(adminSubscription);
     }
 
     public void updatePhoneNumber(long currentPhoneNumber, long newPhoneNumber) {
@@ -183,7 +185,7 @@ public class UserService {
             log.error("User with phone number: {} does not exists", updateEmailDTO.getUserPhoneNumber());
             throw new NoSuchElementException("Phone number " + userPhoneNumber + " not found");
         }
-        if (userRepository.existsByEmail(updateEmailDTO.getNewEmail())) {
+        if (userRepository.existsByEmailIgnoreCase(updateEmailDTO.getNewEmail())) {
             log.error("Email: {} is already exists", updateEmailDTO.getNewEmail());
             throw new IllegalArgumentException("Email " + updateEmailDTO.getNewEmail() + " is already exists");
         }
@@ -195,13 +197,13 @@ public class UserService {
 
     public void setAutoRenewStatus(long userPhoneNumber, SetAutoRenewDTO status) {
         if (!userPhoneNumberExists(userPhoneNumber)) {
-            log.error("User with phone number: {} does not exists", status.getUserPhoneNumber());
+            log.error("User with phone number: {} does not exists", userPhoneNumber);
             throw new NoSuchElementException("Phone number " + userPhoneNumber + " not found");
         }
         User user = userRepository.findByPhoneNumber(userPhoneNumber);
         user.setAutoRenew(status.getAutoRenewStatus());
         userRepository.save(user);
-        log.info("Auto renew status set successfully for user with phone number: {}", status.getUserPhoneNumber());
+        log.info("Auto renew status set successfully for user with phone number: {}", userPhoneNumber);
     }
 
     public void updateSubscription(long userPhoneNumber, UpdateSubscriptionDTO updateSubscriptionDTO) {
@@ -210,7 +212,7 @@ public class UserService {
             throw new NoSuchElementException("User with phone number " + userPhoneNumber + " not found");
         }
         Subscription newSubscription = updateSubscriptionDTO.getNewSubscription();
-        Subscription existingSubscription = subscriptionRepository.findBySubscriptionName(newSubscription.getSubscriptionName());
+        Subscription existingSubscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(newSubscription.getSubscriptionName());
         if (existingSubscription == null) {
             log.error("Subscription with name: {} does not exist", newSubscription.getSubscriptionName());
             throw new NoSuchElementException("Subscription with name " + newSubscription.getSubscriptionName() + " not found");
@@ -251,7 +253,7 @@ public class UserService {
     }
 
     public List<User> findUserBySubscription(String userSubscription) {
-        Subscription subscription = subscriptionRepository.findBySubscriptionName(userSubscription);
+        Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(userSubscription);
         if (subscription == null) {
             throw new NoSuchElementException("Subscription " + userSubscription + " not found");
         }
@@ -263,7 +265,7 @@ public class UserService {
     }
 
     public User findUserByEmail(String userEmail) {
-        User user = userRepository.findByEmail(userEmail);
+        User user = userRepository.findByEmailIgnoreCase(userEmail);
         if (user == null) {
             throw new NoSuchElementException("User with email " + userEmail + " not found");
         }
@@ -346,7 +348,7 @@ public class UserService {
     @Transactional
     public void deleteUsersBySubscription(long phoneNumber, String userSubscription) {
         User adminUser = userRepository.findByPhoneNumber(phoneNumber);
-        Subscription subscription = subscriptionRepository.findBySubscriptionName(userSubscription);
+        Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(userSubscription);
         if (subscription == null) {
             throw new NoSuchElementException("Subscription with name " + userSubscription + " not found");
         }
@@ -362,7 +364,7 @@ public class UserService {
 
     @Transactional
     public void deleteUserByEmail(String userEmail) {
-        User user = userRepository.findByEmail(userEmail);
+        User user = userRepository.findByEmailIgnoreCase(userEmail);
         if (user == null) {
             throw new NoSuchElementException("User with email " + userEmail + " not found");
         }
@@ -375,11 +377,37 @@ public class UserService {
             throw new NoSuchElementException("User with phone number " + userPhoneNumber + " not found");
         }
         String subscriptionName = "FREE";
-        Subscription subscription = subscriptionRepository.findBySubscriptionName(subscriptionName);
+        Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(subscriptionName);
         if (subscription == null) {
             throw new NoSuchElementException("Subscription with subscriptionName " + subscriptionName + " not found");
         }
         user.setSubscription(subscription);
         userRepository.save(user);
+    }
+
+    public Subscription findUsersCurrentSubscription(long phoneNumber) {
+        User user = userRepository.findByPhoneNumber(phoneNumber);
+        if (user == null) {
+            throw new NoSuchElementException("User with phone number " + phoneNumber + " not found");
+        }
+        return user.getSubscription();
+    }
+
+    public String userSubscriptionExpiredTime(long phoneNumber) {
+        User user = userRepository.findByPhoneNumber(phoneNumber);
+        if (user == null) {
+            throw new NoSuchElementException("User with phone number " + phoneNumber + " not found");
+        }
+        LocalDateTime endTime = user.getEndTime();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy HH:mm:ss", new Locale("en"));
+        return endTime.format(formatter);
+    }
+
+    public String checkUsersAutoRenewStatus(long phoneNumber) {
+        User user = userRepository.findByPhoneNumber(phoneNumber);
+        if (user == null) {
+            throw new NoSuchElementException("User with phone number " + phoneNumber + " not found");
+        }
+        return String.valueOf(user.getAutoRenew());
     }
 }

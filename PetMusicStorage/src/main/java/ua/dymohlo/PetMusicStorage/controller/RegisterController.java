@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import ua.dymohlo.PetMusicStorage.dto.RedirectResponseDTO;
 import ua.dymohlo.PetMusicStorage.dto.TransactionDTO;
 import ua.dymohlo.PetMusicStorage.dto.UserRegistrationDTO;
 import ua.dymohlo.PetMusicStorage.repository.SubscriptionRepository;
@@ -14,7 +13,10 @@ import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
 import ua.dymohlo.PetMusicStorage.service.JWTService;
 import ua.dymohlo.PetMusicStorage.service.UserService;
 
+import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
+import java.net.URI;
+import java.time.Duration;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,7 +30,7 @@ public class RegisterController {
     private final SubscriptionRepository subscriptionRepository;
 
     @PostMapping
-    public ResponseEntity<?> registerUser(@RequestBody UserRegistrationDTO request) {
+    public ResponseEntity<?> registerUser(@RequestBody UserRegistrationDTO request, HttpServletResponse response) {
         try {
             if (userService.isPhoneNumberRegistered(request.getPhoneNumber())) {
                 log.error("User with phone number {} already exists", request.getPhoneNumber());
@@ -39,7 +41,7 @@ public class RegisterController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with email " + request.getEmail() + " already exists");
             }
 
-            BigDecimal bonusPrice = subscriptionRepository.findBySubscriptionName("REGISTRATION").getSubscriptionPrice();
+            BigDecimal bonusPrice = subscriptionRepository.findBySubscriptionNameIgnoreCase("REGISTRATION").getSubscriptionPrice();
             TransactionDTO transactionDTO = TransactionDTO.builder()
                     .outputCardNumber(request.getUserBankCard().getCardNumber())
                     .sum(bonusPrice)
@@ -52,7 +54,19 @@ public class RegisterController {
                 String jwtToken = jwtService.generateJwtToken(userDetails);
                 log.info("User with phone number {} registered successfully ", request.getPhoneNumber());
                 log.info("Generated JWT token: {}", jwtToken);
-                return ResponseEntity.ok(new RedirectResponseDTO("/personal_office", jwtToken));
+
+                ResponseCookie jwtCookie = ResponseCookie.from("JWT_TOKEN", jwtToken)
+                        .httpOnly(false)
+                        .secure(false)
+                        .path("/")
+                        .maxAge(Duration.ofHours(1))
+                        .build();
+                response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
+                String redirectUrl = "/personal_office";
+                URI location = URI.create(redirectUrl);
+                return ResponseEntity.status(HttpStatus.FOUND)
+                        .location(location)
+                        .build();
             } else if (paymentResponse.getStatusCode() == HttpStatus.BAD_REQUEST) {
                 String errorMessage = paymentResponse.getBody();
                 log.warn("Payment failed: {}", errorMessage);

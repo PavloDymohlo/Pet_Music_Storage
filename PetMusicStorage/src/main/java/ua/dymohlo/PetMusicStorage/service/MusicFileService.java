@@ -24,10 +24,10 @@ public class MusicFileService {
     private final SubscriptionRepository subscriptionRepository;
 
     public void addMusicFile(NewMusicFileDTO newMusicFileDTO) {
-        if (musicFileRepository.existsByMusicFileName(newMusicFileDTO.getMusicFileName())) {
+        if (musicFileRepository.existsByMusicFileNameIgnoreCase(newMusicFileDTO.getMusicFileName())) {
             throw new IllegalArgumentException("Music file with musicName " + newMusicFileDTO.getMusicFileName() + " already exists");
         }
-        Subscription subscription = subscriptionRepository.findBySubscriptionName(newMusicFileDTO.getSubscription().getSubscriptionName());
+        Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(newMusicFileDTO.getSubscription().getSubscriptionName());
         if (subscription == null) {
             throw new NoSuchElementException("Subscription with subscriptionName " + newMusicFileDTO.getSubscription().getSubscriptionName() + " not found");
         }
@@ -55,7 +55,7 @@ public class MusicFileService {
     }
 
     public MusicFile findMusicFileByMusicFileName(String musicFileName) {
-        MusicFile musicFile = musicFileRepository.findByMusicFileName(musicFileName);
+        MusicFile musicFile = musicFileRepository.findByMusicFileNameIgnoreCase(musicFileName);
         if (musicFile == null) {
             throw new NoSuchElementException("Music file with musicFileName " + musicFileName + " not found");
         }
@@ -63,7 +63,7 @@ public class MusicFileService {
     }
 
     public List<MusicFile> findMusicFilesBySubscription(String subscriptionName) {
-        Subscription subscription = subscriptionRepository.findBySubscriptionName(subscriptionName);
+        Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(subscriptionName);
         if (subscription == null) {
             throw new NoSuchElementException("Subscription with name " + subscriptionName + " not found");
         }
@@ -75,7 +75,7 @@ public class MusicFileService {
     }
 
     public void updateMusicFileName(UpdateMusicFileNameDTO updateMusicFileNameDTO) {
-        MusicFile musicFile = musicFileRepository.findByMusicFileName(updateMusicFileNameDTO.getCurrentMusicFileName());
+        MusicFile musicFile = musicFileRepository.findByMusicFileNameIgnoreCase(updateMusicFileNameDTO.getCurrentMusicFileName());
         if (musicFile == null) {
             throw new NoSuchElementException("Music file with name " + updateMusicFileNameDTO.getCurrentMusicFileName() + " not found");
         }
@@ -84,11 +84,11 @@ public class MusicFileService {
     }
 
     public void updateMusicFileSubscription(UpdateMusicFileSubscriptionDTO updateMusicFileSubscriptionDTO) {
-        MusicFile musicFile = musicFileRepository.findByMusicFileName(updateMusicFileSubscriptionDTO.getMusicFileName());
+        MusicFile musicFile = musicFileRepository.findByMusicFileNameIgnoreCase(updateMusicFileSubscriptionDTO.getMusicFileName());
         if (musicFile == null) {
             throw new NoSuchElementException("Music file with name " + updateMusicFileSubscriptionDTO.getMusicFileName() + " not found");
         }
-        Subscription subscription = subscriptionRepository.findBySubscriptionName(updateMusicFileSubscriptionDTO.getNewMusicFileSubscription());
+        Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(updateMusicFileSubscriptionDTO.getNewMusicFileSubscription());
         if (subscription == null) {
             throw new NoSuchElementException("Subscription with subscriptionName " + updateMusicFileSubscriptionDTO.getNewMusicFileSubscription() + " not found");
         }
@@ -97,11 +97,11 @@ public class MusicFileService {
     }
 
     public void transferMusicFilesToAnotherSubscription(TransferMusicFilesToAnotherSubscription transferMusicFilesToAnotherSubscription) {
-        Subscription currentSubscription = subscriptionRepository.findBySubscriptionName(transferMusicFilesToAnotherSubscription.getCurrentMusicFilesSubscription());
+        Subscription currentSubscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(transferMusicFilesToAnotherSubscription.getCurrentMusicFilesSubscription());
         if (currentSubscription == null) {
             throw new NoSuchElementException("Subscription with subscriptionName " + transferMusicFilesToAnotherSubscription.getCurrentMusicFilesSubscription() + " not found");
         }
-        Subscription newSubscription = subscriptionRepository.findBySubscriptionName(transferMusicFilesToAnotherSubscription.getNewMusicFileSubscription());
+        Subscription newSubscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(transferMusicFilesToAnotherSubscription.getNewMusicFileSubscription());
         if (newSubscription == null) {
             throw new NoSuchElementException("Subscription with subscriptionName " + transferMusicFilesToAnotherSubscription.getNewMusicFileSubscription() + " not found");
         }
@@ -117,7 +117,7 @@ public class MusicFileService {
     }
 
     public void deleteMusicFilesByMusicFileName(String musicFileName) {
-        MusicFile musicFile = musicFileRepository.findByMusicFileName(musicFileName);
+        MusicFile musicFile = musicFileRepository.findByMusicFileNameIgnoreCase(musicFileName);
         if (musicFile == null) {
             throw new NoSuchElementException("Music file with name " + musicFileName + " not found");
         }
@@ -133,7 +133,7 @@ public class MusicFileService {
     }
 
     public void deleteMusicFilesBySubscription(String subscriptionName) {
-        Subscription subscription = subscriptionRepository.findBySubscriptionName(subscriptionName);
+        Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(subscriptionName);
         if (subscription == null) {
             throw new NoSuchElementException("Subscription with name " + subscriptionName + " not found");
         }

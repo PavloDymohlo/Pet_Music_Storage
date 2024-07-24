@@ -6,5 +6,5 @@ import ua.dymohlo.PetMusicStorage.entity.RecipientBankCard;
 
 @Repository
 public interface RecipientBankCardRepository extends JpaRepository<RecipientBankCard,Long> {
-    RecipientBankCard findByBankCardName(String bankCardName);
+    RecipientBankCard findByBankCardNameIgnoreCase(String bankCardName);
 }

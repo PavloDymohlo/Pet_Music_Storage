@@ -15,11 +15,11 @@ public class BankTransactionDataService {
 
     public void addBankTransactionData(NewBankTransactionDataDTO newBankTransactionDataDTO) {
         String bankName = newBankTransactionDataDTO.getBankName();
-        if (bankTransactionDataRepository.existsByBankName(bankName)) {
+        if (bankTransactionDataRepository.existsByBankNameIgnoreCase(bankName)) {
             throw new IllegalArgumentException("Bank with bank's name " + bankName + " already exists");
         }
         String bankUrlTransaction = newBankTransactionDataDTO.getBankUrlTransaction();
-        if (bankTransactionDataRepository.existsByBankUrlTransaction(bankUrlTransaction)) {
+        if (bankTransactionDataRepository.existsByBankUrlTransactionIgnoreCase(bankUrlTransaction)) {
             throw new IllegalArgumentException("Bank with bank's url " + bankUrlTransaction + " already exists");
         }
         BankTransactionData bankTransactionData = BankTransactionData.builder()
@@ -29,6 +29,6 @@ public class BankTransactionDataService {
     }
 
     public BankTransactionData findByBankTransactionDataName(String bankTransactionDataName) {
-        return bankTransactionDataRepository.findByBankName(bankTransactionDataName);
+        return bankTransactionDataRepository.findByBankNameIgnoreCase(bankTransactionDataName);
     }
 }

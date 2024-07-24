@@ -6,12 +6,12 @@ import ua.dymohlo.PetMusicStorage.entity.MusicFile;
 import java.util.List;
 
 public interface MusicFileRepository extends JpaRepository<MusicFile, Long> {
-    boolean existsByMusicFileName(String musicFileName);
+    boolean existsByMusicFileNameIgnoreCase(String musicFileName);
 
     List<MusicFile> findAll();
 
     MusicFile findById(long musicFileId);
 
-    MusicFile findByMusicFileName(String musicFileName);
+    MusicFile findByMusicFileNameIgnoreCase(String musicFileName);
 
 }

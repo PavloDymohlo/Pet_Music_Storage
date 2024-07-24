@@ -9,13 +9,13 @@ import java.util.List;
 
 @Repository
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
-    Subscription findBySubscriptionName(String subscriptionName);
+    Subscription findBySubscriptionNameIgnoreCase(String subscriptionName);
 
-    boolean existsBySubscriptionName(String subscriptionName);
+    boolean existsBySubscriptionNameIgnoreCase(String subscriptionName);
 
     Subscription findById(long subscriptionId);
 
     List<Subscription> findBySubscriptionPriceBetween(BigDecimal minPrice, BigDecimal maxPrice);
 
-    void deleteBySubscriptionName(String subscriptionName);
+    void deleteBySubscriptionNameIgnoreCase(String subscriptionName);
 }

@@ -17,6 +17,7 @@ import ua.dymohlo.PetMusicStorage.service.JWTService;
 import ua.dymohlo.PetMusicStorage.service.SubscriptionService;
 import ua.dymohlo.PetMusicStorage.service.UserService;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -39,7 +40,7 @@ public class PersonalOfficeController {
     }
 
     @PutMapping("/update_phone_number")
-    public ResponseEntity<String> updatePhoneNumber(@RequestBody UpdatePhoneNumberDTO request,//UpdatePhoneNumberDTO request
+    public ResponseEntity<String> updatePhoneNumber(@RequestBody UpdatePhoneNumberDTO request,
                                                     @RequestHeader("Authorization") String jwtToken) {
         long currentUserPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
         log.debug("Current user's phone number retrieved: {}", currentUserPhoneNumber);
@@ -131,7 +132,7 @@ public class PersonalOfficeController {
         log.debug("Current user's phone number retrieved: {}", userPhoneNumber);
         try {
             userService.setAutoRenewStatus(userPhoneNumber, request);
-            log.info("Auto renew status for user with phone number {} set successfully", request.getUserPhoneNumber());
+            log.info("Auto renew status for user with phone number {} set successfully", userPhoneNumber);
             String responseMessage = "Auto renew status for user with phone number " + userPhoneNumber + " set successfully";
             return ResponseEntity.ok(responseMessage);
         } catch (NoSuchElementException e) {
@@ -150,7 +151,10 @@ public class PersonalOfficeController {
         log.debug("Current user's phone number retrieved: {}", userPhoneNumber);
         try {
             User user = userRepository.findByPhoneNumber(userPhoneNumber);
-            Subscription subscription = subscriptionRepository.findBySubscriptionName(request.getNewSubscription().getSubscriptionName());
+            Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(request.getNewSubscription().getSubscriptionName());
+            if (subscription == null) {
+                throw new NoSuchElementException("Subscription " + request.getNewSubscription().getSubscriptionName() + " not found");
+            }
             TransactionDTO transactionDTO = TransactionDTO.builder()
                     .outputCardNumber(user.getUserBankCard().getCardNumber())
                     .sum(subscription.getSubscriptionPrice())
@@ -160,7 +164,7 @@ public class PersonalOfficeController {
             if (paymentResponse.getStatusCode().is2xxSuccessful()) {
                 userService.updateSubscription(userPhoneNumber, request);
                 log.info("Subscription for user with phone number {} updated successful", user.getPhoneNumber());
-                String responseMessage = "Subscription for user with phone number " + request.getUserPhoneNumber() + " updated successful";
+                String responseMessage = "Subscription "+subscription.getSubscriptionName() +" successful activated";
                 return ResponseEntity.ok(responseMessage);
             } else if (paymentResponse.getStatusCode() == HttpStatus.BAD_REQUEST) {
                 String errorMessage = paymentResponse.getBody();
@@ -178,12 +182,28 @@ public class PersonalOfficeController {
         }
     }
 
+    @GetMapping("/subscription")
+    public ResponseEntity<?> findUsersCurrentSubscription(@RequestHeader("Authorization") String jwtToken) {
+        long userPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
+        log.debug("Current user's phone number retrieved: {}", userPhoneNumber);
+        try {
+            Subscription subscription = userService.findUsersCurrentSubscription(userPhoneNumber);
+            return ResponseEntity.ok(subscription);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("Error finding user by subscription", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
     @GetMapping("/subscriptions")
     public ResponseEntity<?> findAllSubscriptions() {
         try {
             List<Subscription> subscriptions = subscriptionService.findAllSubscription();
-            subscriptions.remove(subscriptionRepository.findBySubscriptionName("ADMIN"));
-            subscriptions.remove(subscriptionRepository.findBySubscriptionName("REGISTRATION"));
+            subscriptions.remove(subscriptionRepository.findBySubscriptionNameIgnoreCase("ADMIN"));
+            subscriptions.remove(subscriptionRepository.findBySubscriptionNameIgnoreCase("REGISTRATION"));
             log.info("Fetched all subscription successful");
             return ResponseEntity.ok(subscriptions);
         } catch (NoSuchElementException e) {
@@ -196,23 +216,29 @@ public class PersonalOfficeController {
     }
 
     @GetMapping("/subscription_by_price")
-    public ResponseEntity<?> findSubscriptionsByPrice(@RequestBody FindSubscriptionsByPriceDTO request) {
+    public ResponseEntity<?> findSubscriptionsByPrice(@RequestParam("minPrice") BigDecimal minPrice,
+                                                      @RequestParam("maxPrice") BigDecimal maxPrice) {
         try {
-            List<Subscription> subscriptions = subscriptionService.findSubscriptionsByPrice(request.getMinPrice(),
-                    request.getMaxPrice());
+            List<Subscription> subscriptions = subscriptionService.findSubscriptionsByPrice(minPrice, maxPrice);
             subscriptions.removeIf(subscription -> "ADMIN".equals(subscription.getSubscriptionName()));
             subscriptions.removeIf(subscription -> "REGISTRATION".equals(subscription.getSubscriptionName()));
-
-            log.info("Fetched subscription between price " + request.getMinPrice() + " and " + request.getMaxPrice());
+            if(subscriptions.isEmpty()){
+                String responseMessage = "Subscriptions between price "+ minPrice + " and " + maxPrice+" not found";
+                System.out.println("Subscriptions between price "+ minPrice + " and " + maxPrice+" not found");
+                return ResponseEntity.ok(responseMessage);
+            }
+            System.out.println(subscriptions);
+            log.info("Fetched subscription between price " + minPrice + " and " + maxPrice);
             return ResponseEntity.ok(subscriptions);
         } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
-            log.error("Error finding subscription between price " + request.getMinPrice() + " and " + request.getMaxPrice());
+            log.error("Error finding subscription between price " + minPrice + " and " + maxPrice);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
 
     @GetMapping("/subscription_by_name")
     public ResponseEntity<?> findSubscriptionBySubscriptionName(@RequestParam("subscriptionName") String subscriptionName) {
@@ -228,6 +254,37 @@ public class PersonalOfficeController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
             log.error("Error finding subscription by subscriptionName");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/subscription_end_time")
+    public ResponseEntity<?> userSubscriptionExpiredTime(@RequestHeader("Authorization") String jwtToken) {
+        long userPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
+        log.debug("Current user's phone number retrieved: {}", userPhoneNumber);
+        try {
+            String formattedDateTime = userService.userSubscriptionExpiredTime(userPhoneNumber);
+            return ResponseEntity.ok(formattedDateTime);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("Error finding user by subscription", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+    @GetMapping("/auto_renew_status")
+    public ResponseEntity<?> checkUsersAutoRenewStatus(@RequestHeader("Authorization") String jwtToken) {
+        long userPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
+        log.debug("Current user's phone number retrieved: {}", userPhoneNumber);
+        try {
+            String status = userService.checkUsersAutoRenewStatus(userPhoneNumber);
+            return ResponseEntity.ok(status);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("Error finding user by subscription", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }

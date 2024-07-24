@@ -11,7 +11,6 @@ import ua.dymohlo.PetMusicStorage.entity.UserBankCard;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @DataJpaTest
@@ -50,7 +49,7 @@ public class UserRepositoryTest {
                 .subscription(mockSubscription).build();
         when(mockUserRepository.save(mockUser)).thenReturn(mockUser);
         when(mockUserRepository.findByPhoneNumber(80663698520L)).thenReturn(mockUser);
-        when(mockUserRepository.findByEmail("mockUser@mail.com")).thenReturn(mockUser);
+        when(mockUserRepository.findByEmailIgnoreCase("mockUser@mail.com")).thenReturn(mockUser);
         when(mockUserRepository.findById(1)).thenReturn(mockUser);
     }
 
@@ -91,9 +90,9 @@ public class UserRepositoryTest {
     @Test
     public void existsByEmail_emailExists_true() {
         String email = "mockUser@mail.com";
-        when(mockUserRepository.existsByEmail(email)).thenReturn(true);
+        when(mockUserRepository.existsByEmailIgnoreCase(email)).thenReturn(true);
 
-        boolean emailExists = mockUserRepository.existsByEmail(email);
+        boolean emailExists = mockUserRepository.existsByEmailIgnoreCase(email);
 
         assertTrue(emailExists, "User with the email exist");
     }
@@ -101,23 +100,23 @@ public class UserRepositoryTest {
     @Test
     public void existsByEmail_emailExists_false() {
         String email = "mockUser@mail.com";
-        when(mockUserRepository.existsByEmail(email)).thenReturn(false);
+        when(mockUserRepository.existsByEmailIgnoreCase(email)).thenReturn(false);
 
-        boolean emailExists = mockUserRepository.existsByEmail(email);
+        boolean emailExists = mockUserRepository.existsByEmailIgnoreCase(email);
 
         assertFalse(emailExists, "User with email should not exist");
     }
 
     @Test
     public void findByEmail_emailExists_returnEmail() {
-        User byEmail = mockUserRepository.findByEmail("mockUser@mail.com");
+        User byEmail = mockUserRepository.findByEmailIgnoreCase("mockUser@mail.com");
         assertNotNull(byEmail);
         assertEquals("mockUser@mail.com", byEmail.getEmail());
     }
 
     @Test
     public void findByEmail_emailNotExists_returnNull() {
-        User byEmail = mockUserRepository.findByEmail("mockUser2@mail.com");
+        User byEmail = mockUserRepository.findByEmailIgnoreCase("mockUser2@mail.com");
         assertNull(byEmail);
     }
 

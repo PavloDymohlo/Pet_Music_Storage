@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import ua.dymohlo.PetMusicStorage.dto.TransactionDTO;
-import ua.dymohlo.PetMusicStorage.entity.BankTransactionData;
 import ua.dymohlo.PetMusicStorage.repository.PaymentRecipientDataRepository;
 
 import java.math.BigDecimal;
@@ -29,10 +28,10 @@ public class PaymentController {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             String currentTransactionData = "current_transaction";
-            long recipientBankCardNumber = paymentRecipientDataRepository.findByTransactionalName(currentTransactionData)
+            long recipientBankCardNumber = paymentRecipientDataRepository.findByTransactionalNameIgnoreCase(currentTransactionData)
                     .getRecipientBankCard().getBankCardNumber();
             BigDecimal paymentPrice = request.getSum();
-            String bankUrlTransaction = paymentRecipientDataRepository.findByTransactionalName(currentTransactionData)
+            String bankUrlTransaction = paymentRecipientDataRepository.findByTransactionalNameIgnoreCase(currentTransactionData)
                     .getBankTransactionData().getBankUrlTransaction();
             TransactionDTO transactionDTO = TransactionDTO.builder()
                     .outputCardNumber(request.getOutputCardNumber())
