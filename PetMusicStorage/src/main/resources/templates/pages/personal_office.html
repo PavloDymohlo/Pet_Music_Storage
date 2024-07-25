@@ -113,9 +113,11 @@
     box-sizing: border-box;
     margin-bottom: 50px;
         }
+
         .button:hover {
             background-color: #8A2BE2;
         }
+
         .main-container {
     display: flex;
     flex-direction: column;
@@ -234,6 +236,7 @@
     box-sizing: border-box;
     margin-bottom: 50px;
     }
+
     .submenu-personal-data ul {
         list-style-type: none;
         padding: 0;
@@ -389,6 +392,29 @@
     }
 
 .submenu-personal-data-form {
+     display: none;
+        position: absolute;
+        top: 0;
+        left: 100%;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+        background-color: #E6E6FA;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            cursor: pointer;
+            border-radius: 25px;
+            margin: 5px 0;
+            font-size: 18px;
+            width: 265px;
+    height: 230px;
+    box-sizing: border-box;
+    margin-bottom: 50px;
+}
+
+.form-submenu-personal-data {
     display: none;
     position: absolute;
     top: 0;
@@ -397,7 +423,7 @@
     padding: 15px;
     background-color: #f9f9f9;
     margin-top: 5px;
-    width: auto;
+    width: 210px;
     height: auto;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
      text-align: center;
@@ -409,22 +435,6 @@
     }
 }
 
- .input-new-personal-data {
-    width: 130px;
-    padding: 10px;
-    border-radius: 20px;
-    border: 1px solid #ccc;
-}
-.update-button {
-    background-color: #8B008B;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    display: block;
-    width: 150px;
-}
 
 .update-button:hover {
     background-color: #8A2BE2;
@@ -450,6 +460,46 @@
             margin-bottom:0px;
             margin-top: 0px;
         }
+
+        .personal-data-info-text{
+          font-style: normal;
+            font-style: italic;
+            font-style: oblique;
+            font-style: oblique 10deg;
+            font-weight: bold;
+            font-size: 24px;
+            color: #8B008B;
+            margin-top: 0px ;
+            margin-bottom:0px;
+            padding-top: 0px;
+            padding-bottom: 0px;
+            text-shadow:
+                -0.02px -0.02px 0 #000,
+                0.02px -0.02px 0 #000,
+                -0.02px  0.02px 0 #000,
+                0.02px  0.02px 0 #000;
+        }
+         .input-new-personal-data {
+    width: 190px;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+}
+.update-button {
+    background-color: #8B008B;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    display: block;
+    width: 210px;
+}
+
+.submenu-personal-data-error {
+ width: 250px;
+ height: 100px;
+}
 
 
 
@@ -495,45 +545,43 @@
         <div class="button-container" style="position: relative;">
             <button class="button" onclick="toggleSubMenu('submenuPersonalData')">Personal data</button>
             <div class="submenu-personal-data" id="submenuPersonalData">
-                <ul>
-                    <button class="submenu-personal-data-button" onclick="toggleSubMenu('updatePhoneNumber')">Change phone number</button>
-                    <div class="submenu-personal-data-form" id="updatePhoneNumber">
-                        <form id="updatePhoneNumberForm" onsubmit="updatePhoneNumber(event)">
-                            <input id="newPhoneNumber" class="input-new-personal-data" placeholder="New phone number" type="number" required>
-                            <button type="submit" class="update-button">Update</button>
-                        </form>
-                    </div>
-                    <button class="submenu-personal-data-button" onclick="toggleSubMenu('updatePassword')">Change password</button>
-                    <div class="submenu-personal-data-form" id="updatePassword">
-                        <form id="updatePasswordForm" onsubmit="updatePassword(event)">
-                            <input id="newPassword" class="input-new-personal-data" placeholder="New password" type="text" required>
-                            <button type="submit" class="update-button">Update</button>
-                        </form>
-                    </div>
-                    <button class="submenu-personal-data-button" onclick="toggleSubMenu('updateBankCardData')">Change bank card</button>
-                    <div class="submenu-personal-data-form" id="updateBankCardData">
-                        <form id="updateBankCardDataForm" onsubmit="updateBankCardData(event)">
-                            <input id="newBankCardNumber" class="input-new-personal-data" placeholder="Bank card number" type="number" required>
-                            <input id="newBankCardExpirationDate" class="input-new-personal-data" placeholder="Expiration date" type="text" required>
-                            <input id="newBankCardCVV" class="input-new-personal-data" placeholder="CVV  " type="number" required>
-                            <button type="submit" class="update-button">Update</button>
-                        </form>
-                    </div>
-                    <button class="submenu-personal-data-button" onclick="toggleSubMenu('updateEmail')">Change email</button>
-                    <div class="submenu-personal-data-form" id="updateEmail">
-                        <form id="updateEmailForm" onsubmit="updateEmail(event)">
-                            <input id="newEmail" class="input-new-personal-data" placeholder="New Email" type="text" required>
-                            <button type="submit" class="update-button">Update</button>
-                        </form>
-                    </div>
-                    <button class="submenu-personal-data-button" onclick="toggleSubMenu('deleteAccount')">Delete account</button>
-                    <div class="submenu-personal-data-form" id="deleteAccount">
-                        <p class="submenu-text">Are you sure?</p>
-                        <button type="submit" class="update-button">Delete account</button>
-                    </div>
-                </ul>
+                <button class="submenu-personal-data-button" onclick="showForm('updatePhoneNumberForm')">Change phone number</button>
+                <button class="submenu-personal-data-button" onclick="showForm('updatePasswordForm')">Change password</button>
+                <button class="submenu-personal-data-button" onclick="showForm('updateBankCardDataForm')">Change bank card</button>
+                <button class="submenu-personal-data-button" onclick="showForm('updateEmailForm')">Change email</button>
+                <button class="submenu-personal-data-button" onclick="showForm('deleteAccountForm')">Delete account</button>
+            </div>
+            <div id="formContainer">
+                <form id="updatePhoneNumberForm" class="form-submenu-personal-data" style="display: none;" onsubmit="updatePhoneNumber(event)">
+                    <p class="personal-data-info-text">Your phone number: </p>
+                    <p class="personal-data-info-text"><span id="currentPhoneNumber">Loading...</span></p>
+                    <input id="newPhoneNumber" class="input-new-personal-data" placeholder="New phone number" type="number" required>
+                    <button type="submit" class="update-button">Update</button>
+                </form>
+                <form id="updatePasswordForm" class="form-submenu-personal-data" style="display: none;" onsubmit="updatePassword(event)">
+                    <p class="personal-data-info-text">Enter current password: </p>
+                    <input id="oldPassword" class="input-new-personal-data" placeholder="Enter old password" type="password" required>
+                    <button class="input-button" type="submit">OK</button>
+                    <input id="newPassword" class="input-new-personal-data" placeholder="New password" type="text" required>
+                    <button type="submit" class="update-button">Update</button>
+                </form>
+                <form id="updateBankCardDataForm" class="form-submenu-personal-data" style="display: none;" onsubmit="updateBankCardData(event)">
+                    <input id="newBankCardNumber" class="input-new-personal-data" placeholder="Bank card number" type="number" required>
+                    <input id="newBankCardExpirationDate" class="input-new-personal-data" placeholder="Expiration date" type="text" required>
+                    <input id="newBankCardCVV" class="input-new-personal-data" placeholder="CVV" type="number" required>
+                    <button type="submit" class="update-button">Update</button>
+                </form>
+                <form id="updateEmailForm" class="form-submenu-personal-data" style="display: none;" onsubmit="updateEmail(event)">
+                    <input id="newEmail" class="input-new-personal-data" placeholder="New Email" type="text" required>
+                    <button type="submit" class="update-button">Update</button>
+                </form>
+                <form id="deleteAccountForm" class="form-submenu-personal-data" style="display: none;" onsubmit="deleteAccount(event)">
+                    <p class="submenu-text">Are you sure?</p>
+                    <button type="submit" class="update-button">Delete account</button>
+                </form>
             </div>
         </div>
+    </div>
     </div>
     <div>
         <button class="button" >Exit</button>
@@ -542,10 +590,22 @@
             <button type="submit" class="update-button">Exit</button>
         </div>
     </div>
-
 </aside>
 
 <script>
+
+function showForm(formId) {
+    // Hide all forms in the form container
+    const forms = document.querySelectorAll('#formContainer .form-submenu-personal-data');
+    forms.forEach(form => form.style.display = 'none');
+
+    // Show the selected form
+    document.getElementById(formId).style.display = 'block';
+
+    // Hide all submenus
+    document.querySelectorAll('.submenu-subscription, .submenu-personal-data').forEach(submenu => submenu.style.display = 'none');
+}
+
 const submenuSubscribe = document.getElementById("submenuSubscribe");
 const submenuPersonalData = document.getElementById("submenuPersonalData");
 
@@ -556,28 +616,30 @@ function toggleSubMenu(submenuId) {
     submenu.style.display = 'block';
 }
 
-// Обробник для кнопок відкриття підменю
+// Open submenu
 document.querySelector('.button-container:nth-child(1) .button').addEventListener('click', function(event) {
     toggleSubMenu('submenuSubscribe');
 });
-
-
 document.querySelector('.button-container:nth-child(2) .button').addEventListener('click', function(event) {
     toggleSubMenu('submenuPersonalData');
 });
 
-// Обробник для натискань поза межами підменю
+// Close submenu when clicking outside the block
 document.addEventListener('click', function(event) {
     const target = event.target;
     const isClickInsideButton = target.closest('.button-container .button');
     const isClickInsideSubmenu = target.closest('.submenu-subscription, .submenu-personal-data');
+    const isClickInsideForm = target.closest('#formContainer .form-submenu-personal-data');
 
-    if (!isClickInsideButton && !isClickInsideSubmenu) {
-        // Закриває всі підменю, якщо клік відбувається поза межами
-        const allSubmenus = document.querySelectorAll('.submenu-subscription, .submenu-personal-data');
+    if (!isClickInsideButton && !isClickInsideSubmenu && !isClickInsideForm) {
+        // Hide all submenus and forms when clicking outside
+        const allSubmenus = document.querySelectorAll('.submenu-subscription, .submenu-personal-data, #formContainer .form-submenu-personal-data');
         allSubmenus.forEach(submenu => submenu.style.display = 'none');
     }
 });
+
+
+
 
 
 
@@ -720,18 +782,6 @@ function changeUsersAutoRenewStatus(newStatus) {
     });
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 //find subscription by name
 function submitSubscriptionForm(event, subscriptionName) {
     event.preventDefault();
@@ -774,20 +824,20 @@ function submitSubscriptionForm(event, subscriptionName) {
 
 //show subscription details
 function displaySubscriptionDetails(subscription) {
-    const submenu1 = document.getElementById('submenu1');
-    submenu1.innerHTML = `
+    const submenuSubscribe = document.getElementById('submenuSubscribe');
+    submenuSubscribe.innerHTML = `
         <p>Subscription Name: ${subscription.subscriptionName}</p>
         <p>Subscription Price: ${subscription.subscriptionPrice}</p>
         <p>Subscription Duration Time: ${subscription.subscriptionDurationTime}</p>
         <button class="submenu-subscription-button" onclick="updateSubscription('${subscription.subscriptionName}')">Subscribe</button>
     `;
-    submenu1.classList.add('subscription-details');
-    submenu1.style.display = 'block';
+    submenuSubscribe.classList.add('subscription-details');
+    submenuSubscribe.style.display = 'block';
 }
 
 function displayErrorMessage(message) {
-    const submenu1 = document.getElementById('submenu1');
-    submenu1.innerHTML = `
+    const submenuSubscribe = document.getElementById('submenuSubscribe');
+    submenuSubscribe.innerHTML = `
         <p style="
           display: flex;
             justify-content: center;
@@ -796,7 +846,7 @@ function displayErrorMessage(message) {
          text-align: center;
         color: #8B008B;">${message}</p>
     `;
-    submenu1.style.display = 'block';
+    submenuSubscribe.style.display = 'block';
 }
 
 //update subscription for user
@@ -839,8 +889,8 @@ function updateSubscription(subscriptionName) {
 }
 
 function displayMessage(message, type) {
-    const submenu1 = document.getElementById('submenu1');
-    submenu1.innerHTML = `
+    const submenuSubscribe = document.getElementById('submenuSubscribe');
+    submenuSubscribe.innerHTML = `
         <div style="
             display: flex;
             justify-content: center;
@@ -857,7 +907,7 @@ function displayMessage(message, type) {
             ${message}
         </div>
     `;
-    submenu1.style.display = 'block';
+    submenuSubscribe.style.display = 'block';
 }
 
 function startUpdatingSubscriptionInfo(intervalMinutes) {
@@ -889,19 +939,19 @@ function submitAllSubscriptions() {
         return response.json();
     })
     .then(subscriptions => {
-        const submenu1 = document.getElementById('submenu1');
-        submenu1.innerHTML = '<ul>';
+        const submenuSubscribe = document.getElementById('submenuSubscribe');
+        submenuSubscribe.innerHTML = '<ul>';
         subscriptions.forEach(subscription => {
-            submenu1.innerHTML += `
+            submenuSubscribe.innerHTML += `
                 <li class="submenu-all-subscriptions-item">
                     <p class="submenu-all-subscriptions-name">${subscription.subscriptionName}</p>
                     <button class="submenu-all-subscriptions-button" onclick="submitSubscriptionForm(event, '${subscription.subscriptionName}')">Show details</button>
                 </li>
             `;
         });
-        submenu1.innerHTML += '</ul>';
-        submenu1.classList.add('allSubscription-details');
-        submenu1.style.display = 'block';
+        submenuSubscribe.innerHTML += '</ul>';
+        submenuSubscribe.classList.add('allSubscription-details');
+        submenuSubscribe.style.display = 'block';
     })
     .catch(error => {
         console.error('Failed to fetch subscription details: ', error);
@@ -936,31 +986,58 @@ function submitSubscriptionPriceForm(event) {
         } catch (e) {
             data = text;
         }
-        const submenu1 = document.getElementById('submenu1');
-        submenu1.innerHTML = '';
+        const submenuSubscribe = document.getElementById('submenuSubscribe');
+        submenuSubscribe.innerHTML = '';
         if (typeof data === 'string') {
-            submenu1.innerHTML = `<p>${data}</p>`;
+            submenuSubscribe.innerHTML = `<p>${data}</p>`;
         } else if (Array.isArray(data)) {
-            submenu1.innerHTML = '<ul>';
+            submenuSubscribe.innerHTML = '<ul>';
             data.forEach(subscription => {
-                submenu1.innerHTML += `
+                submenuSubscribe.innerHTML += `
                     <li class="submenu-all-subscriptions-item">
                         <p class="submenu-all-subscriptions-name">${subscription.subscriptionName}</p>
                         <button class="submenu-all-subscriptions-button" onclick="submitSubscriptionForm(event, '${subscription.subscriptionName}')">Show details</button>
                     </li>
                 `;
             });
-            submenu1.innerHTML += '</ul>';
+            submenuSubscribe.innerHTML += '</ul>';
         } else {
-            submenu1.innerHTML = `<p>Unexpected response format: ${text}</p>`;
+            submenuSubscribe.innerHTML = `<p>Unexpected response format: ${text}</p>`;
         }
-        submenu1.classList.add('allSubscription-details');
-        submenu1.style.display = 'block';
+        submenuSubscribe.classList.add('allSubscription-details');
+        submenuSubscribe.style.display = 'block';
     })
     .catch(error => {
         console.error('Failed to fetch subscriptions:', error);
     });
 }
+
+function getUserPhoneNumber() {
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    fetch('/personal_office/phone_number', {
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json(); // Parse JSON response
+    })
+    .then(data => {
+        const currentPhoneNumber = document.getElementById('currentPhoneNumber');
+        currentPhoneNumber.innerText = data; // Access phone number from JSON
+    })
+    .catch(error => {
+        console.error('Failed to fetch phone number: ', error);
+    });
+}
+
 
 function updatePhoneNumber(event) {
     event.preventDefault();
@@ -992,12 +1069,43 @@ function updatePhoneNumber(event) {
             return response.text().then(text => Promise.reject(text));
         }
     })
-    .then(newJwtToken => {
-        setCookie('JWT_TOKEN', newJwtToken);
+ .then(responseMessage => {
+        displayMessageForPersonalDataUpdate(responseMessage, 'success');
     })
     .catch(error => {
         console.error('Failed to update phone number:', error);
+         displayErrorMessageForPersonalDataUpdate(error);
     });
+}
+
+function displayErrorMessageForPersonalDataUpdate(message) {
+    const submenuPersonalData = document.getElementById('submenuPersonalData');
+    submenuPersonalData.classList.add('submenu-personal-data-error');
+    submenuPersonalData.innerHTML = `
+        <p style="
+          display: flex;
+            justify-content: center;
+            align-items: center;
+         text-align: center;
+        color: #FF0000;">${message}</p>
+    `;
+    submenuPersonalData.style.display = 'block';
+      document.getElementById('updatePhoneNumberForm').style.display = 'none';
+}
+
+function displayMessageForPersonalDataUpdate(message) {
+    const submenuPersonalData = document.getElementById('submenuPersonalData');
+     submenuPersonalData.classList.add('submenu-personal-data-error');
+    submenuPersonalData.innerHTML = `
+        <p style="
+          display: flex;
+            justify-content: center;
+            align-items: center;
+         text-align: center;
+        color: #008000;">${message}</p>
+    `;
+    submenuPersonalData.style.display = 'block';
+     document.getElementById('updatePhoneNumberForm').style.display = 'none';
 }
 
 
@@ -1006,7 +1114,9 @@ function updatePhoneNumber(event) {
     showSubscriptionOnScreen();
     showSubscriptionEndTimeOnScreen()
     checkUsersAutoRenewStatus();
+    getUserPhoneNumber()
     startUpdatingSubscriptionInfo(3);
+
 </script>
 </body>
 </html>

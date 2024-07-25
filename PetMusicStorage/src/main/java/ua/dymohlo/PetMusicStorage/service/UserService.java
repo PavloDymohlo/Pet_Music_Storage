@@ -128,7 +128,7 @@ public class UserService {
         User user = userRepository.findByPhoneNumber(currentPhoneNumber);
         user.setPhoneNumber(newPhoneNumber);
         userRepository.save(user);
-        log.info("Phone number updated successfully for user with ID: {}", user);
+        log.info("Phone number updated successfully for user with ID: {}", user.getId());
     }
 
     public long getCurrentUserPhoneNumber(String jwtToken) {

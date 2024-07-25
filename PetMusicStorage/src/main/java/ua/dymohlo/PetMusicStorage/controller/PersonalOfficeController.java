@@ -2,7 +2,9 @@ package ua.dymohlo.PetMusicStorage.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +19,9 @@ import ua.dymohlo.PetMusicStorage.service.JWTService;
 import ua.dymohlo.PetMusicStorage.service.SubscriptionService;
 import ua.dymohlo.PetMusicStorage.service.UserService;
 
+import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -41,15 +45,26 @@ public class PersonalOfficeController {
 
     @PutMapping("/update_phone_number")
     public ResponseEntity<String> updatePhoneNumber(@RequestBody UpdatePhoneNumberDTO request,
-                                                    @RequestHeader("Authorization") String jwtToken) {
+                                                    @RequestHeader("Authorization") String jwtToken,
+                                                    HttpServletResponse response) {
         long currentUserPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
         log.debug("Current user's phone number retrieved: {}", currentUserPhoneNumber);
         try {
             userService.updatePhoneNumber(currentUserPhoneNumber, request.getNewPhoneNumber());
             UserDetails userDetails = databaseUserDetailsService.loadUserByUsername(String.valueOf(request.getNewPhoneNumber()));
+            String responseMessage = "Phone number updated successfully!";
             String newJwtToken = jwtService.generateJwtToken(userDetails);
+            log.info("New jwt token for users with phone number {} : {}", request.getNewPhoneNumber(), newJwtToken);
             log.info("Phone number {} updated successfully!", request.getNewPhoneNumber());
-            return ResponseEntity.ok().body(newJwtToken);
+            ResponseCookie jwtCookie = ResponseCookie.from("JWT_TOKEN", newJwtToken)
+                    .httpOnly(false)
+                    .secure(false)
+                    .path("/")
+                    .maxAge(Duration.ofHours(1))
+                    .build();
+            response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
+
+            return ResponseEntity.ok().body(responseMessage);
         } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -61,6 +76,7 @@ public class PersonalOfficeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
 
     @PutMapping("/update_bank_card")
     public ResponseEntity<String> updateBankCard(@RequestBody UpdateUserBankCardDTO request,
@@ -284,6 +300,17 @@ public class PersonalOfficeController {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
+            log.error("Error finding user by subscription", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+    @GetMapping("/phone_number")
+    public ResponseEntity<?> getUserPhoneNumber(@RequestHeader("Authorization") String jwtToken){
+        long userPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
+        log.debug("Current user's phone number retrieved: {}", userPhoneNumber);
+        try{
+            return ResponseEntity.ok(userPhoneNumber);
+        }catch (Exception e) {
             log.error("Error finding user by subscription", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
