@@ -21,6 +21,7 @@ import ua.dymohlo.PetMusicStorage.service.UserService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
+import java.net.URI;
 import java.time.Duration;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -180,7 +181,7 @@ public class PersonalOfficeController {
             if (paymentResponse.getStatusCode().is2xxSuccessful()) {
                 userService.updateSubscription(userPhoneNumber, request);
                 log.info("Subscription for user with phone number {} updated successful", user.getPhoneNumber());
-                String responseMessage = "Subscription "+subscription.getSubscriptionName() +" successful activated";
+                String responseMessage = "Subscription " + subscription.getSubscriptionName() + " successful activated";
                 return ResponseEntity.ok(responseMessage);
             } else if (paymentResponse.getStatusCode() == HttpStatus.BAD_REQUEST) {
                 String errorMessage = paymentResponse.getBody();
@@ -238,9 +239,9 @@ public class PersonalOfficeController {
             List<Subscription> subscriptions = subscriptionService.findSubscriptionsByPrice(minPrice, maxPrice);
             subscriptions.removeIf(subscription -> "ADMIN".equals(subscription.getSubscriptionName()));
             subscriptions.removeIf(subscription -> "REGISTRATION".equals(subscription.getSubscriptionName()));
-            if(subscriptions.isEmpty()){
-                String responseMessage = "Subscriptions between price "+ minPrice + " and " + maxPrice+" not found";
-                System.out.println("Subscriptions between price "+ minPrice + " and " + maxPrice+" not found");
+            if (subscriptions.isEmpty()) {
+                String responseMessage = "Subscriptions between price " + minPrice + " and " + maxPrice + " not found";
+                System.out.println("Subscriptions between price " + minPrice + " and " + maxPrice + " not found");
                 return ResponseEntity.ok(responseMessage);
             }
             System.out.println(subscriptions);
@@ -289,6 +290,7 @@ public class PersonalOfficeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
     @GetMapping("/auto_renew_status")
     public ResponseEntity<?> checkUsersAutoRenewStatus(@RequestHeader("Authorization") String jwtToken) {
         long userPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
@@ -304,15 +306,69 @@ public class PersonalOfficeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
     @GetMapping("/phone_number")
-    public ResponseEntity<?> getUserPhoneNumber(@RequestHeader("Authorization") String jwtToken){
+    public ResponseEntity<?> getUserPhoneNumber(@RequestHeader("Authorization") String jwtToken) {
         long userPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
         log.debug("Current user's phone number retrieved: {}", userPhoneNumber);
-        try{
+        try {
             return ResponseEntity.ok(userPhoneNumber);
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error finding user by subscription", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/bank_card_number")
+    public ResponseEntity<?> getUserBankCardNumber(@RequestHeader("Authorization") String jwtToken) {
+        long userPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
+        log.debug("Current user's phone number retrieved: {}", userPhoneNumber);
+        try {
+            long userBankCardNumber = Long.parseLong(String.valueOf(userService.getUserBankCard(userPhoneNumber).getCardNumber()));
+            return ResponseEntity.ok(userBankCardNumber);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("Error finding user by subscription", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/email")
+    public ResponseEntity<?> getUserEmail(@RequestHeader("Authorization") String jwtToken) {
+        long userPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
+        log.debug("Current user's phone number retrieved: {}", userPhoneNumber);
+        try {
+            String userEmail = userService.getUserEmail(userPhoneNumber);
+            return ResponseEntity.ok(userEmail);
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @DeleteMapping("/delete_user_by_phone_number")
+    public ResponseEntity<String> deleteUserByPhoneNumber(@RequestHeader("Authorization") String jwtToken) {
+        long userPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
+        log.debug("Current user's phone number retrieved: {}", userPhoneNumber);
+        try {
+            userService.deleteUserByPhoneNumber(userPhoneNumber);
+            log.info("User with phoneNumber {} delete successful", userPhoneNumber);
+            String redirectUrl = "/host_page";
+            URI location = URI.create(redirectUrl);
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(location)
+                    .build();
+        } catch (NoSuchElementException e) {
+            log.error("User with phone number {} not found {}", userPhoneNumber, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("Error deleting a user by phone number", e);
+            String errorMessage = "Error deleting user with phone number " + userPhoneNumber;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
         }
     }
 }

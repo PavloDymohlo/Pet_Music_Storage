@@ -2,6 +2,7 @@ package ua.dymohlo.PetMusicStorage.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -403,11 +404,26 @@ public class UserService {
         return endTime.format(formatter);
     }
 
-    public String checkUsersAutoRenewStatus(long phoneNumber) {
-        User user = userRepository.findByPhoneNumber(phoneNumber);
+    public String checkUsersAutoRenewStatus(long userPhoneNumber) {
+        User user = userRepository.findByPhoneNumber(userPhoneNumber);
         if (user == null) {
-            throw new NoSuchElementException("User with phone number " + phoneNumber + " not found");
+            throw new NoSuchElementException("User with phone number " + userPhoneNumber + " not found");
         }
         return String.valueOf(user.getAutoRenew());
+    }
+
+    public UserBankCard getUserBankCard(long userPhoneNumber){
+        User user = userRepository.findByPhoneNumber(userPhoneNumber);
+        if(user==null){
+            throw new NoSuchElementException("User with phone number "+userPhoneNumber+" not found");
+        }
+        return user.getUserBankCard();
+    }
+    public String getUserEmail(long userPhoneNumber){
+        User user = userRepository.findByPhoneNumber(userPhoneNumber);
+        if(user==null){
+            throw new NoSuchElementException("User with phone number "+userPhoneNumber+" not found");
+        }
+        return user.getEmail();
     }
 }
