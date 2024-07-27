@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -27,7 +28,7 @@ public class WebSecurityConfig {
                 .cors().disable()
                 .authorizeRequests(authorize -> authorize
                         .antMatchers("/register","/host_page", "/login", "/music_files").permitAll()
-                        .antMatchers("/static/**","/background.jpg").permitAll()
+                        .antMatchers("/static/**","/images/background.jpg").permitAll()
                         .antMatchers("/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .antMatchers("/personal_office/**").authenticated()
                         .antMatchers(HttpMethod.GET, "/main").permitAll()
@@ -42,6 +43,9 @@ public class WebSecurityConfig {
                 .addFilterBefore((Filter) jwtTokenConfig, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().antMatchers("/static/**", "/styles/**", "/images/**", "/js/**");
+    }
 }
-//.antMatchers("/personal_office/**").permitAll()
-//.antMatchers("/personal_office/**").hasAnyRole("FREE", "OPTIMAL", "MAXIMUM", "ADMIN")

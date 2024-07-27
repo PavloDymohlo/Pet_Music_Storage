@@ -1,11 +1,10 @@
 body {
-  background-image: url("/background.jpg");
+  background-image: url("/images/images/background.jpg");
   background-size: cover;
   background-position: center -100px;
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
-
 .sidebarMargin {
   margin-top: 10px;
   margin-left: 50px;
@@ -403,7 +402,7 @@ body {
   margin-bottom: 50px;
 }
 
-.form-submenu-personal-data {
+.form-submenu-personal-data .form-submenu-personal-data1 {
   display: none;
   position: absolute;
   top: 0;
@@ -587,3 +586,23 @@ body {
   color: #008000;
 }
 
+.form-submenu-personal-data1 {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  border: 1px solid #ccc;
+  padding: 15px;
+  background-color: #f9f9f9;
+  margin-top: 0px;
+  width: 210px;
+  height: auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  background-color: #e6e6fa;
+  border-radius: 25px;
+  button {
+    display: block;
+    margin: 10px auto;
+  }
+}

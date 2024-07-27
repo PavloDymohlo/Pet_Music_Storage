@@ -3,54 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal office</title>
-    <link rel="stylesheet" type="text/css" href="/styles/css/personal_office.css" />
+    <title>Admin office</title>
+    <link rel="stylesheet" type="text/css" href="/styles/css/admin_office.css" />
 </head>
 <body>
 <aside class="sidebarMargin">
-    <div class="sidebarText">
-        <p>Your subscription: <span id="subscriptionDetails">Loading...</span> </p>
-        <p>Subscription expired: <span id="subscriptionExpiry">Loading...</span> </p>
-    </div>
     <div>
         <button class="button" >Listen to music</button>
     </div>
-    <div class="AutoRenewText">
-        <p>Auto-renew subscription</p>
-        <input name="Auto-renew" id="YES" type="radio" onclick="changeUsersAutoRenewStatus('YES')" checked>
-        <label for="YES">YES</label>
-        <label>/</label>
-        <input name="Auto-renew" id="NO" type="radio" onclick="changeUsersAutoRenewStatus('NO')">
-        <label for="NO">NO</label>
-    </div>
     <div class="main-container">
         <div class="button-container" style="position: relative;">
-            <button class="button" onclick="toggleSubMenu('submenuSubscribe')">Choose new subscription</button>
-            <div class="submenu-subscription" id="submenuSubscribe">
-                <ul>
-                    <form class="input-form"  onsubmit="submitSubscriptionForm(event)">
-                        <input id="subscriptionNameInput" class="input" placeholder="Enter subscription name" type="text" required>
-                        <button class="input-button" type="submit">OK</button>
-                    </form>
-                    <button id="AllSubscriptionsButton" class="submenu-subscription-button" type="button" onclick="submitAllSubscriptions()">All subscriptions</button>
-                    <form class="input-form-price" onsubmit="submitSubscriptionPriceForm(event)">
-                        <div class="input-row">
-                            <input id="minSubscribePrice" class="input-price" placeholder="minimal price" type="number" required>
-                            <input id="maxSubscribePrice" class="input-price" placeholder="maximal price" type="number" required>
-                        </div>
-                        <button class="submenu-subscription-button-price" type="submit">Find subscription by price</button>
-                    </form>
-                </ul>
-            </div>
-        </div>
-        <div class="button-container" style="position: relative;">
-            <button class="button" onclick="toggleSubMenu('submenuPersonalData')">Personal data</button>
-            <div class="submenu-personal-data" id="submenuPersonalData">
-                <button class="submenu-personal-data-button" onclick="showForm('updatePhoneNumberForm')">Change phone number</button>
-                <button class="submenu-personal-data-button" onclick="showForm('updatePasswordForm')">Change password</button>
-                <button class="submenu-personal-data-button" onclick="showForm('updateBankCardDataForm')">Change bank card</button>
-                <button class="submenu-personal-data-button" onclick="showForm('updateEmailForm')">Change email</button>
-                <button class="submenu-personal-data-button" onclick="showForm('deleteAccountForm')">Delete account</button>
+            <button class="button" onclick="toggleSubMenu('users')">Users</button>
+            <div class="submenu-users" id="users">
+                <button class="submenu-personal-data-button" onclick="showForm('findAllUsers')">Get all users</button>
+                <button class="submenu-personal-data-button" onclick="showForm('findByPhoneNumber')">Find by phone number</button>
+                <button class="submenu-personal-data-button" onclick="showForm('findByBankCard')">Find by bank card</button>
+                <button class="submenu-personal-data-button" onclick="showForm('findBySubscription')">find by subscription</button>
+                <button class="submenu-personal-data-button" onclick="showForm('findByEmail')">Find by email</button>
+                <button class="submenu-personal-data-button" onclick="showForm('findById')">Find by Id</button>
             </div>
             <div id="formContainer">
                 <form id="updatePhoneNumberForm" class="form-submenu-personal-data" style="display: none;" onsubmit="updatePhoneNumber(event)">
@@ -69,10 +39,10 @@
                     <p class="personal-data-info-text"><span id="currentBankCardNumber">Loading...</span></p>
                     <input id="newBankCardNumber" class="input-new-personal-data" placeholder="Bank card number" type="number" required>
                     <div style="display: flex; gap: 10px;">
-                    <input id="newBankCardExpirationDate" class="input-bank-card-expiration-data" placeholder="Expiration date" type="text" required>
-                    <input id="newBankCardCVV" class="input-bank-card-cvv" placeholder="CVV" type="number" required>
+                        <input id="newBankCardExpirationDate" class="input-bank-card-expiration-data" placeholder="Expiration date" type="text" required>
+                        <input id="newBankCardCVV" class="input-bank-card-cvv" placeholder="CVV" type="number" required>
                     </div>
-                        <button type="submit" class="update-button">Update</button>
+                    <button type="submit" class="update-button">Update</button>
                 </form>
                 <form id="updateEmailForm" class="form-submenu-personal-data-email" style="display: none;" onsubmit="updateEmail(event)">
                     <p class="personal-data-info-text">Your Email: </p>
@@ -86,6 +56,13 @@
                 </form>
             </div>
         </div>
+        <div class="button-container" style="position: relative;">
+            <button class="button" onclick="toggleSubMenu('subscribe')">Subscription</button>
+            <div class="submenu-subscription" id="subscribe">
+                <button class="submenu-personal-data-button" onclick="showForm('createNewSubscription')">Create new subscription</button>
+                <button class="submenu-personal-data-button" onclick="showForm('findSubscription')">Find subscription</button>
+            </div>
+        </div>
     </div>
     <div class="button-container" style="position: relative;">
         <button class="button" onclick="showForm('exitForm')">Log out</button>
@@ -96,6 +73,6 @@
     </div>
     </div>
 </aside>
-<script src="/js/script/personal_office.js"></script>
+<script src="/js/script/admin_office.js"></script>
 </body>
 </html>

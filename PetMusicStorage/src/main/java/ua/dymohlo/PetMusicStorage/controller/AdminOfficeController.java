@@ -36,7 +36,7 @@ public class AdminOfficeController {
 
     @GetMapping
     public ModelAndView adminOfficePage() {
-        return new ModelAndView("pages/admin_page");
+        return new ModelAndView("pages/admin_office");
     }
 
     @PutMapping("/update_phone_number")
