@@ -16,6 +16,7 @@ import ua.dymohlo.PetMusicStorage.repository.UserRepository;
 import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
 import ua.dymohlo.PetMusicStorage.service.*;
 
+import java.sql.SQLOutput;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -43,10 +44,9 @@ public class AdminOfficeController {
     public ResponseEntity<String> updateUserPhoneNumber(@RequestBody UpdatePhoneNumberDTO request) {
         try {
             userService.updatePhoneNumber(request.getCurrentPhoneNumber(), request.getNewPhoneNumber());
-            UserDetails userDetails = databaseUserDetailsService.loadUserByUsername(String.valueOf(request.getNewPhoneNumber()));
-            String newJwtToken = jwtService.generateJwtToken(userDetails);
+            String responseMessage = "New phone number " + request.getNewPhoneNumber() + " updated successfully!";
             log.info("Phone number {} updated successfully!", request.getNewPhoneNumber());
-            return ResponseEntity.ok().body(newJwtToken);
+            return ResponseEntity.ok(responseMessage);
         } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -73,8 +73,9 @@ public class AdminOfficeController {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
+            String responseMessage = "An error occurred while updating bank card";
             log.error("An error occurred while updating bank card");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseMessage);
         }
     }
 
@@ -392,6 +393,7 @@ public class AdminOfficeController {
         try {
             List<Subscription> subscriptions = subscriptionService.findAllSubscription();
             log.info("Fetched all subscription");
+            System.out.println(subscriptions);
             return ResponseEntity.ok(subscriptions);
         } catch (NoSuchElementException e) {
             log.warn(e.getMessage());

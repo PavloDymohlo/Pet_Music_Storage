@@ -31,6 +31,37 @@ body {
   margin-top: 5px;
 }
 
+input[name="Auto-renew"] {
+    display: none;
+}
+
+/* Створення кастомного вигляду */
+input[name="Auto-renew"] + label {
+    position: relative;
+    padding-left: 30px; /* Відстань для кастомного кружечка */
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Кастомний кружечок */
+input[name="Auto-renew"] + label::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 20px; /* Діаметр кружечка */
+    height: 20px; /* Діаметр кружечка */
+    border-radius: 50%; /* Кругла форма */
+    border: 2px solid #8b008b; /* Обводка кружечка */
+    background-color: transparent; /* Колір фону кружечка */
+    transition: background-color 0.2s;
+}
+
+/* Стиль для вибраного кастомного кружечка */
+input[name="Auto-renew"]:checked + label::before {
+    background-color: #8b008b; /* Колір вибраного кружечка */
+}
+
 .AutoRenewText {
   font-style: normal;
   font-style: italic;
@@ -197,7 +228,7 @@ body {
   margin: 5px 0;
   font-size: 18px;
   width: 265px;
-  height: 80px;
+  height: auto;
   box-sizing: border-box;
   margin-bottom: 50px;
 }
@@ -220,7 +251,7 @@ body {
   margin: 5px 0;
   font-size: 18px;
   width: 265px;
-  height: 350px;
+  height: auto;
   box-sizing: border-box;
   margin-bottom: 50px;
 }
@@ -278,43 +309,6 @@ body {
   width: 225px;
   text-align: center;
   margin: 0 auto;
-}
-
-.submenu-all-subscriptions-button {
-  background-color: #8b008b;
-  color: white;
-  padding: 5px 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  cursor: pointer;
-  border-radius: 25px;
-  margin: 0;
-  font-size: 16px;
-  width: 40;
-  height: 16;
-  box-sizing: border-box;
-}
-
-.submenu-all-subscriptions-button:hover {
-  background-color: #8a2be2;
-}
-
-.submenu-all-subscriptions-item {
-  list-style-type: none;
-  color: #8b008b;
-  font-weight: bold;
-  margin-bottom: 10px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 5px;
-}
-
-.submenu-all-subscriptions-name {
-  margin: 0;
 }
 
 .allSubscription-details {
@@ -446,13 +440,30 @@ body {
   margin-top: 0px;
 }
 
-.personal-data-info-text {
+.users-personal-data-text {
+  font-style: normal;
+  font-style: italic;
+  font-style: oblique;
+  font-style: oblique 10deg;
+  font-weight: bold;
+  font-size: 20px;
+  color: #8b008b;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  text-shadow: -0.02px -0.02px 0 #000, 0.02px -0.02px 0 #000,
+    -0.02px 0.02px 0 #000, 0.02px 0.02px 0 #000;
+}
+
+.delete-user-text {
   font-style: normal;
   font-style: italic;
   font-style: oblique;
   font-style: oblique 10deg;
   font-weight: bold;
   font-size: 24px;
+  text-align: center;
   color: #8b008b;
   margin-top: 0px;
   margin-bottom: 0px;
@@ -607,3 +618,306 @@ body {
     margin: 10px auto;
   }
 }
+
+#users-container {
+   display: none;
+     position: absolute;
+     top: 0;
+     left: 100%;
+     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+     z-index: 1;
+     background-color: #e6e6fa;
+     color: white;
+     padding: 5px;
+     text-decoration: none;
+     cursor: pointer;
+     border-radius: 25px;
+     margin: 5px 0;
+     font-size: 18px;
+     width: 520px;
+     height: auto;
+     box-sizing: border-box;
+     margin: 0px;
+}
+
+.submenu-all-users-button {
+  background-color: #8b008b;
+  color: white;
+  padding: 5px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 25px;
+  font-size: 16px;
+  width: auto; /* Автоматична ширина, щоб кнопка не займала всю доступну ширину */
+  height: 50px;
+  box-sizing: border-box;
+  margin: 0; /* Вимикає будь-які зовнішні відступи */
+}
+
+
+.submenu-all-users-button:hover {
+  background-color: #8a2be2;
+}
+
+.submenu-all-users-item {
+  list-style-type: none;
+  color: #8b008b;
+  font-weight: bold;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #dcdcdc;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+
+.submenu-all-users-item p {
+  margin: 0;
+  padding: 0;
+}
+
+.submenu-all-users-email {
+  margin: 0;
+  padding: 0;
+  color: #6495ED;
+}
+
+.submenu-all-users-phone {
+  margin: 0;
+  padding: 0;
+  color: #8A2BE2;
+}
+
+.submenu-all-users-subscription {
+  margin: 0;
+  padding: 0;
+  color: #228B22;
+}
+
+.submenu-all-users-email {
+  text-align: left;
+}
+
+
+
+.dashed-line {
+  margin: 0;
+  border: 0;
+  border-top: 1px dashed #8b008b;
+}
+
+
+.pagination-controls,
+ .subscription-pagination{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+#pagination-controls button {
+    background-color: #8b008b;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    margin: 0 5px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.pagination-button {
+    background-color: #8b008b;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      display: block;
+      width: 210px;
+}
+.subscription-pagination-button {
+    background-color: #8b008b;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      display: block;
+      width: 100px;
+}
+
+.pagination-button:hover,
+.subscription-pagination-button:hover{
+  background-color: #8a2be2;
+}
+
+.pagination-button:disabled,
+ .subscription-pagination-button:disabled{
+    background-color: #d6d6d6;
+    cursor: not-allowed;
+}
+
+#pagination-controls {
+    font-size: 16px;
+    margin: 0 10px;
+    color: #8b008b;
+}
+
+.page-users-info {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0 10px;
+    color: #8b008b;
+}
+
+.subscription-page-info {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0 10px;
+    color: #8b008b;
+     text-align: center;
+}
+
+.dashed-line {
+    border: 0;
+    border-top: 1px dashed #8b008b;
+    width: 100%;
+    margin: 10px 0;
+}
+
+.user-details {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    background-color: #e6e6fa;
+    padding: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 25px;
+    margin: 5px 0;
+    font-size: 18px;
+    width: 500px;
+    height: auto;
+    box-sizing: border-box;
+    margin: 0;
+    color: #8b008b;
+      text-shadow: -0.2px -0.2px 0 #000,
+      0.2px -0.2px 0 #000,
+      -0.2px 0.2px 0 #000,
+        0.2px 0.2px 0 #000;
+}
+
+.user-details p {
+    position: relative;
+    padding-right: 100px;
+}
+
+#userDetails {
+    margin-right: 320px;
+}
+
+.change-button {
+    position: absolute;
+    right: 0;
+    top: 20%;
+    transform: translateY(-50%);
+     background-color: #8b008b;
+          color: white;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 20px;
+          cursor: pointer;
+          display: block;
+          width: 100px;
+}
+
+.change-button:hover {
+  background-color: #8a2be2;
+}
+
+#usersPersonalDataContainer {
+    display: none;
+     position: absolute;
+     top: 0;
+     left: 500px;
+     background-color: #f9f9f9;
+     min-width: 160px;
+     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+     z-index: 1;
+     background-color: #e6e6fa;
+     color: white;
+     padding: 15px 30px;
+     text-decoration: none;
+     cursor: pointer;
+     border-radius: 25px;
+     margin: 5px 0;
+     font-size: 18px;
+     width: 265px;
+     height: auto;
+     box-sizing: border-box;
+     margin-bottom: 50px;
+}
+
+.subscription-item, .subscribe-button {
+    box-sizing: border-box;
+}
+
+.subscription-item {
+font-size: 18px;
+    list-style-type: none;
+    color: #8b008b;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+}
+
+.subscription-item p {
+    margin: 0;
+    padding: 0;
+}
+
+
+.subscribe-button {
+    background-color: #8b008b;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    width: auto;
+    min-width: 100px;
+    margin-top: 10px;
+}
+
+
+.subscribe-button:hover {
+    background-color: #8a2be2;
+}
+
+.dashed-line {
+    width: 100%;
+    border: 0;
+    border-top: 1px dashed #8b008b;
+    margin: 10px 0;
+}
+
+
+
