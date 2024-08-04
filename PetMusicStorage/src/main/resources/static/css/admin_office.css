@@ -598,26 +598,7 @@ input[name="Auto-renew"]:checked + label::before {
   color: #008000;
 }
 
-.form-submenu-personal-data1 {
-  display: none;
-  position: absolute;
-  top: 0;
-  left: 100%;
-  border: 1px solid #ccc;
-  padding: 15px;
-  background-color: #f9f9f9;
-  margin-top: 0px;
-  width: 210px;
-  height: auto;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  background-color: #e6e6fa;
-  border-radius: 25px;
-  button {
-    display: block;
-    margin: 10px auto;
-  }
-}
+
 
 #users-container {
    display: none;
@@ -919,5 +900,25 @@ font-size: 18px;
     margin: 10px 0;
 }
 
+.form-submenu-find-user {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  border: 1px solid #ccc;
+  padding: 15px;
+  background-color: #f9f9f9;
+  margin-top: 0px;
+  width: 210px;
+  height: auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  background-color: #e6e6fa;
+  border-radius: 25px;
+  button {
+    display: block;
+    margin: 10px auto;
+  }
+}
 
 

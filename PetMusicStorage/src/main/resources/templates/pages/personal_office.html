@@ -7,95 +7,70 @@
     <link rel="stylesheet" type="text/css" href="/styles/css/personal_office.css" />
 </head>
 <body>
-<aside class="sidebarMargin">
-    <div class="sidebarText">
-        <p>Your subscription: <span id="subscriptionDetails">Loading...</span> </p>
-        <p>Subscription expired: <span id="subscriptionExpiry">Loading...</span> </p>
-    </div>
-    <div>
-        <button class="button" >Listen to music</button>
-    </div>
-    <div class="AutoRenewText">
-        <p>Auto-renew subscription</p>
-        <input name="Auto-renew" id="YES" type="radio" onclick="changeUsersAutoRenewStatus('YES')" checked>
-        <label for="YES">YES</label>
-        <label>/</label>
-        <input name="Auto-renew" id="NO" type="radio" onclick="changeUsersAutoRenewStatus('NO')">
-        <label for="NO">NO</label>
-    </div>
-    <div class="main-container">
-        <div class="button-container" style="position: relative;">
-            <button class="button" onclick="toggleSubMenu('submenuSubscribe')">Choose new subscription</button>
-            <div class="submenu-subscription" id="submenuSubscribe">
-                <ul>
-                    <form class="input-form"  onsubmit="submitSubscriptionForm(event)">
-                        <input id="subscriptionNameInput" class="input" placeholder="Enter subscription name" type="text" required>
-                        <button class="input-button" type="submit">OK</button>
-                    </form>
-                    <button id="AllSubscriptionsButton" class="submenu-subscription-button" type="button" onclick="submitAllSubscriptions()">All subscriptions</button>
-                    <form class="input-form-price" onsubmit="submitSubscriptionPriceForm(event)">
-                        <div class="input-row">
-                            <input id="minSubscribePrice" class="input-price" placeholder="minimal price" type="number" required>
-                            <input id="maxSubscribePrice" class="input-price" placeholder="maximal price" type="number" required>
+<div class="header">
+    <ul class="nav-list">
+        <li>
+            <div class="header-text">
+                 <p>Your subscription: <span id="subscriptionDetails">Loading...</span> </p>
+                 <p>Subscription expired: <span id="subscriptionExpiry">Loading...</span> </p>
+           </div>
+            <div class="AutoRenewText">
+                <p>Auto-renew subscription</p>
+                <input name="Auto-renew" id="YES" type="radio" onclick="changeUsersAutoRenewStatus('YES')" checked>
+                <label for="YES">YES</label>
+                <label>/</label>
+                <input name="Auto-renew" id="NO" type="radio" onclick="changeUsersAutoRenewStatus('NO')">
+                <label for="NO">NO</label>
+            </div>
+            <button class="button-nav-list" onclick="showForm('manualFindUserByPhoneNumber')">Listen music</button>
+            <button class="button-nav-list" type="button" onclick="submitFindSubscriptionsList()">Subscriptions</button>
+            <button class="button-nav-list" onclick="showForm('changePersonalData')">Personal data</button>
+            <button class="button-nav-list-exit" onclick="showForm('findUsersByEmail')">Exit</button>
+            <div class="form-nav-list">
+                <form id="findAllSubmenu" class="subscription-list" style="display: none;" onsubmit="submitFindSubscriptionsList()">
+                    <div id="subscriptionList"></div>
+                </form>
+                <form id="changePersonalData" class="form-change-personal-data" style="display: none;" onsubmit="submitFindUserByBankCard(event)">
+                    <div>
+                        <div class="user-details-row">
+                            <p>Phone: ${user.phoneNumber}</p>
+                            <input id="newPhoneNumber" class="input-personal-data" placeholder="New phone number" type="number" required />
+                            <button class="submenu-all-users-button" onclick="updateUsersPhoneNumber(event, '${user.phoneNumber}')"> Update </button>
                         </div>
-                        <button class="submenu-subscription-button-price" type="submit">Find subscription by price</button>
-                    </form>
-                </ul>
-            </div>
-        </div>
-        <div class="button-container" style="position: relative;">
-            <button class="button" onclick="toggleSubMenu('submenuPersonalData')">Personal data</button>
-            <div class="submenu-personal-data" id="submenuPersonalData">
-                <button class="submenu-personal-data-button" onclick="showForm('updatePhoneNumberForm')">Change phone number</button>
-                <button class="submenu-personal-data-button" onclick="showForm('updatePasswordForm')">Change password</button>
-                <button class="submenu-personal-data-button" onclick="showForm('updateBankCardDataForm')">Change bank card</button>
-                <button class="submenu-personal-data-button" onclick="showForm('updateEmailForm')">Change email</button>
-                <button class="submenu-personal-data-button" onclick="showForm('deleteAccountForm')">Delete account</button>
-            </div>
-            <div id="formContainer">
-                <form id="updatePhoneNumberForm" class="form-submenu-personal-data" style="display: none;" onsubmit="updatePhoneNumber(event)">
-                    <p class="personal-data-info-text">Your phone number: </p>
-                    <p class="personal-data-info-text"><span id="currentPhoneNumber">Loading...</span></p>
-                    <input id="newPhoneNumber" class="input-new-personal-data" placeholder="New phone number" type="number" required>
-                    <button type="submit" class="update-button">Update</button>
-                </form>
-                <form id="updatePasswordForm" class="form-submenu-personal-data" style="display: none;" onsubmit="updatePassword(event)">
-                    <p class="personal-data-info-text">Enter new password: </p>
-                    <input id="newPassword" class="input-new-personal-data" placeholder="Enter new password" type="password" required>
-                    <button type="submit" class="update-button">Update</button>
-                </form>
-                <form id="updateBankCardDataForm" class="form-submenu-personal-data" style="display: none;" onsubmit="updateBankCard(event)">
-                    <p class="personal-data-info-text">Bank card number: </p>
-                    <p class="personal-data-info-text"><span id="currentBankCardNumber">Loading...</span></p>
-                    <input id="newBankCardNumber" class="input-new-personal-data" placeholder="Bank card number" type="number" required>
-                    <div style="display: flex; gap: 10px;">
-                    <input id="newBankCardExpirationDate" class="input-bank-card-expiration-data" placeholder="Expiration date" type="text" required>
-                    <input id="newBankCardCVV" class="input-bank-card-cvv" placeholder="CVV" type="number" required>
+                        <div class="user-details-row">
+                            <p>Password: hidden</p>
+                            <input id="currentPassword" class="input-personal-data" placeholder="Current password" type="text" required />
+                            <input id="newPassword" class="input-personal-data" placeholder="New password" type="text" required />
+                            <button class="submenu-all-users-button" onclick="updateUsersPassword(event, '${user.phoneNumber}')" > Update </button>
+                        </div>
+                        <div class="user-details-row">
+                            <p>Email: ${user.email}</p>
+                            <input id="newEmail" class="input-personal-data" placeholder="New email" type="text" required />
+                            <button class="submenu-all-users-button" onclick="updateUsersEmail(event, '${user.phoneNumber}')" > Update </button>
+                        </div>
+                        <div class="user-details-row">
+                            <p>Bank card number: ${user.userBankCard.cardNumber}</p>
+                            <div class="bank-card-group">
+                                <input id="newBankCardNumber" class="input-bank-personal-data" placeholder="Bank card number" type="number" required>
+                                <div class="bank-card-details">
+                                    <input id="newBankCardExpirationDate" class="input-bank-card-expiration-data" placeholder="Expiration date" type="text" required>
+                                    <input id="newBankCardCVV" class="input-bank-card-cvv" placeholder="CVV" type="number" required>
+                                </div>
+                            </div>
+                            <button class="submenu-all-users-button" onclick="updateUsersBankCard(event, '${user.phoneNumber}')">Update</button>
+                        </div>
+                        <div class="user-details-row">
+                            <p>Delete user: </p>
+                            <input id="Password" class="input-personal-data" placeholder="Enter your password" type="text" required />
+                            <button class="submenu-all-users-button" onclick="deleteUserByPhoneNumber('${user.phoneNumber}')" > Delete </button>
+                        </div>
                     </div>
-                        <button type="submit" class="update-button">Update</button>
-                </form>
-                <form id="updateEmailForm" class="form-submenu-personal-data-email" style="display: none;" onsubmit="updateEmail(event)">
-                    <p class="personal-data-info-text">Your Email: </p>
-                    <p class="personal-data-info-text-email"><span id="currentEmail">Loading...</span></p>
-                    <input id="newEmail" class="input-new-personal-data" placeholder="New Email" type="text" required>
-                    <button type="submit" class="update-button">Update</button>
-                </form>
-                <form id="deleteAccountForm" class="form-submenu-personal-data" style="display: none;" onsubmit="deleteAccount(event)">
-                    <p class="submenu-text">Are you sure?</p>
-                    <button type="submit" class="update-button">Delete account</button>
                 </form>
             </div>
-        </div>
-    </div>
-    <div class="button-container" style="position: relative;">
-        <button class="button" onclick="showForm('exitForm')">Log out</button>
-        <form id="exitForm" class="form-submenu-personal-data1" style="display: none;" onsubmit="exit(event)">
-            <p class="submenu-text">Are you sure?</p>
-            <button type="submit" class="update-button">Log out</button>
-        </form>
-    </div>
-    </div>
-</aside>
+        </li>
+    </ul>
+</div>
+
 <script src="/js/script/personal_office.js"></script>
 </body>
 </html>

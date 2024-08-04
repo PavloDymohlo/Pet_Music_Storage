@@ -11,116 +11,19 @@
     <div>
         <button class="button" >Listen to music</button>
     </div>
-    <div class="main-container">
-        <div class="button-container" style="position: relative;">
-            <button class="button" onclick="toggleSubMenu('users')">Users</button>
-            <div class="submenu-users" id="users">
-                <button id="getAllUsers" class="submenu-personal-data-button" type="button" onclick="submitFindAllUsers()">Get all users</button>
-
-                <button class="submenu-personal-data-button" type="button" onclick="showForm('findUserByPhoneNumber')">Find by phone number</button>
-
-
-                <button class="submenu-personal-data-button" onclick="showForm('findByBankCard')">Find by bank card</button>
-                <button class="submenu-personal-data-button" onclick="showForm('findBySubscription')">Find by subscription</button>
-                <button class="submenu-personal-data-button" onclick="showForm('findByEmail')">Find by email</button>
-                <button class="submenu-personal-data-button" onclick="showForm('findById')">Find by Id</button>
-                <button class="submenu-personal-data-button" onclick="showForm('deleteAllUsers')">Delete all users</button>
-            </div>
-            <div id="users-container">
-                <ul id="usersInfo"></ul>
-                <div class="pagination-controls">
-                    <button class="pagination-button" id="prev-page" onclick="changePage(-1)" disabled>Previous</button>
-                    <span class="page-users-info" id="page-info">Page 1</span>
-                    <button class="pagination-button" id="next-page" onclick="changePage(1)">Next</button>
-                </div>
-                <div id="userDetails" class="user-details" style="display: none;"></div>
-                <div id="usersPersonalDataContainer" style="display: none;">
-                    <form id="changeUsersPhoneNumber" class="form-submenu-personal-data" style="display: none;" onsubmit="updateUsersPhoneNumber(event)">
-                        <p class="users-personal-data-text">Current phone number: </p>
-                        <p class="users-personal-data-text"><span id="currentPhoneNumber">Loading...</span></p>
-                        <input id="newPhoneNumber" class="input-new-personal-data" placeholder="New phone number" type="number" required>
-                        <button type="submit" class="update-button">Update</button>
-                    </form>
-                    <form id="changeUsersPassword" class="form-submenu-personal-data" style="display: none;" onsubmit="updateUsersPassword(event)">
-                        <input id="newPassword" class="input-new-personal-data" placeholder="New password" type="text" required>
-                        <button type="submit" class="update-button">Update</button>
-                    </form>
-                    <form id="changeUsersAutoRenewStatus" class="form-submenu-personal-data" style="display: none;">
-                        <p class="users-personal-data-text">Auto-renew subscription</p>
-                        <input name="Auto-renew" id="YES" type="radio" value="YES" onclick="updateUsersAutoRenewStatus(event)" checked>
-                        <label for="YES" class="users-personal-data-text">YES</label>
-                        <label class="users-personal-data-text">/</label>
-                        <input name="Auto-renew" id="NO" type="radio" value="NO" onclick="updateUsersAutoRenewStatus(event)">
-                        <label for="NO" class="users-personal-data-text">NO</label>
-                    </form>
-                    <form id="changeUserEmail" class="form-submenu-personal-data" style="display: none;" onsubmit="updateUsersEmail(event)">
-                        <p class="users-personal-data-text">Current Email: </p>
-                        <p class="users-personal-data-text"><span id="currentEmail">Loading...</span></p>
-                        <input id="newEmail" class="input-new-personal-data" placeholder="New Email" type="text" required>
-                        <button type="submit" class="update-button">Update</button>
-                    </form>
-                    <form id="changeBankCardDataForm" class="form-submenu-personal-data" style="display: none;" onsubmit="updateUsersBankCard(event)">
-                        <p class="users-personal-data-text">Bank card number: </p>
-                        <p class="users-personal-data-text"><span id="currentBankCardNumber">Loading...</span></p>
-                        <input id="newBankCardNumber" class="input-new-personal-data" placeholder="Bank card number" type="number" required>
-                        <div style="display: flex; gap: 10px;">
-                            <input id="newBankCardExpirationDate" class="input-bank-card-expiration-data" placeholder="Expiration date" type="text" required>
-                            <input id="newBankCardCVV" class="input-bank-card-cvv" placeholder="CVV" type="number" required>
-                        </div>
-                        <button type="submit" class="update-button">Update</button>
-                    </form>
-                    <form id="changeUsersSubscription" class="form-submenu-personal-data" style="display: none;" onsubmit="submitFindAlSubscriptions(); return false;">
-                        <p class="users-personal-data-text">Current subscription: </p>
-                        <p class="users-personal-data-text"><span id="currentSubscription">Loading...</span></p>
-                        <ul id="subscriptionInfo" ></ul>
-                        <div class="subscription-pagination">
-                            <button class="subscription-pagination-button" id="sub-prev-page" onclick="changeSubscriptionPage(-1)" disabled>Previous</button>
-                            <span class="subscription-page-info" id="sub-page-info"> 1</span>
-                            <button class="subscription-pagination-button" id="sub-next-page" onclick="changeSubscriptionPage(1)">Next</button>
-                        </div>
-                    </form>
-                        <form id="deleteUserByPhoneNumber" class="form-submenu-personal-data" style="display: none;" onsubmit="deleteUserByPhoneNumber(event)">
-                            <p class="delete-user-text">Are you sure? </p>
-                            <button type="submit" class="update-button">Delete</button>
-                        </form>
-
-                </div>
-                <form id="findUserByPhoneNumber" class="form-submenu-personal-data" style="display: none;" onsubmit="findUserByPhoneNumber(event)">
-                    <input id="userPhoneNumber" class="input-new-personal-data" placeholder="Enter phone number" type="number" required>
-                    <button type="submit" class="update-button">Find</button>
-                </form>
-            </div>
-
-
-
-
-
-            <div id="formContainer1">
-
-
-
-                <form id="deleteAccountForm" class="form-submenu-personal-data" style="display: none;" onsubmit="deleteAccount(event)">
-                    <p class="submenu-text">Are you sure?</p>
-                    <button type="submit" class="update-button">Delete account</button>
-                </form>
-            </div>
-        </div>
-        <div class="button-container" style="position: relative;">
-            <button class="button" onclick="toggleSubMenu('subscribe')">Subscription</button>
-            <div class="submenu-subscription" id="subscribe">
-                <button class="submenu-personal-data-button" onclick="showForm('createNewSubscription')">Create new subscription</button>
-                <button class="submenu-personal-data-button" onclick="showForm('findSubscription')">Find subscription</button>
-            </div>
-        </div>
+    <div>
+        <button class="button" id="usersButton">Users</button>
     </div>
-    <div class="button-container" style="position: relative;">
-        <button class="button" onclick="showForm('exitForm')">Log out</button>
-        <form id="exitForm" class="form-submenu-personal-data1" style="display: none;" onsubmit="exit(event)">
-            <p class="submenu-text">Are you sure?</p>
-            <button type="submit" class="update-button">Log out</button>
-        </form>
+    <div>
+        <button class="button" >Subscriptions</button>
     </div>
+    <div>
+        <button class="button" >Music files</button>
     </div>
+    <div>
+        <button class="button" >Log out</button>
+    </div>
+
 </aside>
 <script src="/js/script/admin_office.js"></script>
 </body>

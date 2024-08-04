@@ -5,278 +5,167 @@ body {
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
-.sidebarMargin {
-  margin-top: 10px;
-  margin-left: 50px;
-  margin-bottom: 5px;
-  margin-right: 50px;
+.header {
+    background-color: rgba(153, 102, 255, 0.3);
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    padding: 10px;
+     border: 5px;
+     border-radius: 25px;
 }
 
-.sidebarText {
+.header-text {
+ justify-content: start;
   font-style: normal;
   font-style: italic;
   font-style: oblique;
   font-style: oblique 10deg;
   font-weight: bold;
-  font-size: 25px;
+  font-size: 18px;
   color: #8b008b;
   margin-bottom: 10px;
   text-shadow: -0.2px -0.2px 0 #000, 0.2px -0.2px 0 #000, -0.2px 0.2px 0 #000,
     0.2px 0.2px 0 #000;
 }
 
-.sidebarText p {
+.header-text p {
   margin-bottom: 5px;
   margin-top: 5px;
 }
 
+.form-nav-list {
+    display: flex;
+
+}
+
+.nav-list {
+    display: flex;
+    flex-direction: row;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    position: relative;
+}
+
+.nav-list li {
+    display: flex;
+}
+
 .AutoRenewText {
+ justify-content: start;
   font-style: normal;
   font-style: italic;
   font-style: oblique;
   font-style: oblique 10deg;
+  font-size: 21px;
+  color: #8b008b;
+  width: 230px;
+    margin-left: 30px;
+    margin-right: 20px;
+     text-align: center;
+
+}
+.AutoRenewText p{
+  margin: 5px;
   font-weight: bold;
-  font-size: 22px;
+}
+
+.auto-renew-options {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+}
+.radio-spacing {
+    width: 10px;
+}
+input[name="Auto-renew"] {
+    display: none;
+}
+input[name="Auto-renew"] + label {
+    position: relative;
+    padding-left: 30px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+}
+input[name="Auto-renew"] + label::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #8b008b;
+    background-color: transparent;
+    transition: background-color 0.2s;
+}
+input[name="Auto-renew"]:checked + label::before {
+    background-color: #8b008b;
+}
+
+.button-nav-list {
+    background-color: #8b008b;
+    justify-content: start;
+    color: white;
+    padding: 5px 5px;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 25px;
+    margin: 5px;
+    font-size: 16px;
+    width: 150px;
+    height: 50px;
+    box-sizing: border-box;
+      box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+}
+
+.button-nav-list-exit {
+    background-color: #8b008b;
+    color: white;
+    padding: 5px 5px;
+    text-decoration: none;
+    justify-content: end;
+    cursor: pointer;
+    border-radius: 25px;
+    margin: 5px;
+    font-size: 16px;
+    width: 150px;
+    height: 50px;
+    box-sizing: border-box;
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+    position: fixed;
+    right: 50px;
+}
+
+.button-nav-list:hover,
+.button-nav-list-exit:hover,
+.submenu-all-subscriptions-button:hover{
+  background-color: #8a2be2;
+  transform: scale(1.1,1.1);
+}
+
+.button-nav-list:active,
+.button-nav-list-exit:active,
+.submenu-all-subscriptions-button:active{
+  background-color: #6a1b9a;
+  transform: scale(0.95, 0.95);
+  box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.3);
+}
+
+.submenu-all-subscriptions-item {
   color: #8b008b;
-  margin-bottom: 50px;
-  width: 225px;
-  background-color: #e6e6fa;
-  margin-bottom: 50px;
-  text-shadow: -0.1px -0.1px 0 #000, 0.1px -0.1px 0 #000, -0.1px 0.1px 0 #000,
-    0.1px 0.1px 0 #000;
-  border-width: 1px;
-  border-style: solid;
-  border-color: #8b008b;
-  padding: 5px 10px;
-  border-radius: 10px;
-}
-
-.AutoRenewText label[for="YES"],
-.AutoRenewText input#YES {
-  margin-right: 20px;
-  cursor: pointer;
-}
-
-.AutoRenewText label[for="NO"],
-.AutoRenewText input#NO {
-  margin-left: 20px;
-  cursor: pointer;
-}
-
-.AutoRenewText input[type="radio"] {
-  display: none;
-}
-
-.AutoRenewText label[for="YES"]::before,
-.AutoRenewText label[for="NO"]::before {
-  content: "";
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 1px solid #8b008b;
-  border-radius: 50%;
-  margin-right: 10px;
-  vertical-align: middle;
-  transition: background-color 0.3s ease;
-}
-
-.AutoRenewText input[type="radio"]:checked + label::before {
-  background-color: #8b008b;
-}
-
-.button {
-  background-color: #8b008b;
-  color: white;
-  padding: 15px 30px;
-  display: block;
-  text-decoration: none;
-  cursor: pointer;
-  border-radius: 25px;
-  margin: 5px 0;
-  font-size: 18px;
-  width: 265px;
-  height: 50px;
-  box-sizing: border-box;
-  margin-bottom: 50px;
-}
-
-.button:hover {
-  background-color: #8a2be2;
-}
-
-.main-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-.button-container {
-  position: relative;
-  display: inline-block;
-}
-
-.submenu-subscription {
-  display: none;
-  position: absolute;
-  top: 0;
-  left: 100%;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  z-index: 1;
-  background-color: #e6e6fa;
-  color: white;
-  padding: 15px 30px;
-  text-decoration: none;
-  cursor: pointer;
-  border-radius: 25px;
-  margin: 5px 0;
-  font-size: 18px;
-  width: 265px;
-  height: auto;
-  box-sizing: border-box;
-  margin-bottom: 50px;
-}
-
-.submenu-subscription ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-.submenu-subscription ul li {
-  padding: 8px 12px;
-  cursor: pointer;
-}
-
-.submenu-subscription-button {
-  background-color: #8b008b;
-  color: white;
-  padding: 15px 30px;
-  display: block;
-  text-decoration: none;
-  cursor: pointer;
-  border-radius: 25px;
-  margin: 5px 0;
-  font-size: 16px;
-  width: 245px;
-  height: 50px;
-  box-sizing: border-box;
-  margin-left: -20px;
+  font-weight: bold;
   margin-bottom: 10px;
-}
-
-.submenu-subscription-button:hover {
-  background-color: #8a2be2;
-}
-
-.input {
-  border-radius: 25px;
-  border: 1px solid #ccc;
-  padding: 10px 15px;
-  width: 175px;
-  margin-left: -20px;
-}
-
-.input-form {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.input-button {
-  border-radius: 25px;
-  padding: 10px 20px;
-  border: none;
-  background-color: #8b008b;
-  color: white;
-  text-align: center;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 30px;
-}
-
-.input-button:hover {
-  background-color: #8a2be2;
-}
-
-.submenu-personal-data {
-  display: none;
-  position: absolute;
-  top: 0;
-  left: 100%;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  z-index: 1;
-  background-color: #e6e6fa;
-  color: white;
-  padding: 15px 30px;
-  text-decoration: none;
-  cursor: pointer;
-  border-radius: 25px;
-  margin: 5px 0;
-  font-size: 18px;
-  width: 265px;
-  height: 230px;
-  box-sizing: border-box;
-  margin-bottom: 50px;
-}
-
-.submenu-personal-data ul {
-  list-style-type: none;
   padding: 0;
-  margin: 0;
-}
-
-.submenu-personal-data ul li {
-  padding: 0px 0px;
-  cursor: pointer;
-}
-
-.submenu-personal-data-button {
-  background-color: #8b008b;
-  color: white;
-  padding: 15px 30px;
-  display: block;
-  text-decoration: none;
-  cursor: pointer;
-  border-radius: 25px;
-  margin: 0px 0;
-  font-size: 16px;
-  width: 245px;
-  height: 30px;
-  box-sizing: border-box;
-  margin-left: -20px;
-  margin-bottom: 10px;
-  text-align: center;
-  line-height: 2px;
-}
-
-.submenu-personal-data-button:hover {
-  background-color: #8a2be2;
-}
-
-.subscription-details {
-  width: 260px;
-  height: 220px;
-  background-color: #e6e6fa;
-  color: #8b008b;
-  padding: 10px;
-  border-radius: 25px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  text-align: center;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: space-between;
+  gap: 5px;
 }
 
-.subscription-details .submenu-subscription-button {
-  width: 225px;
-  text-align: center;
-  margin: 0 auto;
+.submenu-all-subscriptions-name {
+  margin: 0;
 }
 
 .submenu-all-subscriptions-button {
@@ -294,236 +183,37 @@ body {
   width: 40;
   height: 16;
   box-sizing: border-box;
+  box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.3);
 }
 
-.submenu-all-subscriptions-button:hover {
-  background-color: #8a2be2;
-}
-
-.submenu-all-subscriptions-item {
-  list-style-type: none;
-  color: #8b008b;
-  font-weight: bold;
-  margin-bottom: 10px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 5px;
-}
-
-.submenu-all-subscriptions-name {
-  margin: 0;
-}
-
-.allSubscription-details {
-  width: 300px;
-  height: 220px;
-  background-color: #e6e6fa;
-  color: #8b008b;
-  padding: 10px;
-  border-radius: 25px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: auto;
-  left: 100%;
-}
-
-.input-form-price {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.input-row {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  width: 100%;
-}
-
-.input-price,
-.input-phone-number {
-  width: 100px;
-  padding: 10px;
-  border-radius: 20px;
-  border: 1px solid #ccc;
-}
-
-.submenu-subscription-button-price {
-  padding: 5px 30px;
-  border-radius: 5px;
-  background-color: #8b008b;
-  color: white;
-  border: none;
-  cursor: pointer;
-  width: 240px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  cursor: pointer;
-  border-radius: 25px;
-  margin: 0;
-  font-size: 16px;
-  height: 16;
-  box-sizing: border-box;
-}
-
-.submenu-subscription-button-price:hover {
-  background-color: #8a2be2;
-}
-
-.submenu-personal-data-form {
-  display: none;
-  position: absolute;
-  top: 0;
-  left: 100%;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  z-index: 1;
-  background-color: #e6e6fa;
-  color: white;
-  padding: 15px 30px;
-  text-decoration: none;
-  cursor: pointer;
-  border-radius: 25px;
-  margin: 5px 0;
-  font-size: 18px;
-  width: 265px;
-  height: 230px;
-  box-sizing: border-box;
-  margin-bottom: 50px;
-}
-
-.form-submenu-personal-data .form-submenu-personal-data1 {
-  display: none;
-  position: absolute;
-  top: 0;
-  left: 100%;
-  border: 1px solid #ccc;
-  padding: 15px;
-  background-color: #f9f9f9;
-  margin-top: 0px;
-  width: 210px;
-  height: auto;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  background-color: #e6e6fa;
-  border-radius: 25px;
-  button {
-    display: block;
-    margin: 10px auto;
-  }
-}
-
-.update-button:hover {
-  background-color: #8a2be2;
-}
-
-.submenu-text {
-  font-style: normal;
-  font-style: italic;
-  font-style: oblique;
-  font-style: oblique 10deg;
-  font-weight: bold;
-  font-size: 24px;
-  color: #8b008b;
-  margin-bottom: 0px;
-  text-shadow: -0.1px -0.1px 0 #000, 0.1px -0.1px 0 #000, -0.1px 0.1px 0 #000,
-    0.1px 0.1px 0 #000;
-}
-
-.submenu-text p {
-  margin-bottom: 0px;
-  margin-top: 0px;
-}
-
-.personal-data-info-text {
-  font-style: normal;
-  font-style: italic;
-  font-style: oblique;
-  font-style: oblique 10deg;
-  font-weight: bold;
-  font-size: 24px;
-  color: #8b008b;
-  margin-top: 0px;
-  margin-bottom: 0px;
-  padding-top: 0px;
-  padding-bottom: 0px;
-  text-shadow: -0.02px -0.02px 0 #000, 0.02px -0.02px 0 #000,
-    -0.02px 0.02px 0 #000, 0.02px 0.02px 0 #000;
-}
-
-.input-new-personal-data {
-  width: 190px;
-  padding: 10px;
-  border-radius: 20px;
-  border: 1px solid #ccc;
-}
-
-.update-button {
-  background-color: #8b008b;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  display: block;
-  width: 210px;
-}
-
-.submenu-personal-data-error {
+.subscription-list{
+ position: absolute;
+  top: 120%;
+  right: 620px;
   width: 250px;
-  height: 100px;
-}
-
-.input-bank-card-expiration-data {
-  width: 90px;
-  padding: 10px;
-  border-radius: 20px;
-  border: 1px solid #ccc;
-}
-
-.input-bank-card-cvv {
-  width: 70px;
-  padding: 10px;
-  border-radius: 20px;
-  border: 1px solid #ccc;
-}
-
-.personal-data-info-text-email {
-  font-style: normal;
-  font-style: italic;
-  font-style: oblique;
-  font-style: oblique 10deg;
-  font-weight: bold;
-  font-size: 16px;
+  height: 120px;
+  background-color: #e6e6fa;
   color: #8b008b;
-  margin-top: 0px;
-  margin-bottom: 0px;
-  padding-top: 0px;
-  padding-bottom: 0px;
-  text-shadow: -0.02px -0.02px 0 #000, 0.02px -0.02px 0 #000,
-    -0.02px 0.02px 0 #000, 0.02px 0.02px 0 #000;
+  padding: 10px;
+  border-radius: 25px;
+  box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
-.form-submenu-personal-data-email {
+.form-change-personal-data{
+position: absolute;
+  top: 120%;
+  right: 320px;
   display: none;
-  position: absolute;
-  top: 0;
-  left: 100%;
   border: 1px solid #ccc;
   padding: 15px;
   background-color: #f9f9f9;
   margin-top: 0px;
-  width: auto;
+  width: 550px;
   height: auto;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
@@ -535,74 +225,17 @@ body {
   }
 }
 
-.display-error-message {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 70%;
-  text-align: center;
-  color: #8b008b;
+.user-details-row {
+    font-size: 18px;
+     font-weight: bold;
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
-
-.display-message {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 175px;
-  color: $ {
-    type=== 'success' ? 'green' : "red";
-  }
-  background-color: $ {
-    type=== 'success' ? '#d4edda' : "#f8d7da";
-  }
-  border: 1px solid $ {
-    type=== 'success' ? '#c3e6cb' : "#f5c6cb";
-  }
-  padding: 10px;
-  border-radius: 10px;
-  font-size: 20px;
-  text-align: center;
-}
-
-.display-error-message-for-personal-data-update {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  color: #ff0000;
-}
-
-.display-message-for-personal-data-update {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  color: #008000;
-}
-
-.form-submenu-personal-data1 {
-  display: none;
-  position: absolute;
-  top: 0;
-  left: 100%;
-  border: 1px solid #ccc;
-  padding: 15px;
-  background-color: #f9f9f9;
-  margin-top: 0px;
-  width: 210px;
-  height: auto;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  background-color: #e6e6fa;
-  border-radius: 25px;
-  button {
-    display: block;
-    margin: 10px auto;
-  }
+.user-details-row p,
+.user-details-row input,
+.user-details-row button {
+    margin-bottom: 5px;
 }

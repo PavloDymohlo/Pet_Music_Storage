@@ -30,9 +30,11 @@ body {
   border: 1px solid #ccc;
   border-radius: 10px;
   background-color: white;
+  box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.3);
 }
 .dropdown-content button {
   margin-top: 10px;
+  box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.3);
 }
 #loginButton,
 #RegistrationButton {
@@ -45,10 +47,19 @@ body {
   font-size: 18px;
   margin: 10px 0;
   transition: background-color 0.3s ease;
+  box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
 }
 #loginButton:hover,
 #RegistrationButton:hover {
+transform: scale(1.1,1.1);
   background-color: #8a2be2;
+}
+
+#loginButton:active,
+#RegistrationButton:active{
+  background-color: #6a1b9a;
+  transform: scale(0.95, 0.95);
+  box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.3);
 }
 .submitButton {
   background-color: #e6e6fa;
