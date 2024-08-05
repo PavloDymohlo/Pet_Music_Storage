@@ -256,9 +256,10 @@ public class AllUsersPageController {
     }
 
     @DeleteMapping("/delete_user_by_phone_number")
-    public ResponseEntity<String> deleteUserByPhoneNumber(@RequestParam("phoneNumber") long phoneNumber) {
+    public ResponseEntity<String> deleteUserByPhoneNumber(@RequestBody String userPassword,
+                                                          @RequestParam("phoneNumber") long phoneNumber) {
         try {
-            userService.deleteUserByPhoneNumber(phoneNumber);
+            userService.deleteUserByPhoneNumber(phoneNumber, userPassword);
             log.info("User with phoneNumber {} delete successful", phoneNumber);
             String responseMessage = "User with phoneNumber " + phoneNumber + " delete successful";
             return ResponseEntity.ok(responseMessage);

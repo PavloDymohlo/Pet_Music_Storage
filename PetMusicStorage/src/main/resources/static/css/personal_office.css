@@ -140,31 +140,39 @@ input[name="Auto-renew"]:checked + label::before {
 
 .button-nav-list:hover,
 .button-nav-list-exit:hover,
-.submenu-all-subscriptions-button:hover{
+.submenu-all-subscriptions-button:hover,
+.update-user-data-button:hover,
+.update-bank-card-button:hover,
+.log-out-button:hover{
   background-color: #8a2be2;
   transform: scale(1.1,1.1);
 }
 
 .button-nav-list:active,
 .button-nav-list-exit:active,
-.submenu-all-subscriptions-button:active{
+.submenu-all-subscriptions-button:active,
+.update-user-data-button:active,
+.update-bank-card-button:active,
+.log-out-button:active{
   background-color: #6a1b9a;
   transform: scale(0.95, 0.95);
   box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.3);
 }
 
 .submenu-all-subscriptions-item {
-  color: #8b008b;
-  font-weight: bold;
-  margin-bottom: 10px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 5px;
+    color: #8b008b;
+    font-weight: bold;
+    margin-bottom: 10px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-center;
+    gap: 5px;
 }
 
+
 .submenu-all-subscriptions-name {
+font-size: 18px;
   margin: 0;
 }
 
@@ -178,12 +186,12 @@ input[name="Auto-renew"]:checked + label::before {
   text-decoration: none;
   cursor: pointer;
   border-radius: 25px;
-  margin: 0;
+  margin-left: 80px;
   font-size: 16px;
-  width: 40;
-  height: 16;
+  width: 100px;
+  height: 30px;
   box-sizing: border-box;
-  box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
 }
 
 .subscription-list{
@@ -191,7 +199,7 @@ input[name="Auto-renew"]:checked + label::before {
   top: 120%;
   right: 620px;
   width: 250px;
-  height: 120px;
+  height: auto;
   background-color: #e6e6fa;
   color: #8b008b;
   padding: 10px;
@@ -211,11 +219,10 @@ position: absolute;
   display: none;
   border: 1px solid #ccc;
   padding: 15px;
-  background-color: #f9f9f9;
   margin-top: 0px;
   width: 550px;
   height: auto;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
   text-align: center;
   background-color: #e6e6fa;
   border-radius: 25px;
@@ -226,16 +233,211 @@ position: absolute;
 }
 
 .user-details-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.user-details-row p {
+    font-style: italic;
+    font-weight: bold;
     font-size: 18px;
-     font-weight: bold;
+    color: #8b008b;
+    margin: 0;
+    text-shadow: -0.2px -0.2px 0 #000, 0.2px -0.2px 0 #000, -0.2px 0.2px 0 #000, 0.2px 0.2px 0 #000;
+}
+
+.input-button-container {
     display: flex;
     align-items: center;
-    position: relative;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    gap: 10px;
 }
-.user-details-row p,
-.user-details-row input,
-.user-details-row button {
+
+.input-personal-data {
+    width: 190px;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+}
+
+.update-user-data-button {
+    background-color: #8b008b;
+    color: white;
+    padding: 0;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    width: 100px;
+    height: 40px;
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+}
+
+.input-bank-personal-data {
+  width: 185px;
+  padding: 10px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+}
+
+.input-bank-card-expiration-data {
+  width: 90px;
+  padding: 10px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+}
+
+.input-bank-card-cvv {
+  width: 70px;
+  padding: 10px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+}
+
+.bank-card-group {
+    position: absolute;
+    right: 120px;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 10px;
+}
+
+.input-button-container{
+padding:0;
+margin:0;
+}
+
+.delete-account {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 18px;
+        color: #FF0000;
+    font-weight: bold;
     margin-bottom: 5px;
+}
+
+.delete-account p {
+    font-style: italic;
+    margin: 0;
+    text-shadow: -0.2px -0.2px 0 #000, 0.2px -0.2px 0 #000, -0.2px 0.2px 0 #000, 0.2px 0.2px 0 #000;
+}
+
+.delete-account-button {
+    background-color: #FF0000;
+    color: white;
+    padding: 0;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    width: 100px;
+    height: 40px;
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+}
+
+.delete-account-button:hover{
+  background-color: #FF6600;
+  transform: scale(1.1,1.1);
+}
+
+.update-bank-card-button {
+    background-color: #8b008b;
+    color: white;
+    padding: 0;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    width: 200px;
+    height: 40px;
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+}
+
+.display-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 175px;
+  color: $ {
+    type=== 'success' ? 'green' : "red";
+  }
+  background-color: $ {
+    type=== 'success' ? '#d4edda' : "#f8d7da";
+  }
+  border: 1px solid $ {
+    type=== 'success' ? '#c3e6cb' : "#f5c6cb";
+  }
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 20px;
+  text-align: center;
+}
+
+.submenu-personal-data-error {
+  width: 250px;
+  height: 100px;
+}
+
+.display-error-message-for-personal-data-update {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  color: #ff0000 !important;
+}
+
+.display-message-for-personal-data-update {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  color: #008000 !important;
+}
+
+.log-out{
+ position: absolute;
+  top: 120%;
+  right: 30px;
+  width: 120px;
+  height: auto;
+  background-color: #e6e6fa;
+  color: #8b008b;
+  padding: 10px;
+  border-radius: 25px;
+  box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.log-out p{
+font-size: 18px !important;
+margin:5;
+padding:0;
+}
+
+.log-out-button {
+    background-color: #8b008b;
+    color: white;
+    padding: 0;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    width: 100px;
+    height: 40px;
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
 }

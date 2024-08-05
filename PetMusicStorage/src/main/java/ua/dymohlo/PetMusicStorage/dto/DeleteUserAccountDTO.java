@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UpdatePasswordDTO {
-    private long userPhoneNumber;
-    private String currentPassword;
-    private String newPassword;
+public class DeleteUserAccountDTO {
+    private String password;
 }

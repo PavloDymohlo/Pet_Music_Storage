@@ -25,46 +25,56 @@
             <button class="button-nav-list" onclick="showForm('manualFindUserByPhoneNumber')">Listen music</button>
             <button class="button-nav-list" type="button" onclick="submitFindSubscriptionsList()">Subscriptions</button>
             <button class="button-nav-list" onclick="showForm('changePersonalData')">Personal data</button>
-            <button class="button-nav-list-exit" onclick="showForm('findUsersByEmail')">Exit</button>
+            <button class="button-nav-list-exit" onclick="showForm('logOut')">Log out</button>
             <div class="form-nav-list">
                 <form id="findAllSubmenu" class="subscription-list" style="display: none;" onsubmit="submitFindSubscriptionsList()">
                     <div id="subscriptionList"></div>
                 </form>
-                <form id="changePersonalData" class="form-change-personal-data" style="display: none;" onsubmit="submitFindUserByBankCard(event)">
-                    <div>
+                    <div id="changePersonalData" class="form-change-personal-data" style="display: none;">
                         <div class="user-details-row">
-                            <p>Phone: ${user.phoneNumber}</p>
-                            <input id="newPhoneNumber" class="input-personal-data" placeholder="New phone number" type="number" required />
-                            <button class="submenu-all-users-button" onclick="updateUsersPhoneNumber(event, '${user.phoneNumber}')"> Update </button>
+                            <p id="currentPhoneNumber">Phone: loading</p>
+                            <div class="input-button-container">
+                                <input id="newPhoneNumber" class="input-personal-data" placeholder="New phone number" type="number" required />
+                                <button class="update-user-data-button" onclick="updateUsersPhoneNumber(event)">Update</button>
+                            </div>
                         </div>
                         <div class="user-details-row">
-                            <p>Password: hidden</p>
+                            <p id="userPassword">Password: hidden</p>
+                            <div class="input-button-container">
                             <input id="currentPassword" class="input-personal-data" placeholder="Current password" type="text" required />
                             <input id="newPassword" class="input-personal-data" placeholder="New password" type="text" required />
-                            <button class="submenu-all-users-button" onclick="updateUsersPassword(event, '${user.phoneNumber}')" > Update </button>
+                            <button class="update-user-data-button" onclick="updateUsersPassword(event)" > Update </button>
+                            </div>
                         </div>
                         <div class="user-details-row">
-                            <p>Email: ${user.email}</p>
+                            <p id="currentEmail">Email: loading</p>
+                            <div class="input-button-container">
                             <input id="newEmail" class="input-personal-data" placeholder="New email" type="text" required />
-                            <button class="submenu-all-users-button" onclick="updateUsersEmail(event, '${user.phoneNumber}')" > Update </button>
+                            <button class="update-user-data-button" onclick="updateUsersEmail(event)" > Update </button>
+                        </div>
                         </div>
                         <div class="user-details-row">
-                            <p>Bank card number: ${user.userBankCard.cardNumber}</p>
-                            <div class="bank-card-group">
+                            <p id="currentBankCardNumber">Bank card number: loading</p>
+                            <div>
                                 <input id="newBankCardNumber" class="input-bank-personal-data" placeholder="Bank card number" type="number" required>
                                 <div class="bank-card-details">
                                     <input id="newBankCardExpirationDate" class="input-bank-card-expiration-data" placeholder="Expiration date" type="text" required>
                                     <input id="newBankCardCVV" class="input-bank-card-cvv" placeholder="CVV" type="number" required>
                                 </div>
                             </div>
-                            <button class="submenu-all-users-button" onclick="updateUsersBankCard(event, '${user.phoneNumber}')">Update</button>
+                            <button class="update-bank-card-button" onclick="updateUsersBankCard(event)">Update</button>
                         </div>
-                        <div class="user-details-row">
-                            <p>Delete user: </p>
+                        <div  class="delete-account">
+                            <p id="deleteAccount">Delete account: </p>
+                            <div class="input-button-container">
                             <input id="Password" class="input-personal-data" placeholder="Enter your password" type="text" required />
-                            <button class="submenu-all-users-button" onclick="deleteUserByPhoneNumber('${user.phoneNumber}')" > Delete </button>
+                            <button class="delete-account-button" onclick="deleteUserAccount(event)" > Delete </button>
+                        </div>
                         </div>
                     </div>
+                <form id="logOut" class="log-out" style="display: none;">
+                    <p>Are you sure? </p>
+                    <button class="log-out-button" onclick="logOut(event)">Log out</button>
                 </form>
             </div>
         </li>

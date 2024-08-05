@@ -114,7 +114,10 @@ public class PersonalOfficeController {
         } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }catch (Exception e) {
             log.error("An error occurred while updating bank card", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -351,18 +354,22 @@ public class PersonalOfficeController {
     }
 
     @DeleteMapping("/delete_user_by_phone_number")
-    public ResponseEntity<String> deleteUserByPhoneNumber(@RequestHeader("Authorization") String jwtToken) {
+    public ResponseEntity<String> deleteUserByPhoneNumber(@RequestBody DeleteUserAccountDTO request,
+                                                          @RequestHeader("Authorization") String jwtToken) {
         long userPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
         log.debug("Current user's phone number retrieved: {}", userPhoneNumber);
         try {
-            userService.deleteUserByPhoneNumber(userPhoneNumber);
+            userService.deleteUserByPhoneNumber(userPhoneNumber, request.getPassword());
             log.info("User with phoneNumber {} delete successful", userPhoneNumber);
             String redirectUrl = "/host_page";
             URI location = URI.create(redirectUrl);
             return ResponseEntity.status(HttpStatus.FOUND)
                     .location(location)
                     .build();
-        } catch (NoSuchElementException e) {
+        }catch (IllegalArgumentException e){
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }catch (NoSuchElementException e) {
             log.error("User with phone number {} not found {}", userPhoneNumber, e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {

@@ -176,6 +176,9 @@ public class UserService {
             throw new NoSuchElementException("Phone number " + userPhoneNumber + " not found");
         }
         User user = userRepository.findByPhoneNumber(userPhoneNumber);
+        if (!passwordEncoder.matches(updatePasswordDTO.getCurrentPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Current password is incorrect!");
+        }
         user.setPassword(passwordEncoder.encode(updatePasswordDTO.getNewPassword()));
         userRepository.save(user);
         log.info("Password updated successful for user with id: {}", user);
@@ -310,13 +313,17 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUserByPhoneNumber(long phoneNumber) {
+    public void deleteUserByPhoneNumber(long phoneNumber, String userPassword) {
         User user = userRepository.findByPhoneNumber(phoneNumber);
         if (user == null) {
             throw new NoSuchElementException("User with phone number " + phoneNumber + " not found");
         }
+        if (!passwordEncoder.matches(userPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Current password is incorrect!");
+        }
         deleteUserFromDataBase(user);
     }
+
 
     @Transactional
     public void deleteUserByBankCardNumber(long bankCardNumber, long phoneNumber) {

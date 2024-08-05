@@ -12,22 +12,30 @@ function getCookie(name) {
         }
     }
 
+function hideAllMenus() {
+    document.querySelector('.subscription-list').style.display = 'none';
+    document.querySelector('.form-change-personal-data').style.display = 'none';
+}
 
 document.addEventListener('click', function(event) {
     const target = event.target;
     const isClickInsideButton = target.closest('.button-nav-list');
     const isClickInsideForm = target.closest('.form-nav-list');
-    const isClickInsideSubmenu = target.closest('.subscription-list');
-    if (!isClickInsideSubmenu && !isClickInsideButton && !isClickInsideForm) {
-        document.querySelector('.subscription-list').style.display = 'none';
+    const isClickInsidePersonalDataForm = target.closest('.form-change-personal-data');
+    const isClickOutsideAllForms = !isClickInsideButton && !isClickInsideForm && !isClickInsidePersonalDataForm;
+    if (isClickOutsideAllForms) {
+        hideAllMenus();
     }
-    if (isClickInsideButton && target.textContent.trim() === 'Subscriptions') {
-        const subscriptionList = document.querySelector('.subscription-list');
-        const currentDisplay = getComputedStyle(subscriptionList).display;
-        subscriptionList.style.display = (currentDisplay === 'none' || currentDisplay === '') ? 'block' : 'none';
+    if (isClickInsideButton) {
+        const button = target.closest('.button-nav-list');
+        hideAllMenus();
+        if (button.textContent.trim() === 'Subscriptions') {
+            document.querySelector('.subscription-list').style.display = 'block';
+        } else if (button.textContent.trim() === 'Personal data') {
+            document.querySelector('.form-change-personal-data').style.display = 'block';
+        }
     }
 });
-
 
 function showSubscriptionOnScreen() {
         const jwtToken = getCookie('JWT_TOKEN');
@@ -166,56 +174,469 @@ function changeUsersAutoRenewStatus(newStatus) {
     });
 }
 
- function submitFindSubscriptionsList() {
-     const jwtToken = getCookie('JWT_TOKEN');
-     if (!jwtToken) {
-         console.error('JWT token not found');
-         return;
-     }
-     fetch('/personal_office/subscriptions', {
-         headers: {
-             'Authorization': `Bearer ${jwtToken}`
-         }
-     })
-     .then(response => {
-         if (!response.ok) {
-             return response.text().then(errorMessage => {
-                 throw new Error(errorMessage);
-             });
-         }
-         return response.json();
-     })
-     .then(data => {
-     console.log('Fetched subscriptions data:', data);
-         subscriptions = data;
-         displayAllSubscription();
-     })
-     .catch(error => {
-         console.error('Failed to fetch subscriptions: ', error);
-         displayErrorMessage(error.message);
-     });
- }
 
-//show subscription details
+
+function submitFindSubscriptionsList() {
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    fetch('/personal_office/subscriptions', {
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(errorMessage => {
+                throw new Error(errorMessage);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Fetched subscriptions data:', data);
+        subscriptions = data;
+        displayAllSubscription();
+    })
+    .catch(error => {
+        console.error('Failed to fetch subscriptions: ', error);
+        displayErrorMessage(error.message);
+    });
+}
+
 function displayAllSubscription() {
     const findAllSubmenu = document.getElementById('findAllSubmenu');
     if (!findAllSubmenu) {
-        console.error('Element with id "submenuSubscribe" not found.');
+        console.error('Element with id "findAllSubmenu" not found.');
         return;
     }
-    findAllSubmenu.innerHTML = '<ul>';
+    findAllSubmenu.innerHTML = '<ul>'; // Додано лапки
     subscriptions.forEach(subscription => {
         const subscriptionName = subscription.subscriptionName || 'Unknown';
+        const subscriptionPrice = subscription.subscriptionPrice !== null && subscription.subscriptionPrice !== undefined ? subscription.subscriptionPrice : 'N/A';
+        const subscriptionDurationTime = subscription.subscriptionDurationTime !== null && subscription.subscriptionDurationTime !== undefined ? subscription.subscriptionDurationTime : 'N/A';
         findAllSubmenu.innerHTML += `
             <li class="submenu-all-subscriptions-item">
-                <p class="submenu-all-subscriptions-name">${subscriptionName}</p>
-                <button class="submenu-all-subscriptions-button" onclick="submitSubscriptionForm(event, '${subscriptionName}')">Show details</button>
+                <p class="submenu-all-subscriptions-name">Name: ${subscriptionName}</p>
+                <p class="submenu-all-subscriptions-name">Price: ${subscriptionPrice}</p>
+                <p class="submenu-all-subscriptions-name">Duration time: ${subscriptionDurationTime}</p>
+                <button class="submenu-all-subscriptions-button" onclick="updateSubscription('${subscriptionName}')">Subscribe</button>
             </li>
         `;
     });
     findAllSubmenu.innerHTML += '</ul>';
     findAllSubmenu.style.display = 'block';
 }
+
+function updateSubscription(subscriptionName) {
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    const requestData = {
+        newSubscription: {
+            subscriptionName: subscriptionName
+        }
+    };
+    fetch('/personal_office/update_subscription', {
+        method: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(text);
+            });
+        }
+        return response.text();
+    })
+    .then(responseMessage => {
+        displayMessage(responseMessage, 'success');
+        showSubscriptionOnScreen();
+        showSubscriptionEndTimeOnScreen();
+    })
+    .catch(error => {
+        console.error('Failed to update subscription: ', error);
+        displayMessage(error.message, 'error');
+    });
+}
+
+function displayMessage(message, type) {
+    const submenuSubscribe = document.getElementById('findAllSubmenu');
+    submenuSubscribe.innerHTML = `
+        <div class="display-message">${message}</div>
+    `;
+    submenuSubscribe.style.display = 'block';
+}
+
+function getUserPhoneNumber() {
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    fetch('/personal_office/phone_number', {
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+   .then(data => {
+       const currentPhoneNumber = document.getElementById('currentPhoneNumber');
+       currentPhoneNumber.innerHTML = `Phone: ${data}`;
+   })
+    .catch(error => {
+        console.error('Failed to fetch phone number: ', error);
+    });
+}
+
+function updateUsersPhoneNumber(event) {
+    event.preventDefault();
+    const newPhoneNumber = document.getElementById('newPhoneNumber').value;
+    if (!newPhoneNumber) {
+        console.error('Phone number is required');
+        return;
+    }
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    const requestData = {
+        newPhoneNumber: newPhoneNumber
+    };
+    fetch('/personal_office/update_phone_number', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwtToken}`
+        },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.text();
+        } else {
+            return response.text().then(text => Promise.reject(text));
+        }
+    })
+ .then(responseMessage => {
+        getUserPhoneNumber();
+    })
+    .catch(error => {
+        console.error('Failed to update phone number:', error);
+         displayErrorMessageForCurrentPhoneNumber(error);
+    });
+}
+
+function displayErrorMessageForCurrentPhoneNumber(message) {
+    const submenuPersonalData = document.getElementById('currentPhoneNumber');
+    const errorElement = submenuPersonalData.querySelector('.display-error-message-for-personal-data-update');
+    if (errorElement) {
+        errorElement.textContent = message;
+    } else {
+        const newErrorElement = document.createElement('p');
+        newErrorElement.className = 'display-error-message-for-personal-data-update';
+        newErrorElement.textContent = message;
+        submenuPersonalData.appendChild(newErrorElement);
+    }
+    submenuPersonalData.style.display = 'block';
+}
+
+function displayMessageForUserPassword(message) {
+    const submenuPersonalData = document.getElementById('userPassword');
+    const messageElement = submenuPersonalData.querySelector('.display-message-for-personal-data-update');
+    if (messageElement) {
+        messageElement.textContent = message;
+    } else {
+        const newMessageElement = document.createElement('p');
+        newMessageElement.className = 'display-message-for-personal-data-update';
+        newMessageElement.textContent = message;
+        submenuPersonalData.appendChild(newMessageElement);
+    }
+    submenuPersonalData.style.display = 'block';
+}
+
+function displayErrorMessageForUserPassword(message) {
+    const submenuPersonalData = document.getElementById('userPassword');
+    const errorElement = submenuPersonalData.querySelector('.display-error-message-for-personal-data-update');
+    if (errorElement) {
+        errorElement.textContent = message;
+    } else {
+        const newErrorElement = document.createElement('p');
+        newErrorElement.className = 'display-error-message-for-personal-data-update';
+        newErrorElement.textContent = message;
+        submenuPersonalData.appendChild(newErrorElement);
+    }
+    submenuPersonalData.style.display = 'block';
+}
+
+function updateUsersPassword(event) {
+     event.preventDefault();
+     const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    const requestData = {
+    currentPassword: currentPassword,
+        newPassword: newPassword
+    };
+    fetch('/personal_office/update_password', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwtToken}`
+        },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.text();
+        } else {
+            return response.text().then(text => Promise.reject(text));
+        }
+    })
+ .then(responseMessage => {
+        displayMessageForUserPassword(responseMessage, 'success');
+    })
+    .catch(error => {
+        console.error('Failed to update phone number:', error);
+         displayErrorMessageForUserPassword(error);
+    });
+}
+
+function getUserEmail() {
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    fetch('/personal_office/email', {
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.text();
+    })
+    .then(data => {
+        const currentEmail = document.getElementById('currentEmail');
+        currentEmail.innerHTML = `Email: ${data}`;
+    })
+    .catch(error => {
+        console.error('Failed to fetch phone number: ', error);
+    });
+}
+
+function updateUsersEmail(event) {
+     event.preventDefault();
+    const newEmail = document.getElementById('newEmail').value;
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    const requestData = {
+        newEmail: newEmail
+    };
+    fetch('/personal_office/update_email', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwtToken}`
+        },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.text();
+        } else {
+            return response.text().then(text => Promise.reject(text));
+        }
+    })
+ .then(responseMessage => {
+        getUserEmail();
+    })
+    .catch(error => {
+        console.error('Failed to update phone number:', error);
+         displayErrorMessageForUserEmail(error);
+    });
+}
+
+function displayErrorMessageForUserEmail(message) {
+    const submenuPersonalData = document.getElementById('currentEmail');
+    const errorElement = submenuPersonalData.querySelector('.display-error-message-for-personal-data-update');
+    if (errorElement) {
+        errorElement.textContent = message;
+    } else {
+        const newErrorElement = document.createElement('p');
+        newErrorElement.className = 'display-error-message-for-personal-data-update';
+        newErrorElement.textContent = message;
+        submenuPersonalData.appendChild(newErrorElement);
+    }
+    submenuPersonalData.style.display = 'block';
+}
+
+function getUserBankCardNumber() {
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    fetch('/personal_office/bank_card_number', {
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        const currentBankCardNumber = document.getElementById('currentBankCardNumber');
+        currentBankCardNumber.innerHTML = `Bank card number: ${data}`;
+    })
+    .catch(error => {
+        console.error('Failed to fetch phone number: ', error);
+    });
+}
+
+function updateUsersBankCard(event) {
+     event.preventDefault();
+    const newBankCardNumber = document.getElementById('newBankCardNumber').value;
+     const newBankCardExpirationDate = document.getElementById('newBankCardExpirationDate').value;
+      const newBankCardCVV = document.getElementById('newBankCardCVV').value;
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    const requestData = {
+       newUserBankCard: {
+            cardNumber: newBankCardNumber,
+            cvv: newBankCardCVV,
+            cardExpirationDate: newBankCardExpirationDate
+        }
+    };
+    fetch('/personal_office/update_bank_card', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwtToken}`
+        },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.text();
+        } else {
+            return response.text().then(text => Promise.reject(text));
+        }
+    })
+ .then(responseMessage => {
+        getUserBankCardNumber();
+    })
+    .catch(error => {
+        console.error('Failed to update phone number:', error);
+         displayErrorMessageForUserBankCard(error);
+    });
+}
+
+function displayErrorMessageForUserBankCard(message) {
+    const submenuPersonalData = document.getElementById('currentEmail');
+    const errorElement = submenuPersonalData.querySelector('.display-error-message-for-personal-data-update');
+    if (errorElement) {
+        errorElement.textContent = message;
+    } else {
+        const newErrorElement = document.createElement('p');
+        newErrorElement.className = 'display-error-message-for-personal-data-update';
+        newErrorElement.textContent = message;
+        submenuPersonalData.appendChild(newErrorElement);
+    }
+    submenuPersonalData.style.display = 'block';
+}
+
+function deleteUserAccount(event) {
+    event.preventDefault();
+    const password = document.getElementById('Password').value;
+    const jwtToken = getCookie('JWT_TOKEN');
+
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+
+    const requestData = {
+        password: password
+    };
+
+    fetch('/personal_office/delete_user_by_phone_number', {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwtToken}`
+        },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => {
+        if (response.redirected) {
+            // Handle redirect if needed
+            window.location.href = response.url;
+        } else if (response.ok) {
+            // Handle success response
+            console.log('User account deleted successfully');
+            // Optionally, redirect or update UI
+        } else {
+            // Handle errors
+            return response.text().then(text => Promise.reject(text));
+        }
+    })
+    .catch(error => {
+        console.error('Failed to delete account:', error);
+        displayErrorMessageForDeleteAccount(error);
+    });
+}
+
+
+function displayErrorMessageForDeleteAccount(message) {
+    const submenuPersonalData = document.getElementById('deleteAccount');
+    const errorElement = submenuPersonalData.querySelector('.display-error-message-for-personal-data-update');
+    if (errorElement) {
+        errorElement.textContent = message;
+    } else {
+        const newErrorElement = document.createElement('p');
+        newErrorElement.className = 'display-error-message-for-personal-data-update';
+        newErrorElement.textContent = message;
+        submenuPersonalData.appendChild(newErrorElement);
+    }
+    submenuPersonalData.style.display = 'block';
+}
+
+function logOut(event) {
+    event.preventDefault();
+    window.location.href = '/host_page';
+}
+
 
 
 
@@ -228,4 +649,7 @@ function displayAllSubscription() {
     showSubscriptionOnScreen();
     showSubscriptionEndTimeOnScreen()
      checkUsersAutoRenewStatus();
+     getUserPhoneNumber();
+     getUserEmail();
+     getUserBankCardNumber();
     startUpdatingSubscriptionInfo(3);
