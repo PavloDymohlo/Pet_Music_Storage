@@ -23,13 +23,13 @@
                 <label for="NO">NO</label>
             </div>
             <button class="button-nav-list" onclick="showForm('manualFindUserByPhoneNumber')">Listen music</button>
-            <button class="button-nav-list" type="button" onclick="submitFindSubscriptionsList()">Subscriptions</button>
-            <button class="button-nav-list" onclick="showForm('changePersonalData')">Personal data</button>
-            <button class="button-nav-list-exit" onclick="showForm('logOut')">Log out</button>
-            <div class="form-nav-list">
-                <form id="findAllSubmenu" class="subscription-list" style="display: none;" onsubmit="submitFindSubscriptionsList()">
-                    <div id="subscriptionList"></div>
-                </form>
+            <div class="subscription-container">
+                <button id="SubscriptionButton" class="button-nav-list" type="button" onclick="submitFindSubscriptionsList()">Subscriptions</button>
+                <form id="findAllSubmenu" class="subscription-list" style="display: none;" onsubmit="submitFindSubscriptionsList()"></form>
+            </div>
+            <div class="personal-data-container">
+                <button id="PersonalDataButton" class="button-nav-list" onclick="showForm('changePersonalData')">Personal data</button>
+                <div class="form-nav-list">
                     <div id="changePersonalData" class="form-change-personal-data" style="display: none;">
                         <div class="user-details-row">
                             <p id="currentPhoneNumber">Phone: loading</p>
@@ -41,17 +41,17 @@
                         <div class="user-details-row">
                             <p id="userPassword">Password: hidden</p>
                             <div class="input-button-container">
-                            <input id="currentPassword" class="input-personal-data" placeholder="Current password" type="text" required />
-                            <input id="newPassword" class="input-personal-data" placeholder="New password" type="text" required />
-                            <button class="update-user-data-button" onclick="updateUsersPassword(event)" > Update </button>
+                                <input id="currentPassword" class="input-personal-data" placeholder="Current password" type="text" required />
+                                <input id="newPassword" class="input-personal-data" placeholder="New password" type="text" required />
+                                <button class="update-user-data-button" onclick="updateUsersPassword(event)">Update</button>
                             </div>
                         </div>
                         <div class="user-details-row">
                             <p id="currentEmail">Email: loading</p>
                             <div class="input-button-container">
-                            <input id="newEmail" class="input-personal-data" placeholder="New email" type="text" required />
-                            <button class="update-user-data-button" onclick="updateUsersEmail(event)" > Update </button>
-                        </div>
+                                <input id="newEmail" class="input-personal-data" placeholder="New email" type="text" required />
+                                <button class="update-user-data-button" onclick="updateUsersEmail(event)">Update</button>
+                            </div>
                         </div>
                         <div class="user-details-row">
                             <p id="currentBankCardNumber">Bank card number: loading</p>
@@ -64,16 +64,20 @@
                             </div>
                             <button class="update-bank-card-button" onclick="updateUsersBankCard(event)">Update</button>
                         </div>
-                        <div  class="delete-account">
-                            <p id="deleteAccount">Delete account: </p>
+                        <div class="delete-account">
+                            <p id="deleteAccount">Delete account:</p>
                             <div class="input-button-container">
-                            <input id="Password" class="input-personal-data" placeholder="Enter your password" type="text" required />
-                            <button class="delete-account-button" onclick="deleteUserAccount(event)" > Delete </button>
-                        </div>
+                                <input id="Password" class="input-personal-data" placeholder="Enter your password" type="text" required />
+                                <button class="delete-account-button" onclick="deleteUserAccount(event)">Delete</button>
+                            </div>
                         </div>
                     </div>
+                </div>
+            </div>
+            <div class="log-out-container">
+                <button id="LogOutButton" class="button-nav-list-exit" onclick="showForm('logOut')">Log out</button>
                 <form id="logOut" class="log-out" style="display: none;">
-                    <p>Are you sure? </p>
+                    <p>Are you sure?</p>
                     <button class="log-out-button" onclick="logOut(event)">Log out</button>
                 </form>
             </div>

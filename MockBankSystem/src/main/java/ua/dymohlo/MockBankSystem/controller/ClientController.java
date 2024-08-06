@@ -3,6 +3,7 @@ package ua.dymohlo.MockBankSystem.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +22,6 @@ public class ClientController {
         int sum = request.getSum();
         String cardExpirationDate = request.getCardExpirationDate();
         short cvv = request.getCvv();
-
         try {
             clientService.transactionMoney(outputCardNumber, targetCardNumber, sum, cardExpirationDate, cvv);
             return ResponseEntity.ok("Transaction successful!");

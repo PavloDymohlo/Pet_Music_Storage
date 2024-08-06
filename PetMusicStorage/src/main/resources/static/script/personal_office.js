@@ -3,39 +3,129 @@ function getCookie(name) {
         const parts = value.split(`; ${name}=`);
         if (parts.length === 2) return parts.pop().split(';').shift();
     }
-    function showForm(formId) {
-        const forms = document.querySelectorAll('.form-nav-list form');
-        forms.forEach(form => form.style.display = 'none');
-        const formToShow = document.getElementById(formId);
-        if (formToShow) {
-            formToShow.style.display = 'block';
-        }
-    }
+//    function showForm(formId) {
+//        const forms = document.querySelectorAll('.form-nav-list form');
+//        forms.forEach(form => form.style.display = 'none');
+//        const formToShow = document.getElementById(formId);
+//        if (formToShow) {
+//            formToShow.style.display = 'block';
+//        }
+//    }
+//
+//function hideAllMenus() {
+//    document.querySelector('.subscription-list').style.display = 'none';
+//    document.querySelector('.form-change-personal-data').style.display = 'none';
+//    document.querySelector('.log-out').style.display = 'none';
+//}
+//
+//document.addEventListener('click', function(event) {
+//    const target = event.target;
+//    const isClickInsideButton = target.closest('.button-nav-list');
+//    const isClickInsideExitButton = target.closest('.button-nav-list-exit');
+//    const isClickInsideForm = target.closest('.form-nav-list');
+//    const isClickInsidePersonalDataForm = target.closest('.form-change-personal-data');
+//    const isClickOutsideAllForms = !isClickInsideButton && !isClickInsideForm && !isClickInsidePersonalDataForm;
+//
+//    if (isClickOutsideAllForms) {
+//        hideAllMenus();
+//    }
+//    if (isClickInsideButton) {
+//        const button = target.closest('.button-nav-list');
+//        hideAllMenus();
+//        if (button.textContent.trim() === 'Subscriptions') {
+//            document.querySelector('.subscription-list').style.display = 'block';
+//        } else if (button.textContent.trim() === 'Personal data') {
+//            document.querySelector('.form-change-personal-data').style.display = 'block';
+//        }
+//    }
+//    if(isClickInsideExitButton){
+//    const button = target.closest('.button-nav-list-exit');
+//    hideAllMenus();
+//    if (button.textContent.trim() === 'Log out') {
+//                document.querySelector('.log-out').style.display = 'block';
+//            }
+//    }
+//});
 
-function hideAllMenus() {
-    document.querySelector('.subscription-list').style.display = 'none';
-    document.querySelector('.form-change-personal-data').style.display = 'none';
+function toggleSubscriptionMenu() {
+    const menu = document.getElementById('subscriptionMenu');
+    if (menu.style.display === 'none' || menu.style.display === '') {
+        menu.style.display = 'block';
+    } else {
+        menu.style.display = 'none';
+    }
 }
 
 document.addEventListener('click', function(event) {
-    const target = event.target;
-    const isClickInsideButton = target.closest('.button-nav-list');
-    const isClickInsideForm = target.closest('.form-nav-list');
-    const isClickInsidePersonalDataForm = target.closest('.form-change-personal-data');
-    const isClickOutsideAllForms = !isClickInsideButton && !isClickInsideForm && !isClickInsidePersonalDataForm;
-    if (isClickOutsideAllForms) {
-        hideAllMenus();
-    }
-    if (isClickInsideButton) {
-        const button = target.closest('.button-nav-list');
-        hideAllMenus();
-        if (button.textContent.trim() === 'Subscriptions') {
-            document.querySelector('.subscription-list').style.display = 'block';
-        } else if (button.textContent.trim() === 'Personal data') {
-            document.querySelector('.form-change-personal-data').style.display = 'block';
-        }
+    const button = document.getElementById('SubscriptionButton');
+    const menu = document.getElementById('subscriptionMenu');
+    if (!button.contains(event.target) && !menu.contains(event.target)) {
+        menu.style.display = 'none';
     }
 });
+
+
+ function toggleMenu(menuId) {
+            var menu = document.getElementById(menuId);
+            if (menu.style.display === 'none' || menu.style.display === '') {
+                menu.style.display = 'block';
+            } else {
+                menu.style.display = 'none';
+            }
+        }
+        document.getElementById('PersonalDataButton').addEventListener('click', function() {
+            toggleMenu('changePersonalData');
+        });
+        document.getElementById('LogOutButton').addEventListener('click', function() {
+            toggleMenu('logOut');
+        });
+
+
+function toggleSubscriptionForm() {
+    const form = document.getElementById('findAllSubmenu');
+    const button = document.getElementById('SubscriptionButton');
+
+    if (!form) {
+        console.error('Form with id "findAllSubmenu" not found.');
+        return;
+    }
+
+    if (form.classList.contains('hidden')) {
+        // Show the form and fetch subscriptions
+        form.classList.remove('hidden');
+        form.classList.add('visible');
+        submitFindSubscriptionsList();
+    } else {
+        // Hide the form
+        form.classList.remove('visible');
+        form.classList.add('hidden');
+    }
+}
+
+document.getElementById('SubscriptionButton').addEventListener('click', toggleSubscriptionForm);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function showSubscriptionOnScreen() {
         const jwtToken = getCookie('JWT_TOKEN');
@@ -212,7 +302,7 @@ function displayAllSubscription() {
         console.error('Element with id "findAllSubmenu" not found.');
         return;
     }
-    findAllSubmenu.innerHTML = '<ul>'; // Додано лапки
+    findAllSubmenu.innerHTML = '<ul>';
     subscriptions.forEach(subscription => {
         const subscriptionName = subscription.subscriptionName || 'Unknown';
         const subscriptionPrice = subscription.subscriptionPrice !== null && subscription.subscriptionPrice !== undefined ? subscription.subscriptionPrice : 'N/A';
@@ -355,37 +445,10 @@ function displayErrorMessageForCurrentPhoneNumber(message) {
     submenuPersonalData.style.display = 'block';
 }
 
-function displayMessageForUserPassword(message) {
-    const submenuPersonalData = document.getElementById('userPassword');
-    const messageElement = submenuPersonalData.querySelector('.display-message-for-personal-data-update');
-    if (messageElement) {
-        messageElement.textContent = message;
-    } else {
-        const newMessageElement = document.createElement('p');
-        newMessageElement.className = 'display-message-for-personal-data-update';
-        newMessageElement.textContent = message;
-        submenuPersonalData.appendChild(newMessageElement);
-    }
-    submenuPersonalData.style.display = 'block';
-}
-
-function displayErrorMessageForUserPassword(message) {
-    const submenuPersonalData = document.getElementById('userPassword');
-    const errorElement = submenuPersonalData.querySelector('.display-error-message-for-personal-data-update');
-    if (errorElement) {
-        errorElement.textContent = message;
-    } else {
-        const newErrorElement = document.createElement('p');
-        newErrorElement.className = 'display-error-message-for-personal-data-update';
-        newErrorElement.textContent = message;
-        submenuPersonalData.appendChild(newErrorElement);
-    }
-    submenuPersonalData.style.display = 'block';
-}
 
 function updateUsersPassword(event) {
-     event.preventDefault();
-     const currentPassword = document.getElementById('currentPassword').value;
+    event.preventDefault();
+    const currentPassword = document.getElementById('currentPassword').value;
     const newPassword = document.getElementById('newPassword').value;
     const jwtToken = getCookie('JWT_TOKEN');
     if (!jwtToken) {
@@ -393,7 +456,7 @@ function updateUsersPassword(event) {
         return;
     }
     const requestData = {
-    currentPassword: currentPassword,
+        currentPassword: currentPassword,
         newPassword: newPassword
     };
     fetch('/personal_office/update_password', {
@@ -411,14 +474,36 @@ function updateUsersPassword(event) {
             return response.text().then(text => Promise.reject(text));
         }
     })
- .then(responseMessage => {
+    .then(responseMessage => {
         displayMessageForUserPassword(responseMessage, 'success');
     })
     .catch(error => {
-        console.error('Failed to update phone number:', error);
-         displayErrorMessageForUserPassword(error);
+        console.error('Failed to update password:', error);
+        displayMessageForUserPassword(error, 'error');
     });
 }
+
+function displayMessageForUserPassword(message, type) {
+    const submenuPersonalData = document.getElementById('userPassword');
+    const existingMessage = submenuPersonalData.querySelector('.display-message-for-personal-data-update');
+    const existingError = submenuPersonalData.querySelector('.display-error-message-for-personal-data-update');
+    if (existingMessage) {
+        existingMessage.remove();
+    }
+    if (existingError) {
+        existingError.remove();
+    }
+    const newMessageElement = document.createElement('p');
+    if (type === 'success') {
+        newMessageElement.className = 'display-message-for-personal-data-update';
+    } else if (type === 'error') {
+        newMessageElement.className = 'display-error-message-for-personal-data-update';
+    }
+    newMessageElement.textContent = message;
+    submenuPersonalData.appendChild(newMessageElement);
+    submenuPersonalData.style.display = 'block';
+}
+
 
 function getUserEmail() {
     const jwtToken = getCookie('JWT_TOKEN');
@@ -585,11 +670,9 @@ function deleteUserAccount(event) {
         console.error('JWT token not found');
         return;
     }
-
     const requestData = {
         password: password
     };
-
     fetch('/personal_office/delete_user_by_phone_number', {
         method: 'DELETE',
         headers: {
@@ -600,14 +683,10 @@ function deleteUserAccount(event) {
     })
     .then(response => {
         if (response.redirected) {
-            // Handle redirect if needed
             window.location.href = response.url;
         } else if (response.ok) {
-            // Handle success response
             console.log('User account deleted successfully');
-            // Optionally, redirect or update UI
         } else {
-            // Handle errors
             return response.text().then(text => Promise.reject(text));
         }
     })

@@ -166,7 +166,7 @@ input[name="Auto-renew"]:checked + label::before {
     padding: 0;
     display: flex;
     flex-direction: column;
-    align-items: flex-center;
+      align-items: center;
     gap: 5px;
 }
 
@@ -186,7 +186,6 @@ font-size: 18px;
   text-decoration: none;
   cursor: pointer;
   border-radius: 25px;
-  margin-left: 80px;
   font-size: 16px;
   width: 100px;
   height: 30px;
@@ -194,43 +193,57 @@ font-size: 18px;
   box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
 }
 
-.subscription-list{
- position: absolute;
+.subscription-container {
+  position: relative;
+  width: 200px;
+  text-align: center;
+}
+
+.subscription-list {
+  position: absolute;
   top: 120%;
-  right: 620px;
-  width: 250px;
-  height: auto;
+  width: 200px;
   background-color: #e6e6fa;
   color: #8b008b;
   padding: 10px;
   border-radius: 25px;
   box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
 }
 
-.form-change-personal-data{
-position: absolute;
+
+.personal-data-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  width: 200px;
+  text-align: center;
+}
+
+.form-change-personal-data {
+  position: absolute;
   top: 120%;
-  right: 320px;
   display: none;
   border: 1px solid #ccc;
-  padding: 15px;
-  margin-top: 0px;
   width: 550px;
   height: auto;
   box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
   text-align: center;
   background-color: #e6e6fa;
   border-radius: 25px;
-  button {
-    display: block;
-    margin: 10px auto;
-  }
+   button {
+      display: block;
+      margin: 10px auto;
+    }
 }
+
+.form-nav-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 
 .user-details-row {
     display: flex;
