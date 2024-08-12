@@ -185,6 +185,7 @@ public class PersonalOfficeController {
                 userService.updateSubscription(userPhoneNumber, request);
                 log.info("Subscription for user with phone number {} updated successful", user.getPhoneNumber());
                 String responseMessage = "Subscription " + subscription.getSubscriptionName() + " successful activated";
+                System.out.println(responseMessage);
                 return ResponseEntity.ok(responseMessage);
             } else if (paymentResponse.getStatusCode() == HttpStatus.BAD_REQUEST) {
                 String errorMessage = paymentResponse.getBody();
@@ -201,6 +202,7 @@ public class PersonalOfficeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
         }
     }
+
 
     @GetMapping("/subscription")
     public ResponseEntity<?> findUsersCurrentSubscription(@RequestHeader("Authorization") String jwtToken) {

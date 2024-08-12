@@ -3,6 +3,26 @@ function getCookie(name) {
         const parts = value.split(`; ${name}=`);
         if (parts.length === 2) return parts.pop().split(';').shift();
     }
+
+
+
+ function toggleMenu(menuId) {
+            var menu = document.getElementById(menuId);
+            if (menu.style.display === 'none' || menu.style.display === '') {
+                menu.style.display = 'block';
+            } else {
+                menu.style.display = 'none';
+            }
+        }
+        document.getElementById('PersonalDataButton').addEventListener('click', function() {
+            toggleMenu('changePersonalData');
+        });
+        document.getElementById('LogOutButton').addEventListener('click', function() {
+            toggleMenu('logOut');
+        });
+
+
+
 //    function showForm(formId) {
 //        const forms = document.querySelectorAll('.form-nav-list form');
 //        forms.forEach(form => form.style.display = 'none');
@@ -47,67 +67,22 @@ function getCookie(name) {
 //    }
 //});
 
-function toggleSubscriptionMenu() {
-    const menu = document.getElementById('subscriptionMenu');
-    if (menu.style.display === 'none' || menu.style.display === '') {
-        menu.style.display = 'block';
-    } else {
-        menu.style.display = 'none';
-    }
-}
+//function toggleSubscriptionMenu() {
+//    const menu = document.getElementById('subscriptionMenu');
+//    if (menu.style.display === 'none' || menu.style.display === '') {
+//        menu.style.display = 'block';
+//    } else {
+//        menu.style.display = 'none';
+//    }
+//}
 
-document.addEventListener('click', function(event) {
-    const button = document.getElementById('SubscriptionButton');
-    const menu = document.getElementById('subscriptionMenu');
-    if (!button.contains(event.target) && !menu.contains(event.target)) {
-        menu.style.display = 'none';
-    }
-});
-
-
- function toggleMenu(menuId) {
-            var menu = document.getElementById(menuId);
-            if (menu.style.display === 'none' || menu.style.display === '') {
-                menu.style.display = 'block';
-            } else {
-                menu.style.display = 'none';
-            }
-        }
-        document.getElementById('PersonalDataButton').addEventListener('click', function() {
-            toggleMenu('changePersonalData');
-        });
-        document.getElementById('LogOutButton').addEventListener('click', function() {
-            toggleMenu('logOut');
-        });
-
-
-function toggleSubscriptionForm() {
-    const form = document.getElementById('findAllSubmenu');
-    const button = document.getElementById('SubscriptionButton');
-
-    if (!form) {
-        console.error('Form with id "findAllSubmenu" not found.');
-        return;
-    }
-
-    if (form.classList.contains('hidden')) {
-        // Show the form and fetch subscriptions
-        form.classList.remove('hidden');
-        form.classList.add('visible');
-        submitFindSubscriptionsList();
-    } else {
-        // Hide the form
-        form.classList.remove('visible');
-        form.classList.add('hidden');
-    }
-}
-
-document.getElementById('SubscriptionButton').addEventListener('click', toggleSubscriptionForm);
-
-
-
-
-
+//document.addEventListener('click', function(event) {
+//    const button = document.getElementById('SubscriptionButton');
+//    const menu = document.getElementById('subscriptionMenu');
+//    if (!button.contains(event.target) && !menu.contains(event.target)) {
+//        menu.style.display = 'none';
+//    }
+//});
 
 
 
@@ -296,17 +271,13 @@ function submitFindSubscriptionsList() {
     });
 }
 
+
 function displayAllSubscription() {
-    const findAllSubmenu = document.getElementById('findAllSubmenu');
-    if (!findAllSubmenu) {
-        console.error('Element with id "findAllSubmenu" not found.');
-        return;
-    }
     findAllSubmenu.innerHTML = '<ul>';
     subscriptions.forEach(subscription => {
-        const subscriptionName = subscription.subscriptionName || 'Unknown';
-        const subscriptionPrice = subscription.subscriptionPrice !== null && subscription.subscriptionPrice !== undefined ? subscription.subscriptionPrice : 'N/A';
-        const subscriptionDurationTime = subscription.subscriptionDurationTime !== null && subscription.subscriptionDurationTime !== undefined ? subscription.subscriptionDurationTime : 'N/A';
+        const subscriptionName = subscription.subscriptionName;
+        const subscriptionPrice = subscription.subscriptionPrice;
+        const subscriptionDurationTime = subscription.subscriptionDurationTime;
         findAllSubmenu.innerHTML += `
             <li class="submenu-all-subscriptions-item">
                 <p class="submenu-all-subscriptions-name">Name: ${subscriptionName}</p>
@@ -320,51 +291,113 @@ function displayAllSubscription() {
     findAllSubmenu.style.display = 'block';
 }
 
+//function updateSubscription(subscriptionName) {
+//    if (event) {
+//        event.preventDefault();
+//    }
+//    console.log('updateSubscription called with:', subscriptionName);
+//    const jwtToken = getCookie('JWT_TOKEN');
+//    if (!jwtToken) {
+//        console.error('JWT token not found');
+//        return;
+//    }
+//    if (!subscriptionName) {
+//        console.error('Subscription name is required');
+//        return;
+//    }
+//    const requestData = { newSubscription: { subscriptionName: subscriptionName } };
+//    fetch('/personal_office/update_subscription', {
+//        method: 'PUT',
+//        headers: {
+//            'Authorization': `Bearer ${jwtToken}`,
+//            'Content-Type': 'application/json',
+//            'Accept': 'application/json'
+//        },
+//        body: JSON.stringify(requestData)
+//    })
+//    .then(response => {
+//        if (!response.ok) {
+//            return response.text().then(text => { throw new Error(text); });
+//        }
+//        return response.text();
+//    })
+//    .then(responseMessage => {
+//        displayMessage(responseMessage, 'success');
+//        showSubscriptionOnScreen();
+//        showSubscriptionEndTimeOnScreen();
+//    })
+//    .catch(error => {
+//        console.error('Failed to update subscription: ', error);
+//        displayMessage(error.message, 'error');
+//    });
+//}
+
 function updateSubscription(subscriptionName) {
+    if (event) {
+        event.preventDefault();
+    }
+    console.log('updateSubscription called with:', subscriptionName);
     const jwtToken = getCookie('JWT_TOKEN');
     if (!jwtToken) {
         console.error('JWT token not found');
         return;
     }
-    const requestData = {
-        newSubscription: {
-            subscriptionName: subscriptionName
-        }
-    };
-    fetch('/personal_office/update_subscription', {
-        method: 'PUT',
-        headers: {
-            'Authorization': `Bearer ${jwtToken}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestData)
-    })
-    .then(response => {
-        if (!response.ok) {
-            return response.text().then(text => {
-                throw new Error(text);
-            });
-        }
-        return response.text();
-    })
-    .then(responseMessage => {
-        displayMessage(responseMessage, 'success');
-        showSubscriptionOnScreen();
-        showSubscriptionEndTimeOnScreen();
-    })
-    .catch(error => {
-        console.error('Failed to update subscription: ', error);
-        displayMessage(error.message, 'error');
-    });
+    if (!subscriptionName) {
+        console.error('Subscription name is required');
+        return;
+    }
+    const requestData = { newSubscription: { subscriptionName: subscriptionName } };
+   fetch('/personal_office/update_subscription', {
+     method: 'PUT',
+     headers: {
+       'Authorization': `Bearer ${jwtToken}`,
+       'Content-Type': 'application/json',
+       'Accept': 'application/json'
+     },
+     body: JSON.stringify(requestData)
+   })
+   .then(response => {
+     if (!response.ok) {
+       return response.text().then(text => {
+         throw new Error(response.status + ': ' + text);
+       });
+     }
+     return response.text();
+   })
+   .then(responseMessage => {
+     displayMessage(responseMessage, 'success');
+     showSubscriptionOnScreen();
+     showSubscriptionEndTimeOnScreen();
+   })
+   .catch(error => {
+     console.error('Failed to update subscription: ', error);
+     displayMessage(error.message, 'error');
+   });
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function displayMessage(message, type) {
     const submenuSubscribe = document.getElementById('findAllSubmenu');
-    submenuSubscribe.innerHTML = `
-        <div class="display-message">${message}</div>
-    `;
+    submenuSubscribe.innerHTML = `<div class="display-message ${type}">${message}</div>`;
     submenuSubscribe.style.display = 'block';
+    setTimeout(() => {
+        submenuSubscribe.style.display = 'none';
+    }, 10000);
 }
+
+
 
 function getUserPhoneNumber() {
     const jwtToken = getCookie('JWT_TOKEN');
