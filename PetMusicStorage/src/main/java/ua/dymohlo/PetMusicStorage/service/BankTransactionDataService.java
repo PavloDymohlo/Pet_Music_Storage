@@ -28,7 +28,7 @@ public class BankTransactionDataService {
         bankTransactionDataRepository.save(bankTransactionData);
     }
 
-    public BankTransactionData findByBankTransactionDataName(String bankTransactionDataName) {
-        return bankTransactionDataRepository.findByBankNameIgnoreCase(bankTransactionDataName);
-    }
+//    public BankTransactionData findByBankTransactionDataName(String bankTransactionDataName) {
+//        return bankTransactionDataRepository.findByBankNameIgnoreCase(bankTransactionDataName);
+//    }
 }

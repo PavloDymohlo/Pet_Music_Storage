@@ -30,10 +30,11 @@ public class WebSecurityConfig {
         http.csrf().disable()
                 .cors().disable()
                 .authorizeRequests(authorize -> authorize
-                        .antMatchers("/register","/host_page", "/login", "/music_files").permitAll()
+                        .antMatchers("/register","/host_page", "/login").permitAll()
                         .antMatchers("/static/**","/images/background.jpg").permitAll()
                         .antMatchers("/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .antMatchers("/personal_office/**").authenticated()
+                        .antMatchers("/api/get-music-page").authenticated()
                         .antMatchers(HttpMethod.GET, "/main").permitAll()
                         .antMatchers("/free_subscription").hasAnyRole("FREE", "OPTIMAL", "MAXIMUM", "ADMIN")
                         .antMatchers("/optimal_subscription").hasAnyRole("MAXIMUM", "OPTIMAL", "ADMIN")

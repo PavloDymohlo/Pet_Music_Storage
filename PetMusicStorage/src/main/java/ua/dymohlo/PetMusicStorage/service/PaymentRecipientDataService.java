@@ -6,10 +6,10 @@ import org.springframework.stereotype.Service;
 import ua.dymohlo.PetMusicStorage.entity.PaymentRecipientData;
 import ua.dymohlo.PetMusicStorage.repository.PaymentRecipientDataRepository;
 
-@Service
-@RequiredArgsConstructor
-@Slf4j
-public class PaymentRecipientDataService {
-    private final PaymentRecipientDataRepository paymentRecipientDataRepository;
-
-}
+//@Service
+//@RequiredArgsConstructor
+//@Slf4j
+//public class PaymentRecipientDataService {
+//    private final PaymentRecipientDataRepository paymentRecipientDataRepository;
+//
+//}

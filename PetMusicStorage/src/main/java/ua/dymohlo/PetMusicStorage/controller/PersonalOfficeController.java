@@ -78,6 +78,55 @@ public class PersonalOfficeController {
         }
     }
 
+    @PutMapping("/update_subscription")
+    public ResponseEntity<String> updateSubscription(@RequestBody UpdateSubscriptionDTO request,
+                                                     @RequestHeader("Authorization") String jwtToken,
+                                                     HttpServletResponse response) {
+        long userPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
+        log.debug("Current user's phone number retrieved: {}", userPhoneNumber);
+        try {
+            User user = userRepository.findByPhoneNumber(userPhoneNumber);
+            Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(request.getNewSubscription().getSubscriptionName());
+            if (subscription == null) {
+                throw new NoSuchElementException("Subscription " + request.getNewSubscription().getSubscriptionName() + " not found");
+            }
+            TransactionDTO transactionDTO = TransactionDTO.builder()
+                    .outputCardNumber(user.getUserBankCard().getCardNumber())
+                    .sum(subscription.getSubscriptionPrice())
+                    .cardExpirationDate(user.getUserBankCard().getCardExpirationDate())
+                    .cvv(user.getUserBankCard().getCvv()).build();
+            ResponseEntity<String> paymentResponse = paymentController.payment(transactionDTO);
+            if (paymentResponse.getStatusCode().is2xxSuccessful()) {
+                userService.updateSubscription(userPhoneNumber, request);
+                log.info("Subscription for user with phone number {} updated successful", user.getPhoneNumber());
+                String responseMessage = "Subscription " + subscription.getSubscriptionName() + " successful activated";
+                UserDetails userDetails = databaseUserDetailsService.loadUserByUsername(String.valueOf(userPhoneNumber));
+                String newJwtToken = jwtService.generateJwtToken(userDetails);
+                ResponseCookie jwtCookie = ResponseCookie.from("JWT_TOKEN", newJwtToken)
+                        .httpOnly(false)
+                        .secure(false)
+                        .path("/")
+                        .maxAge(Duration.ofHours(1))
+                        .build();
+                response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
+                return ResponseEntity.ok(responseMessage);
+            } else if (paymentResponse.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                String errorMessage = paymentResponse.getBody();
+                log.warn("Payment failed: {}", errorMessage);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment failed");
+            }
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("An error occurred while updating subscription", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
+        }
+    }
+
+
 
     @PutMapping("/update_bank_card")
     public ResponseEntity<String> updateBankCard(@RequestBody UpdateUserBankCardDTO request,
@@ -161,45 +210,6 @@ public class PersonalOfficeController {
         } catch (Exception e) {
             log.error("An error occurred while set auto renew", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @PutMapping("/update_subscription")
-    public ResponseEntity<String> updateSubscription(@RequestBody UpdateSubscriptionDTO request,
-                                                     @RequestHeader("Authorization") String jwtToken) {
-        long userPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
-        log.debug("Current user's phone number retrieved: {}", userPhoneNumber);
-        try {
-            User user = userRepository.findByPhoneNumber(userPhoneNumber);
-            Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(request.getNewSubscription().getSubscriptionName());
-            if (subscription == null) {
-                throw new NoSuchElementException("Subscription " + request.getNewSubscription().getSubscriptionName() + " not found");
-            }
-            TransactionDTO transactionDTO = TransactionDTO.builder()
-                    .outputCardNumber(user.getUserBankCard().getCardNumber())
-                    .sum(subscription.getSubscriptionPrice())
-                    .cardExpirationDate(user.getUserBankCard().getCardExpirationDate())
-                    .cvv(user.getUserBankCard().getCvv()).build();
-            ResponseEntity<String> paymentResponse = paymentController.payment(transactionDTO);
-            if (paymentResponse.getStatusCode().is2xxSuccessful()) {
-                userService.updateSubscription(userPhoneNumber, request);
-                log.info("Subscription for user with phone number {} updated successful", user.getPhoneNumber());
-                String responseMessage = "Subscription " + subscription.getSubscriptionName() + " successful activated";
-                System.out.println(responseMessage);
-                return ResponseEntity.ok(responseMessage);
-            } else if (paymentResponse.getStatusCode() == HttpStatus.BAD_REQUEST) {
-                String errorMessage = paymentResponse.getBody();
-                log.warn("Payment failed: {}", errorMessage);
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment failed");
-            }
-        } catch (NoSuchElementException e) {
-            log.warn(e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            log.error("An error occurred while updating subscription", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
         }
     }
 

@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personal office</title>
-    <link rel="icon" type="image/x-icon" href="/ico/favicon.ico">
     <link rel="stylesheet" type="text/css" href="/styles/css/personal_office.css" />
 </head>
 <body>
@@ -23,13 +22,16 @@
                 <input name="Auto-renew" id="NO" type="radio" onclick="changeUsersAutoRenewStatus('NO')">
                 <label for="NO">NO</label>
             </div>
-            <button class="button-nav-list" onclick="showForm('manualFindUserByPhoneNumber')">Listen music</button>
+            <div class="Music-container">
+                <button class="button-nav-list" onclick="navigateToMusic()">Listen music</button>
+                <form id="findMusicPage" class="subscription-list" style="display: none;"></form>
+            </div>
             <div class="subscription-container">
-                <button id="SubscriptionButton" class="button-nav-list" type="button" onclick="submitFindSubscriptionsList()">Subscriptions</button>
+                <button id="SubscriptionButton" class="button-nav-list" type="button">Subscriptions</button>
                 <form id="findAllSubmenu" class="subscription-list" style="display: none;"></form>
             </div>
             <div class="personal-data-container">
-                <button id="PersonalDataButton" class="button-nav-list" onclick="showForm('changePersonalData')">Personal data</button>
+                <button id="PersonalDataButton" class="button-nav-list" >Personal data</button>
                 <div class="form-nav-list">
                     <div id="changePersonalData" class="form-change-personal-data" style="display: none;">
                         <div class="user-details-row">
@@ -76,7 +78,7 @@
                 </div>
             </div>
             <div class="log-out-container">
-                <button id="LogOutButton" class="button-nav-list-exit" onclick="showForm('logOut')">Log out</button>
+                <button id="LogOutButton" class="button-nav-list-exit">Log out</button>
                 <form id="logOut" class="log-out" style="display: none;">
                     <p>Are you sure?</p>
                     <button class="log-out-button" onclick="logOut(event)">Log out</button>
@@ -85,6 +87,9 @@
         </li>
     </ul>
 </div>
+
+
+
 
 <script src="/js/script/personal_office.js"></script>
 </body>

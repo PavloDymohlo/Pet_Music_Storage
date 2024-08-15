@@ -4,100 +4,32 @@ function getCookie(name) {
         if (parts.length === 2) return parts.pop().split(';').shift();
     }
 
-
-
- function toggleMenu(menuId) {
-            var menu = document.getElementById(menuId);
-            if (menu.style.display === 'none' || menu.style.display === '') {
-                menu.style.display = 'block';
-            } else {
-                menu.style.display = 'none';
-            }
+function closeAllMenus() {
+    const menus = ['findAllSubmenu', 'changePersonalData', 'logOut', 'manualFindUserByPhoneNumber'];
+    menus.forEach(menuId => {
+        const menu = document.getElementById(menuId);
+        if (menu) {
+            menu.style.display = 'none';
         }
-        document.getElementById('PersonalDataButton').addEventListener('click', function() {
-            toggleMenu('changePersonalData');
-        });
-        document.getElementById('LogOutButton').addEventListener('click', function() {
-            toggleMenu('logOut');
-        });
+    });
+}
 
+function toggleMenu(menuId) {
+    const menu = document.getElementById(menuId);
+    const isCurrentlyOpen = menu.style.display === 'block';
+    closeAllMenus();
+    if (!isCurrentlyOpen) {
+        menu.style.display = 'block';
+    }
+}
 
-
-//    function showForm(formId) {
-//        const forms = document.querySelectorAll('.form-nav-list form');
-//        forms.forEach(form => form.style.display = 'none');
-//        const formToShow = document.getElementById(formId);
-//        if (formToShow) {
-//            formToShow.style.display = 'block';
-//        }
-//    }
-//
-//function hideAllMenus() {
-//    document.querySelector('.subscription-list').style.display = 'none';
-//    document.querySelector('.form-change-personal-data').style.display = 'none';
-//    document.querySelector('.log-out').style.display = 'none';
-//}
-//
-//document.addEventListener('click', function(event) {
-//    const target = event.target;
-//    const isClickInsideButton = target.closest('.button-nav-list');
-//    const isClickInsideExitButton = target.closest('.button-nav-list-exit');
-//    const isClickInsideForm = target.closest('.form-nav-list');
-//    const isClickInsidePersonalDataForm = target.closest('.form-change-personal-data');
-//    const isClickOutsideAllForms = !isClickInsideButton && !isClickInsideForm && !isClickInsidePersonalDataForm;
-//
-//    if (isClickOutsideAllForms) {
-//        hideAllMenus();
-//    }
-//    if (isClickInsideButton) {
-//        const button = target.closest('.button-nav-list');
-//        hideAllMenus();
-//        if (button.textContent.trim() === 'Subscriptions') {
-//            document.querySelector('.subscription-list').style.display = 'block';
-//        } else if (button.textContent.trim() === 'Personal data') {
-//            document.querySelector('.form-change-personal-data').style.display = 'block';
-//        }
-//    }
-//    if(isClickInsideExitButton){
-//    const button = target.closest('.button-nav-list-exit');
-//    hideAllMenus();
-//    if (button.textContent.trim() === 'Log out') {
-//                document.querySelector('.log-out').style.display = 'block';
-//            }
-//    }
-//});
-
-//function toggleSubscriptionMenu() {
-//    const menu = document.getElementById('subscriptionMenu');
-//    if (menu.style.display === 'none' || menu.style.display === '') {
-//        menu.style.display = 'block';
-//    } else {
-//        menu.style.display = 'none';
-//    }
-//}
-
-//document.addEventListener('click', function(event) {
-//    const button = document.getElementById('SubscriptionButton');
-//    const menu = document.getElementById('subscriptionMenu');
-//    if (!button.contains(event.target) && !menu.contains(event.target)) {
-//        menu.style.display = 'none';
-//    }
-//});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+document.getElementById('PersonalDataButton').addEventListener('click', function() {
+    toggleMenu('changePersonalData');
+});
+document.getElementById('LogOutButton').addEventListener('click', function() {
+    toggleMenu('logOut');
+});
+document.getElementById('SubscriptionButton').addEventListener('click', submitFindSubscriptionsList);
 
 
 
@@ -239,38 +171,47 @@ function changeUsersAutoRenewStatus(newStatus) {
     });
 }
 
-
-
 function submitFindSubscriptionsList() {
-    const jwtToken = getCookie('JWT_TOKEN');
-    if (!jwtToken) {
-        console.error('JWT token not found');
-        return;
+    console.log("Function called");
+    const findAllSubmenu = document.getElementById('findAllSubmenu');
+    console.log("Current display style:", findAllSubmenu.style.display);
+    if (findAllSubmenu.style.display === 'block') {
+        console.log("Closing menu");
+        findAllSubmenu.style.display = 'none';
+    } else {
+        console.log("Opening menu");
+        closeAllMenus();
+        const jwtToken = getCookie('JWT_TOKEN');
+        if (!jwtToken) {
+            console.error('JWT token not found');
+            return;
+        }
+        fetch('/personal_office/subscriptions', {
+            headers: {
+                'Authorization': `Bearer ${jwtToken}`
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(errorMessage => {
+                    throw new Error(errorMessage);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Fetched subscriptions data:', data);
+            subscriptions = data;
+            displayAllSubscription();
+            findAllSubmenu.style.display = 'block';
+            console.log("Menu should be visible now");
+        })
+        .catch(error => {
+            console.error('Failed to fetch subscriptions: ', error);
+            displayErrorMessage(error.message);
+        });
     }
-    fetch('/personal_office/subscriptions', {
-        headers: {
-            'Authorization': `Bearer ${jwtToken}`
-        }
-    })
-    .then(response => {
-        if (!response.ok) {
-            return response.text().then(errorMessage => {
-                throw new Error(errorMessage);
-            });
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Fetched subscriptions data:', data);
-        subscriptions = data;
-        displayAllSubscription();
-    })
-    .catch(error => {
-        console.error('Failed to fetch subscriptions: ', error);
-        displayErrorMessage(error.message);
-    });
 }
-
 
 function displayAllSubscription() {
     findAllSubmenu.innerHTML = '<ul>';
@@ -290,47 +231,6 @@ function displayAllSubscription() {
     findAllSubmenu.innerHTML += '</ul>';
     findAllSubmenu.style.display = 'block';
 }
-
-//function updateSubscription(subscriptionName) {
-//    if (event) {
-//        event.preventDefault();
-//    }
-//    console.log('updateSubscription called with:', subscriptionName);
-//    const jwtToken = getCookie('JWT_TOKEN');
-//    if (!jwtToken) {
-//        console.error('JWT token not found');
-//        return;
-//    }
-//    if (!subscriptionName) {
-//        console.error('Subscription name is required');
-//        return;
-//    }
-//    const requestData = { newSubscription: { subscriptionName: subscriptionName } };
-//    fetch('/personal_office/update_subscription', {
-//        method: 'PUT',
-//        headers: {
-//            'Authorization': `Bearer ${jwtToken}`,
-//            'Content-Type': 'application/json',
-//            'Accept': 'application/json'
-//        },
-//        body: JSON.stringify(requestData)
-//    })
-//    .then(response => {
-//        if (!response.ok) {
-//            return response.text().then(text => { throw new Error(text); });
-//        }
-//        return response.text();
-//    })
-//    .then(responseMessage => {
-//        displayMessage(responseMessage, 'success');
-//        showSubscriptionOnScreen();
-//        showSubscriptionEndTimeOnScreen();
-//    })
-//    .catch(error => {
-//        console.error('Failed to update subscription: ', error);
-//        displayMessage(error.message, 'error');
-//    });
-//}
 
 function updateSubscription(subscriptionName) {
     if (event) {
@@ -375,29 +275,14 @@ function updateSubscription(subscriptionName) {
    });
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 function displayMessage(message, type) {
     const submenuSubscribe = document.getElementById('findAllSubmenu');
     submenuSubscribe.innerHTML = `<div class="display-message ${type}">${message}</div>`;
     submenuSubscribe.style.display = 'block';
     setTimeout(() => {
         submenuSubscribe.style.display = 'none';
-    }, 10000);
+    }, 5000);
 }
-
-
 
 function getUserPhoneNumber() {
     const jwtToken = getCookie('JWT_TOKEN');
@@ -478,7 +363,6 @@ function displayErrorMessageForCurrentPhoneNumber(message) {
     submenuPersonalData.style.display = 'block';
 }
 
-
 function updateUsersPassword(event) {
     event.preventDefault();
     const currentPassword = document.getElementById('currentPassword').value;
@@ -536,7 +420,6 @@ function displayMessageForUserPassword(message, type) {
     submenuPersonalData.appendChild(newMessageElement);
     submenuPersonalData.style.display = 'block';
 }
-
 
 function getUserEmail() {
     const jwtToken = getCookie('JWT_TOKEN');
@@ -729,7 +612,6 @@ function deleteUserAccount(event) {
     });
 }
 
-
 function displayErrorMessageForDeleteAccount(message) {
     const submenuPersonalData = document.getElementById('deleteAccount');
     const errorElement = submenuPersonalData.querySelector('.display-error-message-for-personal-data-update');
@@ -744,18 +626,56 @@ function displayErrorMessageForDeleteAccount(message) {
     submenuPersonalData.style.display = 'block';
 }
 
+
+//This function is intended for further training on security.
+//function logOut(event) {
+//    event.preventDefault();
+//    window.location.href = '/host_page';
+//}
+
+
 function logOut(event) {
     event.preventDefault();
+    document.cookie = "JWT_TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    localStorage.clear();
+    sessionStorage.clear();
     window.location.href = '/host_page';
+    window.history.pushState(null, "", window.location.href);
+    window.onpopstate = function() {
+        window.history.pushState(null, "", window.location.href);
+    };
 }
 
-
-
-
-
-
-
-
+function navigateToMusic() {
+   const jwtToken = getCookie('JWT_TOKEN');
+  if (!jwtToken) {
+    console.error('JWT token not found. User might not be authenticated.');
+    return;
+  }
+  fetch('/api/get-music-page', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${jwtToken}`,
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (data && data.url) {
+      window.location.href = data.url;
+    } else {
+      console.error('Invalid response from server');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+}
 
     // Call the function to fetch and display the subscription details
     showSubscriptionOnScreen();

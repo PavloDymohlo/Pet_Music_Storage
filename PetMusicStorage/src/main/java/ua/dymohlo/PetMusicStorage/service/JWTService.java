@@ -31,7 +31,7 @@ public class JWTService {
     public String generateJwtToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         List<String> rolesList = userDetails.getAuthorities().stream()
-                .map(authority ->"ROLE_" +authority.getAuthority())//.map(authority ->"ROLE_" +authority.getAuthority())
+                .map(authority ->"ROLE_" +authority.getAuthority())
                 .collect(Collectors.toList());
         claims.put("roles", rolesList);
         Date issuedDate = new Date();

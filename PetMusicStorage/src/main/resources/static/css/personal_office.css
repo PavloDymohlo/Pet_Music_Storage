@@ -209,6 +209,7 @@ font-size: 18px;
   border-radius: 25px;
   box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
   text-align: center;
+    z-index: 1;
 }
 
 
@@ -459,4 +460,320 @@ padding:0;
     width: 100px;
     height: 40px;
     box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+}
+
+
+
+
+@media screen and (max-width: 1270px) {
+    .header {
+         background-color: rgba(153, 102, 255, 0.0);
+        margin: 0;
+        padding: 0;
+        border: 5px;
+        border-radius: 25px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+        justify-content: center;
+        height: 500px;
+    }
+
+    .header-text {
+      font-style: normal;
+      font-style: italic;
+      font-style: oblique;
+      font-style: oblique 10deg;
+      font-weight: bold;
+      font-size: 27px;
+      color: #8b008b;
+      margin-bottom: 10px;
+      text-shadow: -1.3px -1.3px 0 #FFFFFF,
+                   1.3px -1.3px 0 #FFFFFF,
+                   -1.3px 1.3px 0 #FFFFFF,
+                   1.3px 1.3px 0 #FFFFFF;
+
+    }
+
+    .nav-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .nav-list li {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .header-text,
+    .AutoRenewText,
+    .subscription-container,
+    .personal-data-container,
+    .log-out-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .AutoRenewText {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+        font-style: oblique;
+        font-size: 21px;
+        color: #8b008b;
+        width: 230px;
+        margin: 0;
+        text-align: center;
+         text-shadow: -1.3px -1.3px 0 #FFFFFF,
+                           1.3px -1.3px 0 #FFFFFF,
+                           -1.3px 1.3px 0 #FFFFFF,
+                           1.3px 1.3px 0 #FFFFFF;
+    }
+
+    .AutoRenewText p {
+        margin: 5px;
+        font-weight: bold;
+    }
+
+    .auto-renew-options {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+    }
+
+    .radio-spacing {
+        width: 10px;
+    }
+
+    input[name="Auto-renew"] {
+        display: none;
+    }
+
+    input[name="Auto-renew"] + label {
+        position: relative;
+        padding-left: 30px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    input[name="Auto-renew"] + label::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid #8b008b;
+        background-color: transparent;
+        transition: background-color 0.2s;
+         box-shadow: -1.3px -1.3px 0 #FFFFFF,
+                           1.3px -1.3px 0 #FFFFFF,
+                           -1.3px 1.3px 0 #FFFFFF,
+                           1.3px 1.3px 0 #FFFFFF;
+    }
+
+    input[name="Auto-renew"]:checked + label::before {
+        background-color: #8b008b;
+    }
+
+     .log-out-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .button-nav-list-exit {
+            position: static;
+            margin: 0 auto;
+        }
+
+        .log-out {
+            position: static;
+            margin: 0 auto;
+            width: auto;
+        }
+}
+
+@media screen and (max-width: 580px){
+  body {
+   background-image: url("/images/images/background.jpg");
+    background-size: cover;
+    background-position: -450px;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+.header {
+         background-color: rgba(153, 102, 255, 0.0);
+        margin: 0;
+        padding: 0;
+        border: 5px;
+        border-radius: 25px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+        justify-content: center;
+        height: 500px;
+    }
+
+    .header-text {
+      font-style: normal;
+      font-style: italic;
+      font-style: oblique;
+      font-style: oblique 10deg;
+      font-weight: bold;
+      font-size: 27px;
+      color: #8b008b;
+      margin-bottom: 10px;
+      text-shadow: -1.3px -1.3px 0 #FFFFFF,
+                   1.3px -1.3px 0 #FFFFFF,
+                   -1.3px 1.3px 0 #FFFFFF,
+                   1.3px 1.3px 0 #FFFFFF;
+
+    }
+
+    .nav-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .nav-list li {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .header-text,
+    .AutoRenewText,
+    .subscription-container,
+    .personal-data-container,
+    .log-out-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .AutoRenewText {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+        font-style: oblique;
+        font-size: 21px;
+        color: #8b008b;
+        width: 230px;
+        margin: 0;
+        text-align: center;
+         text-shadow: -1.3px -1.3px 0 #FFFFFF,
+                           1.3px -1.3px 0 #FFFFFF,
+                           -1.3px 1.3px 0 #FFFFFF,
+                           1.3px 1.3px 0 #FFFFFF;
+    }
+
+    .AutoRenewText p {
+        margin: 5px;
+        font-weight: bold;
+    }
+
+    .auto-renew-options {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+    }
+
+    .radio-spacing {
+        width: 10px;
+    }
+
+    input[name="Auto-renew"] {
+        display: none;
+    }
+
+    input[name="Auto-renew"] + label {
+        position: relative;
+        padding-left: 30px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    input[name="Auto-renew"] + label::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid #8b008b;
+        background-color: transparent;
+        transition: background-color 0.2s;
+         box-shadow: -1.3px -1.3px 0 #FFFFFF,
+                           1.3px -1.3px 0 #FFFFFF,
+                           -1.3px 1.3px 0 #FFFFFF,
+                           1.3px 1.3px 0 #FFFFFF;
+    }
+
+    input[name="Auto-renew"]:checked + label::before {
+        background-color: #8b008b;
+    }
+
+     .log-out-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .button-nav-list-exit {
+            position: static;
+            margin: 0 auto;
+        }
+
+        .log-out {
+            position: static;
+            margin: 0 auto;
+            width: auto;
+        }
+
+.form-change-personal-data {
+  border: 1px solid #ccc;
+  width: 350px;
+  height: auto;
+  box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+  text-align: center;
+  background-color: #e6e6fa;
+  border-radius: 25px;
+}
+
+         .user-details-row .input-button-container {
+            display: flex;
+            flex-direction: column;
+          }
+
 }
