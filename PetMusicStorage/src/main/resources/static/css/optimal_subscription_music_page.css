@@ -1,0 +1,116 @@
+body {
+    background-image: url("/images/images/background.jpg");
+    background-size: cover;
+    background-position: center -100px;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+.header {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 5px;
+    border-radius: 25px;
+}
+
+.header-text {
+    justify-content: start;
+    font-style: oblique 10deg;
+    font-weight: bold;
+    font-size: 18px;
+    color: #8b008b;
+    margin-bottom: 10px;
+    text-shadow: -0.2px -0.2px 0 #000, 0.2px -0.2px 0 #000, -0.2px 0.2px 0 #000, 0.2px 0.2px 0 #000;
+}
+
+.nav-container {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.return-main-menu, .log-out-container {
+    position: relative;
+    margin-left: 10px;
+}
+
+.log-out {
+    position: absolute;
+    top: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: auto;
+    background-color: #e6e6fa;
+    color: #8b008b;
+    padding: 10px;
+    border-radius: 25px;
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.log-out p {
+    font-size: 18px !important;
+    margin: 5px;
+    padding: 0;
+}
+
+.log-out-button {
+    background-color: #8b008b;
+    color: white;
+    padding: 0;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    width: 100px;
+    height: 40px;
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+}
+
+.button-nav-list-main-menu,
+.button-nav-list-exit {
+    background-color: #8b008b;
+    color: white;
+    padding: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 25px;
+    margin: 5px;
+    font-size: 16px;
+    width: 150px;
+    height: 50px;
+    box-sizing: border-box;
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+}
+
+.button-nav-list-exit:hover,
+.button-nav-list-main-menu:hover,
+ .log-out-button:hover{
+    background-color: #8a2be2;
+    transform: scale(1.1, 1.1);
+}
+
+.button-nav-list-exit:active,
+.button-nav-list-main-menu:active,
+ .log-out-button:active{
+    background-color: #6a1b9a;
+    transform: scale(0.95, 0.95);
+    box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.3);
+}
+
+@media screen and (max-width: 580px){
+  body {
+   background-image: url("/images/images/background.jpg");
+    background-size: cover;
+    background-position: -550px;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+  }

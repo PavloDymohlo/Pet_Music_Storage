@@ -2,9 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>MAXIMUM SUBSCRIPTION</title>
+    <title>Maximum subscription</title>
+    <link rel="stylesheet" type="text/css" href="/styles/css/maximum_subscription_music_page.css" />
 </head>
 <body>
-<p>Hello in maximum subscription</p>
+<p class="header-text">Hello in maximum subscription</p>
+<div class="header">
+    <div class="nav-container">
+        <div class="return-main-menu">
+            <button id="MeinMenuButton" class="button-nav-list-main-menu">Main menu</button>
+            <form id="MeinMenu" class="log-out" style="display: none;">
+                <p>Are you sure?</p>
+                <button class="log-out-button" onclick="MeinMenu(event)">Main menu</button>
+            </form>
+        </div>
+        <div class="log-out-container">
+            <button id="LogOutButton" class="button-nav-list-exit">Log out</button>
+            <form id="logOut" class="log-out" style="display: none;">
+                <p>Are you sure?</p>
+                <button class="log-out-button" onclick="logOut(event)">Log out</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="/js/script/maximum_subscription_music_page.js"></script>
 </body>
 </html>
