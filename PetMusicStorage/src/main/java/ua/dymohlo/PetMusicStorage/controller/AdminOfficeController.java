@@ -1,36 +1,25 @@
 package ua.dymohlo.PetMusicStorage.controller;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ua.dymohlo.PetMusicStorage.dto.*;
 import ua.dymohlo.PetMusicStorage.entity.MusicFile;
 import ua.dymohlo.PetMusicStorage.entity.Subscription;
-import ua.dymohlo.PetMusicStorage.entity.User;
-import ua.dymohlo.PetMusicStorage.repository.SubscriptionRepository;
-import ua.dymohlo.PetMusicStorage.repository.UserRepository;
-import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
 import ua.dymohlo.PetMusicStorage.service.*;
 
-import java.sql.SQLOutput;
 import java.util.List;
 import java.util.NoSuchElementException;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/admin_office")
 public class AdminOfficeController {
     private final UserService userService;
-    private final JWTService jwtService;
-    private final DatabaseUserDetailsService databaseUserDetailsService;
-    private final PaymentController paymentController;
-    private final UserRepository userRepository;
-    private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionService subscriptionService;
     private final MusicFileService musicFileService;
     private final BankTransactionDataService bankTransactionDataService;
@@ -39,7 +28,6 @@ public class AdminOfficeController {
     public ModelAndView adminOfficePage() {
         return new ModelAndView("pages/admin_office");
     }
-
 
     @DeleteMapping("/delete_user_by_id")
     public ResponseEntity<String> deleteUserById(@RequestParam("id") long userId) {
@@ -57,9 +45,6 @@ public class AdminOfficeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
         }
     }
-
-
-
 
     @DeleteMapping("/delete_users_by_bank_card_number")
     public ResponseEntity<String> deleteUsersByBankCardNumber(@RequestParam("bankCardNumber") long bankCardNumber,
@@ -115,6 +100,7 @@ public class AdminOfficeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
         }
     }
+
     @GetMapping("/subscription_by_id")
     public ResponseEntity<Object> findSubscriptionById(@RequestParam("id") long subscriptionId) {
         try {

@@ -22,7 +22,8 @@ public class TelegramBot extends TelegramLongPollingBot {
             if ("/start".equals(text)) {
                 SendMessage sendMessage = new SendMessage();
                 sendMessage.setChatId(chatId);
-                sendMessage.setText("Enter your phone number:");
+                String responseMessage = "Enter your phone number:";
+                sendMessage.setText(responseMessage);
                 try {
                     this.execute(sendMessage);
                 } catch (TelegramApiException e) {
@@ -38,8 +39,8 @@ public class TelegramBot extends TelegramLongPollingBot {
                         userRepository.save(user);
                         SendMessage sendMessage = new SendMessage();
                         sendMessage.setChatId(chatId);
-                        sendMessage.setText("Congratulations! You've successfully connected to our bot. You will now receive notifications related to changes in your account.");
-
+                        String responseMessage = "Congratulations! You've successfully connected to our bot. You will now receive notifications related to changes in your account.";
+                        sendMessage.setText(responseMessage);
                         try {
                             this.execute(sendMessage);
                         } catch (TelegramApiException e) {
@@ -49,7 +50,8 @@ public class TelegramBot extends TelegramLongPollingBot {
                     } else {
                         SendMessage sendMessage = new SendMessage();
                         sendMessage.setChatId(chatId);
-                        sendMessage.setText("User with phone number "+ phoneNumber+" not found!");
+                        String responseMessage = "User with phone number " + phoneNumber + " not found!";
+                        sendMessage.setText(responseMessage);
                         try {
                             this.execute(sendMessage);
                         } catch (TelegramApiException e) {
@@ -57,11 +59,11 @@ public class TelegramBot extends TelegramLongPollingBot {
                             throw new RuntimeException(e);
                         }
                     }
-                }
-                catch (NumberFormatException e) {
+                } catch (NumberFormatException e) {
                     SendMessage sendMessage = new SendMessage();
                     sendMessage.setChatId(chatId);
-                    sendMessage.setText("Please, enter correct phone number");
+                    String responseMessage = "Please, enter correct phone number";
+                    sendMessage.setText(responseMessage);
                     try {
                         this.execute(sendMessage);
                     } catch (TelegramApiException exception) {
@@ -73,16 +75,16 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-
-
-
     @Override
     public String getBotUsername() {
-        return "musicStorageMessage_bot";
+        final String botUserName = "musicStorageMessage_bot";
+        return botUserName;
     }
+
     @Override
     public String getBotToken() {
-        return "7387041594:AAHxs3a1ZL3NzLOEYNHBHISV0r05g2_b4gc";
+        final String botToken = "7387041594:AAHxs3a1ZL3NzLOEYNHBHISV0r05g2_b4gc";
+        return botToken;
     }
 
     public void sendMessage(String chatId, String text) {
@@ -96,6 +98,3 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 }
-
-
-

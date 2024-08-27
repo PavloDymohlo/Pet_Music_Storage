@@ -10,7 +10,7 @@ import java.util.List;
 
 @Configuration
 public class SwaggerConfig {
-//http://localhost:8080/swagger-ui/index.html#/ - swagger link
+    //http://localhost:8080/swagger-ui/index.html#/ - swagger link
     private final String URL = "http://localhost:8080";
     private final String TITLE = "Pet music storage";
 
@@ -21,6 +21,4 @@ public class SwaggerConfig {
                         .url(URL)))
                 .info(new Info().title(TITLE));
     }
-
 }
-
