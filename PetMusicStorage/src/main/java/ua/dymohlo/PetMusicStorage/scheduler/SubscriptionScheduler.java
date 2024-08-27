@@ -22,6 +22,7 @@ public class SubscriptionScheduler {
     public void checkSubscriptionExpiration() {
         List<User> users = userService.findAllUsers();
         users.removeIf(user -> "ADMIN".equals(user.getSubscription().getSubscriptionName()));
+        users.removeIf(user -> "FREE".equals(user.getSubscription().getSubscriptionName()));
         users.stream()
                 .filter(user -> {
                     LocalDateTime endTime = user.getEndTime();

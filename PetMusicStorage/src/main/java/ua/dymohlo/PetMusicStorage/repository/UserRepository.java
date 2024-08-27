@@ -16,4 +16,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User findById(long userId);
     void deleteById(long id);
+
+    User findByTelegramChatId(String chatId);
 }

@@ -8,8 +8,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import ua.dymohlo.PetMusicStorage.dto.TransactionDTO;
 import ua.dymohlo.PetMusicStorage.dto.UserRegistrationDTO;
+import ua.dymohlo.PetMusicStorage.entity.User;
 import ua.dymohlo.PetMusicStorage.repository.SubscriptionRepository;
 import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
+import ua.dymohlo.PetMusicStorage.service.EmailService;
 import ua.dymohlo.PetMusicStorage.service.JWTService;
 import ua.dymohlo.PetMusicStorage.service.UserService;
 
@@ -28,17 +30,26 @@ public class RegisterController {
     private final JWTService jwtService;
     private final PaymentController paymentController;
     private final SubscriptionRepository subscriptionRepository;
+    private final EmailService emailService;
 
     @PostMapping
     public ResponseEntity<?> registerUser(@RequestBody UserRegistrationDTO request, HttpServletResponse response) {
         try {
             if (userService.isPhoneNumberRegistered(request.getPhoneNumber())) {
                 log.error("User with phone number {} already exists", request.getPhoneNumber());
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with phone number " + request.getPhoneNumber() + " already exists");
+                String errorMessage = "User with phone number " + request.getPhoneNumber() + " already exists";
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
             }
             if (userService.isEmailRegistered(request.getEmail())) {
                 log.error("User with email {} already exists", request.getEmail());
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with email " + request.getEmail() + " already exists");
+                String errorMessage = "User with email " + request.getEmail() + " already exists";
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+            }
+            if (!request.getEmail().isEmpty() && !emailService.isValidEmail(request.getEmail())) {
+                log.error("Email {} is not correct", request.getEmail());
+                String errorMessage = "Email " + request.getEmail() + " is not correct";
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+
             }
 
             BigDecimal bonusPrice = subscriptionRepository.findBySubscriptionNameIgnoreCase("REGISTRATION").getSubscriptionPrice();
@@ -49,12 +60,13 @@ public class RegisterController {
                     .cvv(request.getUserBankCard().getCvv()).build();
             ResponseEntity<String> paymentResponse = paymentController.payment(transactionDTO);
             if (paymentResponse.getStatusCode().is2xxSuccessful()) {
-                userService.registerUser(request);
+                User user = userService.registerUser(request);
                 UserDetails userDetails = databaseUserDetailsService.loadUserByUsername(String.valueOf(request.getPhoneNumber()));
                 String jwtToken = jwtService.generateJwtToken(userDetails);
                 log.info("User with phone number {} registered successfully ", request.getPhoneNumber());
                 log.info("Generated JWT token: {}", jwtToken);
-
+                String telegramBotLink = "https://t.me/musicStorageMessage_bot?start=" + user.getPhoneNumber();
+                log.info("Telegram bot link generated for user: {}", telegramBotLink);
                 ResponseCookie jwtCookie = ResponseCookie.from("JWT_TOKEN", jwtToken)
                         .httpOnly(false)
                         .secure(false)
@@ -64,8 +76,16 @@ public class RegisterController {
                 response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
                 String redirectUrl = "/personal_office";
                 URI location = URI.create(redirectUrl);
+                String emailThemes = "Congratulations!";
+                String emailText = "You register successful!";
+                try {
+                    emailService.sendSimpleMessage(request.getEmail(), emailThemes, emailText);
+                } catch (Exception e) {
+                    log.error("Failed to send registration email", e);
+                }
                 return ResponseEntity.status(HttpStatus.FOUND)
                         .location(location)
+                        .header("Telegram-Bot-Link", telegramBotLink)
                         .build();
             } else if (paymentResponse.getStatusCode() == HttpStatus.BAD_REQUEST) {
                 String errorMessage = paymentResponse.getBody();

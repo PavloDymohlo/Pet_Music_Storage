@@ -31,7 +31,6 @@ public class WebSecurityConfig {
                 .cors().disable()
                 .authorizeRequests(authorize -> authorize
                         .antMatchers("/register","/host_page", "/login").permitAll()
-                        .antMatchers("/static/**","/images/background.jpg").permitAll()
                         .antMatchers("/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .antMatchers("/personal_office/**").authenticated()
                         .antMatchers("/api/get-music-page").authenticated()

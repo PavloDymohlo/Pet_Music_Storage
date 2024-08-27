@@ -335,6 +335,7 @@ margin:0;
     font-size: 18px;
         color: #FF0000;
     font-weight: bold;
+    margin-top: 10px;
     margin-bottom: 5px;
 }
 
@@ -462,6 +463,18 @@ padding:0;
     box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
 }
 
+
+.telegram_bot_link{
+ justify-content: start;
+  font-style: oblique 10deg;
+  font-weight: bold;
+  font-size: 21px;
+  color: #8b008b;
+  margin-bottom: 15px;
+  text-shadow: -0.2px -0.2px 0 #000, 0.2px -0.2px 0 #000, -0.2px 0.2px 0 #000,
+    0.2px 0.2px 0 #000;
+  text-decoration: none;
+}
 
 
 
@@ -609,6 +622,7 @@ padding:0;
             width: auto;
         }
 }
+
 
 @media screen and (max-width: 580px){
   body {
@@ -777,3 +791,4 @@ padding:0;
           }
 
 }
+

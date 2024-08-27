@@ -56,8 +56,11 @@
 			<artifactId>jjwt</artifactId>
 			<version>0.9.1</version>
 		</dependency>
-
-
+		<dependency>
+			<groupId>org.telegram</groupId>
+			<artifactId>telegrambots</artifactId>
+			<version>6.9.7.1</version>
+		</dependency>
 
 
 		<dependency>
@@ -101,6 +104,22 @@
 			<artifactId>json</artifactId>
 			<version>20240303</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
+			<version>4.29.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-ui</artifactId>
+			<version>1.6.15</version> <!-- Одна з останніх версій у гілці 1.6.x -->
+		</dependency>
+
+
 
 
 	</dependencies>

@@ -28,7 +28,6 @@ public class ClientService {
                 int newRecipientBalance = recipient.getBalance() + sum;
                 recipient.setBalance(newRecipientBalance);
                 clientRepository.save(recipient);
-                System.out.println("Transaction successful!");
             } else {
                 throw new IllegalArgumentException("Insufficient funds!");
             }

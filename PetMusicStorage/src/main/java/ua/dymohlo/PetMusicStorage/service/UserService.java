@@ -2,7 +2,6 @@ package ua.dymohlo.PetMusicStorage.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,6 +35,8 @@ public class UserService {
     private final UserBankCardRepository userBankCardRepository;
     private final JWTService jwtService;
     private final UserBankCardService userBankCardService;
+    private final TelegramService telegramService;
+    private final EmailService emailService;
 
 
     public UserDetailsService userDetailsService() {
@@ -130,6 +131,8 @@ public class UserService {
         user.setPhoneNumber(newPhoneNumber);
         userRepository.save(user);
         log.info("Phone number updated successfully for user with ID: {}", user.getId());
+        telegramService.notifyUserAboutChangePhoneNumber(newPhoneNumber);
+        emailService.notifyUserAboutChangePhoneNumber(newPhoneNumber, user.getEmail());
     }
 
     public long getCurrentUserPhoneNumber(String jwtToken) {
@@ -165,9 +168,17 @@ public class UserService {
             }
         }
         User user = userRepository.findByPhoneNumber(userPhoneNumber);
+        UserBankCard oldBankCard = user.getUserBankCard();
         user.setUserBankCard(newUserBankCard);
         userRepository.save(user);
+
+        if (userBankCardRepository.findByCardNumber(oldBankCard.getCardNumber()).getUsers().isEmpty()) {
+            userBankCardRepository.delete(oldBankCard);
+        }
+
         log.info("Bank card updated successful for user with id: {}", user);
+        telegramService.notifyUserAboutChangeBankCard(userPhoneNumber, String.valueOf(updateUserBankCardDTO.getNewUserBankCard().getCardNumber()));
+        emailService.notifyUserAboutChangeBankCard(user.getEmail(), newUserBankCard.getCardNumber());
     }
 
     public void updatePassword(long userPhoneNumber, UpdatePasswordDTO updatePasswordDTO) {
@@ -181,7 +192,9 @@ public class UserService {
         }
         user.setPassword(passwordEncoder.encode(updatePasswordDTO.getNewPassword()));
         userRepository.save(user);
-        log.info("Password updated successful for user with id: {}", user);
+        log.info("Password updated successful for user with id: {}", user.getPhoneNumber());
+        telegramService.notifyUserAboutChangePassword(userPhoneNumber);
+        emailService.notifyUserAboutChangePassword(user.getEmail());
     }
 
     public void updateEmail(long userPhoneNumber, UpdateEmailDTO updateEmailDTO) {
@@ -194,9 +207,12 @@ public class UserService {
             throw new IllegalArgumentException("Email " + updateEmailDTO.getNewEmail() + " is already exists");
         }
         User user = userRepository.findByPhoneNumber(userPhoneNumber);
+        String oldUserEmail = user.getEmail();
         user.setEmail(updateEmailDTO.getNewEmail());
         userRepository.save(user);
         log.info("Email updated successful for user with id: {}", user);
+        telegramService.notifyUserAboutChangeEmail(userPhoneNumber, updateEmailDTO.getNewEmail());
+        emailService.notifyUserAboutChangeEmail(userPhoneNumber, oldUserEmail, updateEmailDTO.getNewEmail());
     }
 
     public void setAutoRenewStatus(long userPhoneNumber, SetAutoRenewDTO status) {
@@ -208,6 +224,8 @@ public class UserService {
         user.setAutoRenew(status.getAutoRenewStatus());
         userRepository.save(user);
         log.info("Auto renew status set successfully for user with phone number: {}", userPhoneNumber);
+        telegramService.notifyUserAboutChangeAutoRenewStatus(userPhoneNumber, String.valueOf(status.getAutoRenewStatus()));
+        emailService.notifyUserAboutChangeAutoRenewStatus(user.getEmail(), status.getAutoRenewStatus().name());
     }
 
     public void updateSubscription(long userPhoneNumber, UpdateSubscriptionDTO updateSubscriptionDTO) {
@@ -225,7 +243,17 @@ public class UserService {
         user.setSubscription(existingSubscription);
         user.setEndTime(LocalDateTime.now().plusMinutes(existingSubscription.getSubscriptionDurationTime()));
         userRepository.save(user);
-        log.info("Subscription updated successfully for user with phone number: {}", userPhoneNumber);
+        if (user.getSubscription().getSubscriptionName().equals("FREE")) {
+            String formattedDate = "Infinity";
+            telegramService.notifyUserAboutChangeSubscription(userPhoneNumber, user.getSubscription().getSubscriptionName(), formattedDate);
+            emailService.notifyUserAboutChangeSubscription(user.getEmail(), newSubscription.getSubscriptionName(), formattedDate);
+        } else {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy HH:mm:ss", Locale.ENGLISH);
+            String formattedDate = user.getEndTime().format(formatter);
+            log.info("Subscription updated successfully for user with phone number: {}", userPhoneNumber);
+            telegramService.notifyUserAboutChangeSubscription(userPhoneNumber, newSubscription.getSubscriptionName(), formattedDate);
+            emailService.notifyUserAboutChangeSubscription(user.getEmail(), newSubscription.getSubscriptionName(), formattedDate);
+        }
     }
 
     public List<User> findAllUsers() {
@@ -338,8 +366,13 @@ public class UserService {
         users.forEach(this::deleteUserFromDataBase);
     }
 
+    @Transactional
     private void deleteUserFromDataBase(User user) {
+        String userEmail = user.getEmail();
+        String userChatId = user.getTelegramChatId();
         if (userBankCardService.checkBankCardUsers(user.getUserBankCard().getCardNumber()) == 1) {
+            telegramService.notifyUserAboutDeleteAccount(userChatId);
+            emailService.notifyUserAboutDeleteAccount(userEmail);
             userBankCardService.deleteBankCard(user.getUserBankCard().getCardNumber());
         } else {
             UserBankCard userBankCard = user.getUserBankCard();
@@ -349,6 +382,8 @@ public class UserService {
                     userBankCardService.deleteBankCard(userBankCard.getCardNumber());
                 }
             }
+            telegramService.notifyUserAboutDeleteAccount(userChatId);
+            emailService.notifyUserAboutDeleteAccount(userEmail);
             userRepository.deleteById(user.getId());
         }
     }
@@ -391,6 +426,8 @@ public class UserService {
         }
         user.setSubscription(subscription);
         userRepository.save(user);
+        String formattedDate = "Infinity";
+        telegramService.notifyUserAboutChangeSubscription(userPhoneNumber, subscription.getSubscriptionName(), formattedDate);
     }
 
     public Subscription findUsersCurrentSubscription(long phoneNumber) {
@@ -419,17 +456,18 @@ public class UserService {
         return String.valueOf(user.getAutoRenew());
     }
 
-    public UserBankCard getUserBankCard(long userPhoneNumber){
+    public UserBankCard getUserBankCard(long userPhoneNumber) {
         User user = userRepository.findByPhoneNumber(userPhoneNumber);
-        if(user==null){
-            throw new NoSuchElementException("User with phone number "+userPhoneNumber+" not found");
+        if (user == null) {
+            throw new NoSuchElementException("User with phone number " + userPhoneNumber + " not found");
         }
         return user.getUserBankCard();
     }
-    public String getUserEmail(long userPhoneNumber){
+
+    public String getUserEmail(long userPhoneNumber) {
         User user = userRepository.findByPhoneNumber(userPhoneNumber);
-        if(user==null){
-            throw new NoSuchElementException("User with phone number "+userPhoneNumber+" not found");
+        if (user == null) {
+            throw new NoSuchElementException("User with phone number " + userPhoneNumber + " not found");
         }
         return user.getEmail();
     }

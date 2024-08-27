@@ -35,4 +35,6 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "subscription_id")
     private Subscription subscription;
+    @Column(name = "telegram_chat_id")
+    private String telegramChatId;
 }

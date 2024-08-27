@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="1" author="admin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="subscriptions"/>
+            </not>
+        </preConditions>
+        <createTable tableName="subscriptions">
+            <column name="id" type="serial">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="subscription_name" type="varchar(20)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="subscription_price" type="decimal(10,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="subscription_duration_time" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="admin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="subscriptions"/>
+            </not>
+        </preConditions>
+        <createTable tableName="music_files">
+            <column name="id" type="serial">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="music_file_name" type="varchar(50)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="file_path" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="subscriptions_id" type="int">
+                <constraints nullable="false" foreignKeyName="fk_music_files_subscriptions" references="subscriptions(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+    
+    <changeSet id="3" author="admin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="subscriptions"/>
+            </not>
+        </preConditions>
+        <createTable tableName="users_bank_cards">
+            <column name="id" type="serial">
+                <constraints unique="true"/>
+            </column>
+            <column name="card_number" type="bigint">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="cvv" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="card_expiration_date" type="varchar(5)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="4" author="admin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="subscriptions"/>
+            </not>
+        </preConditions>
+        <createTable tableName="users">
+            <column name="id" type="serial">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="phone_number" type="bigint">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="bank_card_id" type="int">
+                <constraints nullable="false" foreignKeyName="fk_users_bank_cards" references="users_bank_cards(id)"/>
+            </column>
+            <column name="password" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="subscription_id" type="int">
+                <constraints nullable="false" foreignKeyName="fk_users_subscriptions" references="subscriptions(id)"/>
+            </column>
+            <column name="auto_renew" type="varchar(3)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_time" type="timestamp"/>
+            <column name="email" type="varchar(50)">
+                <constraints unique="true" nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="5" author="admin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="subscriptions"/>
+            </not>
+        </preConditions>
+        <createTable tableName="bank_transaction_data">
+            <column name="id" type="serial">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="bank_name" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bank_url_transaction" type="text">
+                <constraints unique="true" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    
+    <changeSet id="6" author="admin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="subscriptions"/>
+            </not>
+        </preConditions>
+        <createTable tableName="recipient_bank_card">
+            <column name="id" type="serial">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="bank_card_name" type="text">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="bank_card_number" type="bigint">
+                <constraints unique="true" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    
+    <changeSet id="7" author="admin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="subscriptions"/>
+            </not>
+        </preConditions>
+        <createTable tableName="payment_recipient_data">
+            <column name="id" type="serial">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="transactional_name" type="text">
+                <constraints unique="true"/>
+            </column>
+            <column name="bank_card_id" type="int">
+                <constraints nullable="false" foreignKeyName="fk_payment_recipient_bank_card" references="recipient_bank_card(id)"/>
+            </column>
+            <column name="bank_name_id" type="int">
+                <constraints nullable="false" foreignKeyName="fk_payment_recipient_bank_transaction_data" references="bank_transaction_data(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
