@@ -121,7 +121,6 @@ public class AdminOfficeController {
         try {
             List<Subscription> subscriptions = subscriptionService.findAllSubscription();
             log.info("Fetched all subscription");
-            System.out.println(subscriptions);
             return ResponseEntity.ok(subscriptions);
         } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
@@ -357,6 +356,9 @@ public class AdminOfficeController {
         } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -468,7 +470,7 @@ public class AdminOfficeController {
             log.info("New transactional data successful added in database");
             String responseMessage = "New transactional data successful added in database";
             return ResponseEntity.ok(responseMessage);
-        } catch (NoSuchElementException e) {
+        } catch (IllegalArgumentException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {

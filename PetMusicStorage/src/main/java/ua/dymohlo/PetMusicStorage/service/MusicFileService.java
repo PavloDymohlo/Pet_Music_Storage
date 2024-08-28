@@ -76,11 +76,16 @@ public class MusicFileService {
 
     public void updateMusicFileName(UpdateMusicFileNameDTO updateMusicFileNameDTO) {
         MusicFile musicFile = musicFileRepository.findByMusicFileNameIgnoreCase(updateMusicFileNameDTO.getCurrentMusicFileName());
+        boolean musicFileNewName = musicFileRepository.existsByMusicFileNameIgnoreCase(updateMusicFileNameDTO.getNewMusicFileName());
         if (musicFile == null) {
             throw new NoSuchElementException("Music file with name " + updateMusicFileNameDTO.getCurrentMusicFileName() + " not found");
         }
-        musicFile.setMusicFileName(updateMusicFileNameDTO.getNewMusicFileName());
-        musicFileRepository.save(musicFile);
+        if (musicFileNewName) {
+            throw new IllegalArgumentException("This music name " + updateMusicFileNameDTO.getNewMusicFileName() + " already exists");
+        } else {
+            musicFile.setMusicFileName(updateMusicFileNameDTO.getNewMusicFileName());
+            musicFileRepository.save(musicFile);
+        }
     }
 
     public void updateMusicFileSubscription(UpdateMusicFileSubscriptionDTO updateMusicFileSubscriptionDTO) {

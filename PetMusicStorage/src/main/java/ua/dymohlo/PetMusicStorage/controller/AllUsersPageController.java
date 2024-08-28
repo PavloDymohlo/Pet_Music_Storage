@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ua.dymohlo.PetMusicStorage.dto.*;
@@ -52,7 +51,7 @@ public class AllUsersPageController {
     public ResponseEntity<Object> findUserByPhoneNumber(@RequestParam("phoneNumber") long phoneNumber) {
         try {
             User user = userService.findUserByPhoneNumber(phoneNumber);
-            log.info("Fetched user with phone number {} successful",phoneNumber);
+            log.info("Fetched user with phone number {} successful", phoneNumber);
             return ResponseEntity.ok(user);
         } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
@@ -62,6 +61,7 @@ public class AllUsersPageController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
     @GetMapping("/user_by_email")
     public ResponseEntity<Object> findUserByEmail(@RequestParam("email") String userEmail) {
         try {
@@ -91,6 +91,7 @@ public class AllUsersPageController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
     @GetMapping("/user_by_id")
     public ResponseEntity<Object> findUserById(@RequestParam("id") long userId) {
         try {
@@ -105,6 +106,7 @@ public class AllUsersPageController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
     @GetMapping("/user_by_subscription")
     public ResponseEntity<?> findUserBySubscription(@RequestParam("subscription") String userSubscription) {
         try {
@@ -120,6 +122,7 @@ public class AllUsersPageController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
     @PutMapping("/update_phone_number")
     public ResponseEntity<String> updateUserPhoneNumber(@RequestBody UpdatePhoneNumberDTO request) {
         try {
@@ -138,6 +141,7 @@ public class AllUsersPageController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @PutMapping("/update_password")
     public ResponseEntity<String> updateUserPassword(@RequestBody UpdatePasswordDTO request) {
         try {
@@ -148,11 +152,15 @@ public class AllUsersPageController {
         } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             log.error("An error occurred while updating password");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @PutMapping("/set_auto_renew")
     public ResponseEntity<String> setUserAutoRenewStatus(@RequestBody SetAutoRenewDTO request) {
         try {
