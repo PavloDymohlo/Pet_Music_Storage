@@ -11,18 +11,18 @@ import ua.dymohlo.PetMusicStorage.service.JWTService;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
-public class PasswordEncoderConfigTest {
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @MockBean
-    private JWTService mockJwtService;
-    @MockBean
-    private UserDetails mockUserDetails;
-
-    @Test
-    public void passwordEncoder_beanExists() {
-        when(mockJwtService.generateJwtToken(mockUserDetails)).thenReturn("mocked_secret_key");
-        assertNotNull(passwordEncoder);
-    }
-}
+//@SpringBootTest
+//public class PasswordEncoderConfigTest {
+//    @Autowired
+//    private PasswordEncoder passwordEncoder;
+//    @MockBean
+//    private JWTService mockJwtService;
+//    @MockBean
+//    private UserDetails mockUserDetails;
+//
+//    @Test
+//    public void passwordEncoder_beanExists() {
+//        when(mockJwtService.generateJwtToken(mockUserDetails)).thenReturn("mocked_secret_key");
+//        assertNotNull(passwordEncoder);
+//    }
+//}

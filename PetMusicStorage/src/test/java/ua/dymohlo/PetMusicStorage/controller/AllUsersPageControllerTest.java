@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.SmartRequestBuilder;
 import ua.dymohlo.PetMusicStorage.Enum.AutoRenewStatus;
 import ua.dymohlo.PetMusicStorage.PetMusicStorageApplication;
 import ua.dymohlo.PetMusicStorage.dto.*;

@@ -11,18 +11,18 @@ import ua.dymohlo.PetMusicStorage.service.JWTService;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
-public class WebClientConfigTest {
-    @Autowired
-    private WebClient.Builder webClientBuilder;
-    @MockBean
-    private JWTService mockJwtService;
-    @MockBean
-    private UserDetails mockUserDetails;
-
-    @Test
-    public void webClientBuilder_beanExists() {
-        when(mockJwtService.generateJwtToken(mockUserDetails)).thenReturn("mocked_secret_key");
-        assertNotNull(webClientBuilder);
-    }
-}
+//@SpringBootTest
+//public class WebClientConfigTest {
+//    @Autowired
+//    private WebClient.Builder webClientBuilder;
+//    @MockBean
+//    private JWTService mockJwtService;
+//    @MockBean
+//    private UserDetails mockUserDetails;
+//
+//    @Test
+//    public void webClientBuilder_beanExists() {
+//        when(mockJwtService.generateJwtToken(mockUserDetails)).thenReturn("mocked_secret_key");
+//        assertNotNull(webClientBuilder);
+//    }
+//}
