@@ -652,7 +652,7 @@ function navigateToMusic() {
     console.error('JWT token not found. User might not be authenticated.');
     return;
   }
-  fetch('/api/get-music-page', {
+  fetch('/music/get_music_page', {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${jwtToken}`,

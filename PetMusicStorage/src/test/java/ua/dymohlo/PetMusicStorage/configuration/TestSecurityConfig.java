@@ -15,8 +15,10 @@ public class TestSecurityConfig {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/auto_renew_subscription").permitAll()
-                .anyRequest().authenticated();
+                .antMatchers("/auto_renew_subscription", "/login","/payment").permitAll()
+                .antMatchers("/admin_office/**").hasRole("ADMIN")
+                .antMatchers("/free_subscription").authenticated()
+                .anyRequest().permitAll();
         return http.build();
     }
 }

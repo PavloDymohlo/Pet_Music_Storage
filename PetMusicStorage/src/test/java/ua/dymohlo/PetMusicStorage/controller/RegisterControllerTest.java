@@ -2,22 +2,24 @@ package ua.dymohlo.PetMusicStorage.controller;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import ua.dymohlo.PetMusicStorage.PetMusicStorageApplication;
+import ua.dymohlo.PetMusicStorage.dto.TransactionDTO;
 import ua.dymohlo.PetMusicStorage.dto.UserRegistrationDTO;
+import ua.dymohlo.PetMusicStorage.entity.User;
 import ua.dymohlo.PetMusicStorage.entity.UserBankCard;
 import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
+import ua.dymohlo.PetMusicStorage.service.EmailService;
 import ua.dymohlo.PetMusicStorage.service.JWTService;
 import ua.dymohlo.PetMusicStorage.service.UserService;
 
@@ -29,71 +31,90 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = RegisterController.class)
-@AutoConfigureMockMvc(addFilters = false)
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = PetMusicStorageApplication.class)
+@AutoConfigureMockMvc
 public class RegisterControllerTest {
-
     @Autowired
-    private MockMvc mockMvc;
-
+    private MockMvc mvc;
+    @Autowired
+    private ObjectMapper objectMapper;
     @MockBean
-    private UserService mockUserService;
-
+    private UserService userService;
     @MockBean
-    private DatabaseUserDetailsService mockDatabaseUserDetailsService;
-
+    private DatabaseUserDetailsService databaseUserDetailsService;
     @MockBean
-    private JWTService mockJwtService;
-
+    private JWTService jwtService;
     @MockBean
     private WebClient.Builder webClientBuilder;
+    @MockBean
+    private EmailService emailService;
+    @MockBean
+    private PaymentController paymentController;
 
     @Test
-    public void registerUser_successfulRegistration() throws Exception {
-        WebClient.RequestBodyUriSpec requestBodyUriSpecMock = Mockito.mock(WebClient.RequestBodyUriSpec.class);
-        WebClient.RequestBodySpec requestBodySpecMock = Mockito.mock(WebClient.RequestBodySpec.class);
-        WebClient.RequestHeadersSpec requestHeadersSpecMock = Mockito.mock(WebClient.RequestHeadersSpec.class);
-        WebClient.ResponseSpec responseSpecMock = Mockito.mock(WebClient.ResponseSpec.class);
+    public void registerUser_success() throws Exception {
+        User user = User.builder()
+                .phoneNumber(80663322110L).build();
+        UserBankCard userBankCard = UserBankCard.builder()
+                .cardNumber(1234567890123456L)
+                .cardExpirationDate("25/25")
+                .cvv((short) 111).build();
+        UserRegistrationDTO request = UserRegistrationDTO.builder()
+                .phoneNumber(80988887520L)
+                .userBankCard(userBankCard)
+                .email("useremail@email.com")
+                .password("password").build();
+        String jwtToken = "mockJwtToken";
+        String requestJson = objectMapper.writeValueAsString(request);
+        WebClient.RequestBodyUriSpec requestBodyUriSpecMock = mock(WebClient.RequestBodyUriSpec.class);
+        WebClient.RequestBodySpec requestBodySpecMock = mock(WebClient.RequestBodySpec.class);
+        WebClient.RequestHeadersSpec requestHeadersSpecMock = mock(WebClient.RequestHeadersSpec.class);
+        WebClient.ResponseSpec responseSpecMock = mock(WebClient.ResponseSpec.class);
 
-        when(webClientBuilder.build()).thenReturn(Mockito.mock(WebClient.class));
+        when(webClientBuilder.build()).thenReturn(mock(WebClient.class));
         when(webClientBuilder.build().post()).thenReturn(requestBodyUriSpecMock);
         when(webClientBuilder.build().post().uri(anyString())).thenReturn(requestBodySpecMock);
         when(webClientBuilder.build().post().uri(anyString()).contentType(any())).thenReturn(requestBodySpecMock);
         when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any())).thenReturn(requestHeadersSpecMock);
         when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any()).retrieve()).thenReturn(responseSpecMock);
         when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any()).retrieve().toEntity(String.class)).thenReturn(Mono.just(ResponseEntity.ok().body("mockResponse")));
-        when(mockUserService.isPhoneNumberRegistered(anyLong())).thenReturn(false);
-        when(mockUserService.isEmailRegistered(anyString())).thenReturn(false);
-        when(mockJwtService.generateJwtToken(any(UserDetails.class))).thenReturn("mockJwtToken");
+        when(userService.isPhoneNumberRegistered(anyLong())).thenReturn(false);
+        when(userService.isEmailRegistered(anyString())).thenReturn(false);
+        when(jwtService.generateJwtToken(any(UserDetails.class))).thenReturn(jwtToken);
+        when(emailService.isValidEmail(anyString())).thenReturn(true);
+        when(paymentController.payment(any(TransactionDTO.class)))
+                .thenReturn(ResponseEntity.ok("success"));
+        when(userService.registerUser(any(UserRegistrationDTO.class))).thenReturn(user);
 
+        mvc.perform(MockMvcRequestBuilders.post("/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isFound());
+    }
+
+    @Test
+    public void registerUser_paymentFailed() throws Exception {
         UserBankCard mockUserBankCard = UserBankCard.builder()
                 .cardNumber(1234567890123456L)
                 .cardExpirationDate("25/25")
                 .cvv((short) 111).build();
-        UserRegistrationDTO mockUserRegistrationDTO = UserRegistrationDTO.builder()
+        UserRegistrationDTO request = UserRegistrationDTO.builder()
                 .phoneNumber(80988887520L)
                 .userBankCard(mockUserBankCard)
                 .email("useremail@email.com")
                 .password("password").build();
+        String jwtToken = "mockJwtToken";
+        String requestJson = objectMapper.writeValueAsString(request);
+        WebClient.RequestBodyUriSpec requestBodyUriSpecMock = mock(WebClient.RequestBodyUriSpec.class);
+        WebClient.RequestBodySpec requestBodySpecMock = mock(WebClient.RequestBodySpec.class);
+        WebClient.RequestHeadersSpec requestHeadersSpecMock = mock(WebClient.RequestHeadersSpec.class);
+        WebClient.ResponseSpec responseSpecMock = mock(WebClient.ResponseSpec.class);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(mockUserRegistrationDTO)))
-                .andExpect(MockMvcResultMatchers.status().isOk());
-
-        verify(mockUserService, times(1)).registerUser(mockUserRegistrationDTO);
-    }
-
-    @Test
-    public void registerUser_responseBadRequest() throws Exception {
-        WebClient.RequestBodyUriSpec requestBodyUriSpecMock = Mockito.mock(WebClient.RequestBodyUriSpec.class);
-        WebClient.RequestBodySpec requestBodySpecMock = Mockito.mock(WebClient.RequestBodySpec.class);
-        WebClient.RequestHeadersSpec requestHeadersSpecMock = Mockito.mock(WebClient.RequestHeadersSpec.class);
-        WebClient.ResponseSpec responseSpecMock = Mockito.mock(WebClient.ResponseSpec.class);
-
-        when(webClientBuilder.build()).thenReturn(Mockito.mock(WebClient.class));
+        when(webClientBuilder.build()).thenReturn(mock(WebClient.class));
         when(webClientBuilder.build().post()).thenReturn(requestBodyUriSpecMock);
         when(webClientBuilder.build().post().uri(anyString())).thenReturn(requestBodySpecMock);
         when(webClientBuilder.build().post().uri(anyString()).contentType(any())).thenReturn(requestBodySpecMock);
@@ -101,29 +122,18 @@ public class RegisterControllerTest {
         when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any()).retrieve()).thenReturn(responseSpecMock);
         when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any()).retrieve().toEntity(String.class))
                 .thenReturn(Mono.just(ResponseEntity.badRequest().body("mockResponse")));
+        when(userService.isPhoneNumberRegistered(anyLong())).thenReturn(false);
+        when(userService.isEmailRegistered(anyString())).thenReturn(false);
+        when(jwtService.generateJwtToken(any(UserDetails.class))).thenReturn(jwtToken);
+        when(emailService.isValidEmail(request.getEmail())).thenReturn(true);
+        when(paymentController.payment(any(TransactionDTO.class)))
+                .thenReturn(ResponseEntity.badRequest().body("Payment failed"));
 
-        when(mockUserService.isPhoneNumberRegistered(anyLong())).thenReturn(false);
-        when(mockUserService.isEmailRegistered(anyString())).thenReturn(false);
-        when(mockJwtService.generateJwtToken(any(UserDetails.class))).thenReturn("mockJwtToken");
-
-        UserBankCard mockUserBankCard = UserBankCard.builder()
-                .cardNumber(1234567890123456L)
-                .cardExpirationDate("25/25")
-                .cvv((short) 111).build();
-        UserRegistrationDTO mockUserRegistrationDTO = UserRegistrationDTO.builder()
-                .phoneNumber(80988887520L)
-                .userBankCard(mockUserBankCard)
-                .email("useremail@email.com")
-                .password("password").build();
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/register")
+        mvc.perform(MockMvcRequestBuilders.post("/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(mockUserRegistrationDTO)))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest()); // Очікуваний статус "400 Bad Request"
-
-        verify(mockUserService, never()).registerUser(any(UserRegistrationDTO.class));
-        verify(mockUserService, times(1)).isPhoneNumberRegistered(mockUserRegistrationDTO.getPhoneNumber());
-        verify(mockUserService, times(1)).isEmailRegistered(mockUserRegistrationDTO.getEmail());
+                        .content(requestJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Payment failed"));
     }
 
     @Test
@@ -132,19 +142,20 @@ public class RegisterControllerTest {
                 .cardNumber(1234567890123456L)
                 .cardExpirationDate("25/25")
                 .cvv((short) 111).build();
-        UserRegistrationDTO mockUserRegistrationDTO = UserRegistrationDTO.builder()
+        UserRegistrationDTO request = UserRegistrationDTO.builder()
                 .phoneNumber(80988887520L)
                 .userBankCard(mockUserBankCard)
                 .email("useremail@email.com")
                 .password("password").build();
+        String requestJson = objectMapper.writeValueAsString(request);
 
-        when(mockUserService.isPhoneNumberRegistered(anyLong())).thenReturn(true);
+        when(userService.isPhoneNumberRegistered(anyLong())).thenReturn(true);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/register")
+        mvc.perform(MockMvcRequestBuilders.post("/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(mockUserRegistrationDTO)))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().string("User with phone number already exists"));
+                        .content(requestJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("User with phone number " + request.getPhoneNumber() + " already exists"));
     }
 
     @Test
@@ -153,18 +164,19 @@ public class RegisterControllerTest {
                 .cardNumber(1234567890123456L)
                 .cardExpirationDate("25/25")
                 .cvv((short) 111).build();
-        UserRegistrationDTO mockUserRegistrationDTO = UserRegistrationDTO.builder()
+        UserRegistrationDTO request = UserRegistrationDTO.builder()
                 .phoneNumber(80988887520L)
                 .userBankCard(mockUserBankCard)
                 .email("useremail@email.com")
                 .password("password").build();
+        String requestJson = objectMapper.writeValueAsString(request);
 
-        when(mockUserService.isEmailRegistered(anyString())).thenReturn(true);
+        when(userService.isEmailRegistered(anyString())).thenReturn(true);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/register")
+        mvc.perform(MockMvcRequestBuilders.post("/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(mockUserRegistrationDTO)))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().string("User with email already exists"));
+                        .content(requestJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("User with email " + request.getEmail() + " already exists"));
     }
 }

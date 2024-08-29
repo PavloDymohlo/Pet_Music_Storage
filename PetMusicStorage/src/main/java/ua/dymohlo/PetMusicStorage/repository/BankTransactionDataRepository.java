@@ -6,7 +6,6 @@ import ua.dymohlo.PetMusicStorage.entity.BankTransactionData;
 
 @Repository
 public interface BankTransactionDataRepository extends JpaRepository<BankTransactionData, Long> {
-    //BankTransactionData findByBankNameIgnoreCase(String bankTransactionDataName);
     boolean existsByBankNameIgnoreCase(String bankTransactionDataName);
     boolean existsByBankUrlTransactionIgnoreCase(String bankUrlTransaction);
 }

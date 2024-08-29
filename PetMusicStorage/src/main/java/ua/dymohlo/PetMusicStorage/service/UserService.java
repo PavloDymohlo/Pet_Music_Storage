@@ -347,7 +347,7 @@ public class UserService {
             throw new NoSuchElementException("User with phone number " + phoneNumber + " not found");
         }
         if (!passwordEncoder.matches(userPassword, user.getPassword())) {
-            throw new IllegalArgumentException("Current password is incorrect!");
+            throw new IllegalArgumentException("Password is incorrect!");
         }
         deleteUserFromDataBase(user);
     }

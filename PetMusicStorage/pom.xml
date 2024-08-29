@@ -95,6 +95,7 @@
 			<version>2.0.9</version>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
@@ -116,7 +117,7 @@
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-ui</artifactId>
-			<version>1.6.15</version> <!-- Одна з останніх версій у гілці 1.6.x -->
+			<version>1.6.15</version>
 		</dependency>
 
 

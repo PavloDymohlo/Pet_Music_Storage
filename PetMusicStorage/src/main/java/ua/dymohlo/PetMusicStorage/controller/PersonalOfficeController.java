@@ -391,12 +391,12 @@ public ResponseEntity<String> updateSubscription(@RequestBody UpdateSubscription
             return ResponseEntity.status(HttpStatus.FOUND)
                     .location(location)
                     .build();
-        }catch (IllegalArgumentException e){
-            log.error(e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }catch (NoSuchElementException e) {
             log.error("User with phone number {} not found {}", userPhoneNumber, e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }catch (IllegalArgumentException e){
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             log.error("Error deleting a user by phone number", e);
             String errorMessage = "Error deleting user with phone number " + userPhoneNumber;
