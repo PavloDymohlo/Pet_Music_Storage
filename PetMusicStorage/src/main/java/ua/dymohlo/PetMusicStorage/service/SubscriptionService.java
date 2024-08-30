@@ -67,9 +67,15 @@ public class SubscriptionService {
     }
 
     public void updateSubscriptionName(UpdateSubscriptionNameDTO updateSubscriptionNameDTO) {
-        Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(updateSubscriptionNameDTO.getCurrentSubscriptionName());
+        Subscription subscription = subscriptionRepository
+                .findBySubscriptionNameIgnoreCase(updateSubscriptionNameDTO.getCurrentSubscriptionName());
         if (subscription == null) {
-            throw new NoSuchElementException("Subscription with subscriptionName " + updateSubscriptionNameDTO.getCurrentSubscriptionName() + " not found");
+            throw new NoSuchElementException("Subscription with subscriptionName "
+                    + updateSubscriptionNameDTO.getCurrentSubscriptionName() + " not found");
+        }
+        if (subscriptionRepository.existsBySubscriptionNameIgnoreCase(updateSubscriptionNameDTO.getNewSubscriptionName())) {
+            throw new IllegalArgumentException("Subscription with subscriptionName "
+                    + updateSubscriptionNameDTO.getNewSubscriptionName() + " already exists");
         }
         subscription.setSubscriptionName(updateSubscriptionNameDTO.getNewSubscriptionName());
         subscriptionRepository.save(subscription);
@@ -112,7 +118,7 @@ public class SubscriptionService {
     private void transferMusicFiles(Subscription subscription) {
         Subscription newSubscription = subscriptionRepository.findBySubscriptionNameIgnoreCase("ADMIN");
         if (newSubscription == null) {
-            throw new NoSuchElementException("Subscription with name 'FREE' not found");
+            throw new NoSuchElementException("Subscription with name 'ADMIN' not found");
         }
         List<MusicFile> musicFiles = subscription.getMusicFiles();
         musicFiles.stream()

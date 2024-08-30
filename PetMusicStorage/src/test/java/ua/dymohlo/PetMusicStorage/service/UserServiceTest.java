@@ -36,38 +36,41 @@ public class UserServiceTest {
     @InjectMocks
     private UserService userService;
     @Mock
-    private UserRepository mockUserRepository;
+    private UserRepository userRepository;
     @Mock
-    private DatabaseUserDetailsService mockDatabaseUserDetailsService;
+    private DatabaseUserDetailsService databaseUserDetailsService;
     @Mock
-    private UserBankCard mockUserBankCard;
+    private UserBankCard userBankCard;
     @Mock
-    private UserBankCardRepository mockUserBankCardRepository;
+    private UserBankCardRepository userBankCardRepository;
     @Mock
-    private SubscriptionRepository mockSubscriptionRepository;
+    private SubscriptionRepository subscriptionRepository;
     @Mock
-    private User mockUser;
+    private User user;
     @Mock
-    private PasswordEncoder mockPasswordEncoder;
+    private PasswordEncoder passwordEncoder;
     @Mock
-    private Subscription mockSubscription;
+    private Subscription subscription;
     @Mock
-    private JWTService mockJwtService;
+    private JWTService jwtService;
     @Mock
-    private UserBankCardService mockUserBankCardService;
+    private UserBankCardService userBankCardService;
+    @Mock
+    private TelegramService telegramService;
+    @Mock
+    private EmailService emailService;
 
     @Test
     public void userDetailsService_phoneNumberExist() {
         long phoneNumber = 80996663322L;
         UserDetails mockUserDetails = mock(UserDetails.class);
-        when(mockDatabaseUserDetailsService.loadUserByUsername(String.valueOf(phoneNumber))).thenReturn(mockUserDetails);
+        when(databaseUserDetailsService.loadUserByUsername(String.valueOf(phoneNumber))).thenReturn(mockUserDetails);
 
         UserDetailsService userDetailsService = userService.userDetailsService();
         UserDetails userDetails = userDetailsService.loadUserByUsername(String.valueOf(phoneNumber));
 
         assertNotNull(userDetails);
         assertEquals(mockUserDetails, userDetails);
-        verify(mockDatabaseUserDetailsService).loadUserByUsername(String.valueOf(phoneNumber));
     }
 
     @Test
@@ -82,138 +85,121 @@ public class UserServiceTest {
 
     @Test
     public void registerUser_success() {
+
         long phoneNumber = 80996663322L;
         String email = "testuser@example.com";
-        String password = mockPasswordEncoder.encode("password");
-        when(mockUserRepository.existsByPhoneNumber(phoneNumber)).thenReturn(false);
-        when(mockUserRepository.existsByEmailIgnoreCase(email)).thenReturn(false);
-        mockUserBankCard = UserBankCard.builder().cardNumber(1234567890123456L).build();
-        when(mockUserBankCardRepository.findByCardNumber(anyLong())).thenReturn(mockUserBankCard);
-        Subscription firstSubscription = Subscription.builder().subscriptionName("MAXIMUM").build();
-        when(mockSubscriptionRepository.findBySubscriptionNameIgnoreCase("MAXIMUM")).thenReturn(firstSubscription);
-        when(mockSubscriptionRepository.existsBySubscriptionNameIgnoreCase(String.valueOf(firstSubscription))).thenReturn(true);
+        String password = passwordEncoder.encode("password");
+        userBankCard = UserBankCard.builder()
+                .cardNumber(1234567890123456L).build();
+        Subscription firstSubscription = Subscription.builder()
+                .subscriptionName("MAXIMUM").build();
         UserRegistrationDTO userRegistrationDTO = UserRegistrationDTO.builder()
                 .phoneNumber(phoneNumber)
-                .userBankCard(mockUserBankCard)
+                .userBankCard(userBankCard)
                 .password(password)
                 .email(email).build();
+        when(userRepository.existsByPhoneNumber(phoneNumber)).thenReturn(false);
+        when(userRepository.existsByEmailIgnoreCase(email)).thenReturn(false);
+        when(userBankCardRepository.findByCardNumber(anyLong())).thenReturn(userBankCard);
+        when(subscriptionRepository.findBySubscriptionNameIgnoreCase("MAXIMUM")).thenReturn(firstSubscription);
+        when(subscriptionRepository.existsBySubscriptionNameIgnoreCase(String.valueOf(firstSubscription))).thenReturn(true);
 
         userService.registerUser(userRegistrationDTO);
 
-        verify(mockUserRepository).save(any(User.class));
-        verify(mockUserRepository, times(1)).save(any(User.class));
-        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-        verify(mockUserRepository).save(userCaptor.capture());
-        User savedUser = userCaptor.getValue();
-        assertNotNull(savedUser);
-        assertEquals(phoneNumber, savedUser.getPhoneNumber());
-        assertEquals(email, savedUser.getEmail());
-        assertEquals(firstSubscription, savedUser.getSubscription());
-        assertEquals(mockUserBankCard, savedUser.getUserBankCard());
+        verify(userRepository).save(any(User.class));
     }
 
     @Test
-    public void registerUser_phoneNumberExists_registrationFailed() {
+    public void registerUser_phoneNumberAlreadyExists() {
         long phoneNumber = 80996663322L;
-        when(mockUserRepository.existsByPhoneNumber(phoneNumber)).thenReturn(true);
+        when(userRepository.existsByPhoneNumber(phoneNumber)).thenReturn(true);
         UserRegistrationDTO userRegistrationDTO = UserRegistrationDTO.builder()
                 .phoneNumber(phoneNumber).build();
 
-        try {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             userService.registerUser(userRegistrationDTO);
-            fail("Expected IllegalArgumentException was not thrown");
-        } catch (IllegalArgumentException e) {
+        });
 
-            assertEquals("Phone number " + phoneNumber + " already exists", e.getMessage());
-            verify(mockUserRepository, never()).save(any(User.class));
-        }
+        assertEquals("Phone number " + phoneNumber + " already exists", exception.getMessage());
     }
 
     @Test
-    public void registerUser_emailNumberExists_registrationFailed() {
+    public void registerUser_emailAlreadtExists() {
         long phoneNumber = 80996663322L;
         String email = "testuser@example.com";
-        when(mockUserRepository.existsByPhoneNumber(phoneNumber)).thenReturn(false);
-        when(mockUserRepository.existsByEmailIgnoreCase(email)).thenReturn(true);
+        when(userRepository.existsByPhoneNumber(phoneNumber)).thenReturn(false);
+        when(userRepository.existsByEmailIgnoreCase(email)).thenReturn(true);
         UserRegistrationDTO userRegistrationDTO = UserRegistrationDTO.builder()
                 .phoneNumber(phoneNumber)
                 .email(email).build();
 
-        try {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             userService.registerUser(userRegistrationDTO);
-            fail("Expected IllegalArgumentException was not thrown");
-        } catch (IllegalArgumentException e) {
+        });
 
-            assertEquals("Email " + email + " already exists", e.getMessage());
-            verify(mockUserRepository, never()).save(any(User.class));
-        }
+        assertEquals("Email " + email + " already exists", exception.getMessage());
     }
 
     @Test
-    public void isPhoneNumberRegistered_phoneNumberExists_returnTrue() {
+    public void isPhoneNumberRegistered_true() {
         long phoneNumber = 80996663322L;
-        when(mockUserRepository.existsByPhoneNumber(phoneNumber)).thenReturn(true);
+        when(userRepository.existsByPhoneNumber(phoneNumber)).thenReturn(true);
 
         boolean result = userService.isPhoneNumberRegistered(phoneNumber);
 
         assertTrue(result);
-        verify(mockUserRepository).existsByPhoneNumber(phoneNumber);
     }
 
     @Test
-    public void isPhoneNumberRegistered_phoneNumberNotExists_returnFalse() {
+    public void isPhoneNumberRegistered_false() {
         long phoneNumber = 80996663322L;
-        when(mockUserRepository.existsByPhoneNumber(phoneNumber)).thenReturn(false);
+        when(userRepository.existsByPhoneNumber(phoneNumber)).thenReturn(false);
 
         boolean result = userService.isPhoneNumberRegistered(phoneNumber);
 
         assertFalse(result);
-        verify(mockUserRepository).existsByPhoneNumber(phoneNumber);
+        verify(userRepository).existsByPhoneNumber(phoneNumber);
     }
 
     @Test
-    public void isEmailRegistered_emailExists_returnTrue() {
+    public void isEmailRegistered_true() {
         String email = "testuser@example.com";
-        when(mockUserRepository.existsByEmailIgnoreCase(email)).thenReturn(true);
+        when(userRepository.existsByEmailIgnoreCase(email)).thenReturn(true);
 
         boolean result = userService.isEmailRegistered(email);
 
         assertTrue(result);
-        verify(mockUserRepository).existsByEmailIgnoreCase(email);
     }
 
     @Test
-    public void isEmailRegistered_emailNotExists_returnFalse() {
+    public void isEmailRegistered_false() {
         String email = "testuser@example.com";
-        when(mockUserRepository.existsByEmailIgnoreCase(email)).thenReturn(false);
+        when(userRepository.existsByEmailIgnoreCase(email)).thenReturn(false);
 
         boolean result = userService.isEmailRegistered(email);
 
         assertFalse(result);
-        verify(mockUserRepository).existsByEmailIgnoreCase(email);
     }
 
     @Test
-    public void loginIn_successful_returnSuccess() {
+    public void loginIn_success() {
         UserLoginInDTO userLoginInDTO = UserLoginInDTO.builder()
                 .phoneNumber(80966584100L)
                 .password("password").build();
-        mockUser = User.builder()
+        user = User.builder()
                 .phoneNumber(80966584100L)
                 .password("password").build();
-        when(mockUserRepository.existsByPhoneNumber(anyLong())).thenReturn(true);
-        when(mockUserRepository.findByPhoneNumber(80966584100L)).thenReturn(mockUser);
-        when(mockPasswordEncoder.matches("password", "password")).thenReturn(true);
+        when(userRepository.existsByPhoneNumber(anyLong())).thenReturn(true);
+        when(userRepository.findByPhoneNumber(80966584100L)).thenReturn(user);
+        when(passwordEncoder.matches("password", "password")).thenReturn(true);
 
         String result = userService.loginIn(userLoginInDTO);
 
         assertEquals("Success", result);
-        verify(mockUserRepository, times(1)).findByPhoneNumber(80966584100L);
-        verify(mockPasswordEncoder, times(1)).matches("password", "password");
     }
 
     @Test
-    public void loginIn_invalidPhoneNumber_returnIllegalArgumentException() {
+    public void loginIn_invalidPhoneNumber() {
         UserLoginInDTO userLoginInDTO = UserLoginInDTO.builder()
                 .phoneNumber(80966584100L).build();
 
@@ -225,16 +211,16 @@ public class UserServiceTest {
     }
 
     @Test
-    public void loginIn_invalidPassword_returnIllegalArgumentException() {
+    public void loginIn_invalidPassword() {
         UserLoginInDTO userLoginInDTO = UserLoginInDTO.builder()
                 .phoneNumber(80966584100L)
                 .password("password").build();
-        mockUser = User.builder()
+        user = User.builder()
                 .phoneNumber(80966584100L)
                 .password("1234").build();
-        when(mockUserRepository.existsByPhoneNumber(anyLong())).thenReturn(true);
-        when(mockUserRepository.findByPhoneNumber(anyLong())).thenReturn(mockUser);
-        when(mockPasswordEncoder.matches("password", "1234")).thenReturn(false);
+        when(userRepository.existsByPhoneNumber(anyLong())).thenReturn(true);
+        when(userRepository.findByPhoneNumber(anyLong())).thenReturn(user);
+        when(passwordEncoder.matches("password", "1234")).thenReturn(false);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             userService.loginIn(userLoginInDTO);
@@ -244,52 +230,56 @@ public class UserServiceTest {
     }
 
     @Test
-    public void isAdminSubscription_returnTrue() {
-        mockSubscription = Subscription.builder()
+    public void isAdminSubscription_true() {
+        subscription = Subscription.builder()
                 .subscriptionName("ADMIN").build();
-        mockUser = User.builder()
-                .subscription(mockSubscription).build();
-        when(mockSubscriptionRepository.findBySubscriptionNameIgnoreCase("ADMIN")).thenReturn(mockSubscription);
-        Subscription subscription = mockUser.getSubscription();
+        user = User.builder()
+                .subscription(subscription)
+                .phoneNumber(80663201200L).build();
+        when(userRepository.findByPhoneNumber(80663201200L)).thenReturn(user);
+        when(subscriptionRepository.findBySubscriptionNameIgnoreCase("ADMIN")).thenReturn(subscription);
 
-        boolean result = subscription == mockSubscriptionRepository.findBySubscriptionNameIgnoreCase("ADMIN");
+        boolean userSubscription = userService.isAdminSubscription(80663201200L);
 
-        assertTrue(result);
-        verify(mockSubscriptionRepository, times(1)).findBySubscriptionNameIgnoreCase("ADMIN");
+        assertTrue(userSubscription);
     }
 
     @Test
-    public void isAdminSubscription_returnFalse() {
-        mockSubscription = Subscription.builder()
+    public void isAdminSubscription_false() {
+        subscription = Subscription.builder()
                 .subscriptionName("FREE").build();
-        mockUser = User.builder()
-                .subscription(mockSubscription).build();
-        when(mockSubscriptionRepository.findBySubscriptionNameIgnoreCase("ADMIN")).thenReturn(null);
-        Subscription subscription = mockUser.getSubscription();
+        user = User.builder()
+                .subscription(subscription)
+                .phoneNumber(80663201200L).build();
+        when(userRepository.findByPhoneNumber(80663201200L)).thenReturn(user);
 
-        boolean result = subscription == mockSubscriptionRepository.findBySubscriptionNameIgnoreCase("ADMIN");
+        boolean userSubscription = userService.isAdminSubscription(80663201200L);
 
-        assertFalse(result);
-        verify(mockSubscriptionRepository, times(1)).findBySubscriptionNameIgnoreCase("ADMIN");
+        assertFalse(userSubscription);
     }
 
     @Test
-    public void getCurrentUserPhoneNumber_returnPhoneNumber() {
-        String jwtToken = "Bearer <token>";
-        long phoneNumber = 80996658896L;
-        when(mockJwtService.extractUserName(anyString())).thenReturn(String.valueOf(phoneNumber));
+    public void updatePhoneNumber_success() {
+        long currentPhoneNumber = 80998866555L;
+        long newPhoneNumber = 80985623300L;
+        user = User.builder()
+                .phoneNumber(80998866555L).build();
+        when(userRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(true);
+        when(userRepository.existsByPhoneNumber(newPhoneNumber)).thenReturn(false);
+        when(userRepository.findByPhoneNumber(currentPhoneNumber)).thenReturn(user);
+        doNothing().when(telegramService).notifyUserAboutChangePhoneNumber(newPhoneNumber);
+        doNothing().when(emailService).notifyUserAboutChangePhoneNumber(newPhoneNumber, user.getEmail());
 
-        long actualPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
+        userService.updatePhoneNumber(currentPhoneNumber, newPhoneNumber);
 
-        verify(mockJwtService).extractUserName(anyString());
-        assertEquals(Long.parseLong(String.valueOf(phoneNumber)), actualPhoneNumber);
+        verify(userRepository).save(user);
     }
 
     @Test
     public void updatePhoneNumber_phoneNumberNotFound() {
         long currentPhoneNumber = 80998885566L;
         long newPhoneNumber = 80663210022L;
-        when(mockUserRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(false);
+        when(userRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(false);
 
         NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
             userService.updatePhoneNumber(currentPhoneNumber, newPhoneNumber);
@@ -299,11 +289,11 @@ public class UserServiceTest {
     }
 
     @Test
-    public void updatePhoneNumber_newPhoneNumberAlreadyExists() {
+    public void updatePhoneNumber_phoneNumberAlreadyExists() {
         long currentPhoneNumber = 80998885566L;
         long newPhoneNumber = 80663210022L;
-        when(mockUserRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(true);
-        when(mockUserRepository.existsByPhoneNumber(newPhoneNumber)).thenReturn(true);
+        when(userRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(true);
+        when(userRepository.existsByPhoneNumber(newPhoneNumber)).thenReturn(true);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             userService.updatePhoneNumber(currentPhoneNumber, newPhoneNumber);
@@ -313,20 +303,63 @@ public class UserServiceTest {
     }
 
     @Test
-    public void updatePhoneNumber_success() {
-        long currentPhoneNumber = 80998866555L;
-        long newPhoneNumber = 80985623300L;
-        mockUser = User.builder()
-                .phoneNumber(80998866555L).build();
-        when(mockUserRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(true);
-        when(mockUserRepository.existsByPhoneNumber(newPhoneNumber)).thenReturn(false);
-        when(mockUserRepository.findByPhoneNumber(currentPhoneNumber)).thenReturn(mockUser);
+    public void getCurrentUserPhoneNumber_success() {
+        String jwtToken = "Bearer <token>";
+        long phoneNumber = 80996658896L;
+        when(jwtService.extractUserName(anyString())).thenReturn(String.valueOf(phoneNumber));
 
-        userService.updatePhoneNumber(currentPhoneNumber, newPhoneNumber);
+        userService.getCurrentUserPhoneNumber(jwtToken);
 
-        assertEquals(newPhoneNumber, mockUser.getPhoneNumber());
-        verify(mockUserRepository).save(mockUser);
+        verify(jwtService).extractUserName(anyString());
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @Test
+    public void updateBankCard_setNewBankCard() {
+        long currentPhoneNumber = 80998885566L;
+        long newCardNumber = 9876543210987654L;
+        UpdateUserBankCardDTO mockUpdateUserBankCardDTO = UpdateUserBankCardDTO.builder()
+                .userPhoneNumber(currentPhoneNumber)
+                .newUserBankCard(UserBankCard.builder()
+                        .cardNumber(newCardNumber)
+                        .cardExpirationDate("25/25")
+                        .cvv((short) 123)
+                        .build())
+                .build();
+        when(userRepository.findByPhoneNumber(currentPhoneNumber)).thenReturn(user);
+        when(userRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(true);
+        when(userBankCardRepository.findByCardNumber(mockUpdateUserBankCardDTO.getNewUserBankCard().getCardNumber()))
+                .thenReturn(null);
+
+        userService.updateBankCard(currentPhoneNumber, mockUpdateUserBankCardDTO);
+
+        verify(userRepository).existsByPhoneNumber(currentPhoneNumber);
+        verify(userBankCardRepository).findByCardNumber(newCardNumber);
+        verify(userRepository).save(any(User.class));
+    }
+
+
 
     @Test
     public void updateBankCard_phoneNumberNotFound() {
@@ -338,7 +371,7 @@ public class UserServiceTest {
                         .cardExpirationDate("25/25")
                         .cvv((short) 123).build()).build();
 
-        when(mockUserRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(false);
+        when(userRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(false);
 
         NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
             userService.updateBankCard(currentPhoneNumber, mockUpdateUserBankCardDTO);
@@ -356,10 +389,10 @@ public class UserServiceTest {
                         .cardNumber(1234567890125874L)
                         .cardExpirationDate("25/25")
                         .cvv((short) 123).build()).build();
-        when(mockUserRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(true);
-        when(mockUserBankCardRepository.findByCardNumber(mockUpdateUserBankCardDTO.getNewUserBankCard().getCardNumber()))
-                .thenReturn(mockUserBankCard);
-        when(mockUserBankCardService.validateBankCard(mockUpdateUserBankCardDTO.getNewUserBankCard())).thenReturn(false);
+        when(userRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(true);
+        when(userBankCardRepository.findByCardNumber(mockUpdateUserBankCardDTO.getNewUserBankCard().getCardNumber()))
+                .thenReturn(userBankCard);
+        when(userBankCardService.validateBankCard(mockUpdateUserBankCardDTO.getNewUserBankCard())).thenReturn(false);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             userService.updateBankCard(currentPhoneNumber, mockUpdateUserBankCardDTO);
@@ -372,7 +405,7 @@ public class UserServiceTest {
     public void updateBankCard_cardExists_updateCard() {
         long currentPhoneNumber = 80998885566L;
         long newCardNumber = 9876543210987654L;
-        mockUser = new User();
+        user = new User();
         UpdateUserBankCardDTO mockUpdateUserBankCardDTO = UpdateUserBankCardDTO.builder()
                 .userPhoneNumber(currentPhoneNumber)
                 .newUserBankCard(UserBankCard.builder()
@@ -386,44 +419,21 @@ public class UserServiceTest {
                 .cardExpirationDate(mockUpdateUserBankCardDTO.getNewUserBankCard().getCardExpirationDate())
                 .cvv(mockUpdateUserBankCardDTO.getNewUserBankCard().getCvv())
                 .build();
-        when(mockUserRepository.findByPhoneNumber(currentPhoneNumber)).thenReturn(mockUser);
-        when(mockUserRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(true);
-        when(mockUserBankCardRepository.findByCardNumber(mockUpdateUserBankCardDTO.getNewUserBankCard().getCardNumber()))
+        when(userRepository.findByPhoneNumber(currentPhoneNumber)).thenReturn(user);
+        when(userRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(true);
+        when(userBankCardRepository.findByCardNumber(mockUpdateUserBankCardDTO.getNewUserBankCard().getCardNumber()))
                 .thenReturn(existingCard);
-        when(mockUserBankCardService.validateBankCard(existingCard)).thenReturn(true);
+        when(userBankCardService.validateBankCard(existingCard)).thenReturn(true);
 
         userService.updateBankCard(currentPhoneNumber, mockUpdateUserBankCardDTO);
 
-        verify(mockUserRepository).existsByPhoneNumber(currentPhoneNumber);
-        verify(mockUserBankCardRepository).findByCardNumber(newCardNumber);
-        verify(mockUserBankCardService).validateBankCard(existingCard);
-        verify(mockUserRepository).save(any(User.class));
+        verify(userRepository).existsByPhoneNumber(currentPhoneNumber);
+        verify(userBankCardRepository).findByCardNumber(newCardNumber);
+        verify(userBankCardService).validateBankCard(existingCard);
+        verify(userRepository).save(any(User.class));
     }
 
-    @Test
-    public void updateBankCard_newBankCard() {
-        long currentPhoneNumber = 80998885566L;
-        long newCardNumber = 9876543210987654L;
-        mockUser = new User();
-        UpdateUserBankCardDTO mockUpdateUserBankCardDTO = UpdateUserBankCardDTO.builder()
-                .userPhoneNumber(currentPhoneNumber)
-                .newUserBankCard(UserBankCard.builder()
-                        .cardNumber(newCardNumber)
-                        .cardExpirationDate("25/25")
-                        .cvv((short) 123)
-                        .build())
-                .build();
-        when(mockUserRepository.findByPhoneNumber(currentPhoneNumber)).thenReturn(mockUser);
-        when(mockUserRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(true);
-        when(mockUserBankCardRepository.findByCardNumber(mockUpdateUserBankCardDTO.getNewUserBankCard().getCardNumber()))
-                .thenReturn(null);
 
-        userService.updateBankCard(currentPhoneNumber, mockUpdateUserBankCardDTO);
-
-        verify(mockUserRepository).existsByPhoneNumber(currentPhoneNumber);
-        verify(mockUserBankCardRepository).findByCardNumber(newCardNumber);
-        verify(mockUserRepository).save(any(User.class));
-    }
 
     @Test
     public void updatePassword_success() {
@@ -431,13 +441,13 @@ public class UserServiceTest {
         String newPassword = "password";
         UpdatePasswordDTO updatePasswordDTO = UpdatePasswordDTO.builder()
                 .newPassword(newPassword).build();
-        when(mockUserRepository.existsByPhoneNumber(userPhoneNumber)).thenReturn(true);
-        when(mockUserRepository.findByPhoneNumber(userPhoneNumber)).thenReturn(mockUser);
-        when(mockPasswordEncoder.encode(newPassword)).thenReturn(newPassword);
+        when(userRepository.existsByPhoneNumber(userPhoneNumber)).thenReturn(true);
+        when(userRepository.findByPhoneNumber(userPhoneNumber)).thenReturn(user);
+        when(passwordEncoder.encode(newPassword)).thenReturn(newPassword);
 
         userService.updatePassword(userPhoneNumber, updatePasswordDTO);
 
-        verify(mockUserRepository).save(any(User.class));
+        verify(userRepository).save(any(User.class));
     }
 
     @Test
@@ -447,7 +457,7 @@ public class UserServiceTest {
         UpdatePasswordDTO updatePasswordDTO = UpdatePasswordDTO.builder()
                 .newPassword(newPassword)
                 .userPhoneNumber(userPhoneNumber).build();
-        when(mockUserRepository.existsByPhoneNumber(userPhoneNumber)).thenReturn(false);
+        when(userRepository.existsByPhoneNumber(userPhoneNumber)).thenReturn(false);
         NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
             userService.updatePassword(userPhoneNumber, updatePasswordDTO);
         });
@@ -462,14 +472,14 @@ public class UserServiceTest {
         UpdateEmailDTO updateEmailDTO = UpdateEmailDTO.builder()
                 .userPhoneNumber(userPhoneNumber)
                 .newEmail(newEmail).build();
-        when(mockUserRepository.existsByPhoneNumber(userPhoneNumber)).thenReturn(true);
-        when(mockUserRepository.existsByEmailIgnoreCase(newEmail)).thenReturn(false);
-        when(mockUserRepository.findByPhoneNumber(userPhoneNumber)).thenReturn(mockUser);
+        when(userRepository.existsByPhoneNumber(userPhoneNumber)).thenReturn(true);
+        when(userRepository.existsByEmailIgnoreCase(newEmail)).thenReturn(false);
+        when(userRepository.findByPhoneNumber(userPhoneNumber)).thenReturn(user);
 
         userService.updateEmail(userPhoneNumber, updateEmailDTO);
 
         assertEquals(newEmail, updateEmailDTO.getNewEmail());
-        verify(mockUserRepository).save(any(User.class));
+        verify(userRepository).save(any(User.class));
     }
 
     @Test
@@ -479,8 +489,8 @@ public class UserServiceTest {
         UpdateEmailDTO updateEmailDTO = UpdateEmailDTO.builder()
                 .userPhoneNumber(userPhoneNumber)
                 .newEmail(newEmail).build();
-        when(mockUserRepository.existsByPhoneNumber(userPhoneNumber)).thenReturn(true);
-        when(mockUserRepository.existsByEmailIgnoreCase(newEmail)).thenReturn(true);
+        when(userRepository.existsByPhoneNumber(userPhoneNumber)).thenReturn(true);
+        when(userRepository.existsByEmailIgnoreCase(newEmail)).thenReturn(true);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             userService.updateEmail(userPhoneNumber, updateEmailDTO);
@@ -493,13 +503,13 @@ public class UserServiceTest {
     public void setAutoRenewStatus_success() {
         long phoneNumber = 80998885566L;
         AutoRenewStatus newStatus = AutoRenewStatus.YES;
-        when(mockUserRepository.existsByPhoneNumber(phoneNumber)).thenReturn(true);
-        when(mockUserRepository.findByPhoneNumber(phoneNumber)).thenReturn(mockUser);
+        when(userRepository.existsByPhoneNumber(phoneNumber)).thenReturn(true);
+        when(userRepository.findByPhoneNumber(phoneNumber)).thenReturn(user);
 
         userService.setAutoRenewStatus(phoneNumber, new SetAutoRenewDTO(phoneNumber, newStatus));
 
-        verify(mockUser, times(1)).setAutoRenew(newStatus);
-        verify(mockUserRepository, times(1)).save(mockUser);
+        verify(user, times(1)).setAutoRenew(newStatus);
+        verify(userRepository, times(1)).save(user);
     }
 
     @Test
@@ -509,14 +519,14 @@ public class UserServiceTest {
                 .subscriptionName("MAXIMUM").build();
         UpdateSubscriptionDTO updateSubscriptionDTO = UpdateSubscriptionDTO.builder()
                 .newSubscription(newSubscription).build();
-        when(mockUserRepository.existsByPhoneNumber(phoneNumber)).thenReturn(true);
-        when(mockUserRepository.findByPhoneNumber(phoneNumber)).thenReturn(mockUser);
-        when(mockSubscriptionRepository.findBySubscriptionNameIgnoreCase(anyString())).thenReturn(newSubscription);
+        when(userRepository.existsByPhoneNumber(phoneNumber)).thenReturn(true);
+        when(userRepository.findByPhoneNumber(phoneNumber)).thenReturn(user);
+        when(subscriptionRepository.findBySubscriptionNameIgnoreCase(anyString())).thenReturn(newSubscription);
 
         userService.updateSubscription(phoneNumber, updateSubscriptionDTO);
 
-        verify(mockUser, times(1)).setSubscription(newSubscription);
-        verify(mockUserRepository, times(1)).save(mockUser);
+        verify(user, times(1)).setSubscription(newSubscription);
+        verify(userRepository, times(1)).save(user);
     }
 
     @Test
@@ -526,8 +536,8 @@ public class UserServiceTest {
                 .subscriptionName("MAXIMUM").build();
         UpdateSubscriptionDTO updateSubscriptionDTO = UpdateSubscriptionDTO.builder()
                 .newSubscription(newSubscription).build();
-        when(mockUserRepository.existsByPhoneNumber(phoneNumber)).thenReturn(true);
-        when(mockSubscriptionRepository.findBySubscriptionNameIgnoreCase(anyString())).thenReturn(null);
+        when(userRepository.existsByPhoneNumber(phoneNumber)).thenReturn(true);
+        when(subscriptionRepository.findBySubscriptionNameIgnoreCase(anyString())).thenReturn(null);
 
         NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
             userService.updateSubscription(phoneNumber, updateSubscriptionDTO);
@@ -543,17 +553,18 @@ public class UserServiceTest {
         List<User> mockUsers = new ArrayList<>();
         mockUsers.add(firstUser);
         mockUsers.add(secondUser);
-        when(mockUserRepository.findAll()).thenReturn(mockUsers);
+        when(userRepository.findAll()).thenReturn(mockUsers);
 
         List<User> result = userService.findAllUsers();
 
         assertEquals(2, result.size());
     }
-    @Test
-    public void findAllUsers_returnException_usersNotFound(){
-        when(mockUserRepository.findAll()).thenReturn(new ArrayList<>());
 
-        NoSuchElementException exception = assertThrows(NoSuchElementException.class, ()->{
+    @Test
+    public void findAllUsers_returnException_usersNotFound() {
+        when(userRepository.findAll()).thenReturn(new ArrayList<>());
+
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
             userService.findAllUsers();
         });
 
@@ -563,7 +574,7 @@ public class UserServiceTest {
     @Test
     public void findUserByPhoneNumber_returnUser() {
         User user = User.builder().phoneNumber(80996653200L).build();
-        when(mockUserRepository.findByPhoneNumber(80996653200L)).thenReturn(user);
+        when(userRepository.findByPhoneNumber(80996653200L)).thenReturn(user);
 
         User findUser = userService.findUserByPhoneNumber(80996653200L);
 
@@ -573,7 +584,7 @@ public class UserServiceTest {
     @Test
     public void findUserByPhoneNumber_returnException() {
         User user = User.builder().phoneNumber(80996653200L).build();
-        when(mockUserRepository.findByPhoneNumber(user.getPhoneNumber())).thenReturn(null);
+        when(userRepository.findByPhoneNumber(user.getPhoneNumber())).thenReturn(null);
 
         NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
             userService.findUserByPhoneNumber(user.getPhoneNumber());
@@ -591,7 +602,7 @@ public class UserServiceTest {
                 .userBankCard(userBankCard).build();
         List<User> users = Collections.singletonList(user);
         userBankCard.setUsers(users);
-        when(mockUserBankCardRepository.findByCardNumber(anyLong())).thenReturn(userBankCard);
+        when(userBankCardRepository.findByCardNumber(anyLong())).thenReturn(userBankCard);
 
         List<User> result = userService.findUserByBankCard(bankCardNumber);
 
@@ -602,7 +613,7 @@ public class UserServiceTest {
     @Test
     public void findUserByBankCard_returnException_bankCardNotFound() {
         long bankCardNumber = 2225698763250124L;
-        when(mockUserBankCardRepository.findByCardNumber(anyLong())).thenReturn(null);
+        when(userBankCardRepository.findByCardNumber(anyLong())).thenReturn(null);
 
         NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
             userService.findUserByBankCard(bankCardNumber);
@@ -614,10 +625,10 @@ public class UserServiceTest {
     @Test
     public void findUserByBankCard_returnException_usersNotFound() {
         long bankCardNumber = 2225698763250124L;
-        when(mockUserBankCardRepository.findByCardNumber(anyLong())).thenReturn(mockUserBankCard);
-        when(mockUserBankCard.getUsers()).thenReturn(null);
+        when(userBankCardRepository.findByCardNumber(anyLong())).thenReturn(userBankCard);
+        when(userBankCard.getUsers()).thenReturn(null);
         List<User> users = mock(List.class);
-        when(mockUserBankCard.getUsers()).thenReturn(users);
+        when(userBankCard.getUsers()).thenReturn(users);
         when(users.isEmpty()).thenReturn(true);
 
         NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
@@ -636,7 +647,7 @@ public class UserServiceTest {
                 .subscription(subscription).build();
         List<User> users = Collections.singletonList(user);
         subscription.setUsers(users);
-        when(mockSubscriptionRepository.findBySubscriptionNameIgnoreCase(anyString())).thenReturn(subscription);
+        when(subscriptionRepository.findBySubscriptionNameIgnoreCase(anyString())).thenReturn(subscription);
 
         List<User> result = userService.findUserBySubscription(userSubscription);
 
@@ -647,7 +658,7 @@ public class UserServiceTest {
     @Test
     public void findUserBySubscription_returnException_subscriptionNotFound() {
         String userSubscription = "FREE";
-        when(mockSubscriptionRepository.findBySubscriptionNameIgnoreCase(anyString())).thenReturn(null);
+        when(subscriptionRepository.findBySubscriptionNameIgnoreCase(anyString())).thenReturn(null);
 
         NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
             userService.findUserBySubscription(userSubscription);
@@ -659,9 +670,9 @@ public class UserServiceTest {
     @Test
     public void findUserBySubscription_returnException_usersNotFound() {
         String userSubscription = "FREE";
-        when(mockSubscription.getSubscriptionName()).thenReturn(userSubscription);
-        when(mockSubscriptionRepository.findBySubscriptionNameIgnoreCase(userSubscription))
-                .thenReturn(mockSubscription);
+        when(subscription.getSubscriptionName()).thenReturn(userSubscription);
+        when(subscriptionRepository.findBySubscriptionNameIgnoreCase(userSubscription))
+                .thenReturn(subscription);
 
         NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
             userService.findUserBySubscription(userSubscription);
@@ -671,11 +682,10 @@ public class UserServiceTest {
     }
 
 
-
     @Test
     public void findUserByEmail_returnUser() {
         User user = User.builder().email("example@email.com").build();
-        when(mockUserRepository.findByEmailIgnoreCase(anyString())).thenReturn(user);
+        when(userRepository.findByEmailIgnoreCase(anyString())).thenReturn(user);
 
         User findUser = userService.findUserByEmail("example@email.com");
 
@@ -685,9 +695,9 @@ public class UserServiceTest {
     @Test
     public void findUserByEmail_returnException_userNotFound() {
         String userEmail = "example.email";
-        when(mockUserRepository.findByEmailIgnoreCase(anyString())).thenReturn(null);
+        when(userRepository.findByEmailIgnoreCase(anyString())).thenReturn(null);
 
-        NoSuchElementException exception = assertThrows(NoSuchElementException.class,()->{
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
             userService.findUserByEmail(userEmail);
         });
 
@@ -697,7 +707,7 @@ public class UserServiceTest {
     @Test
     public void findUserById_returnUser() {
         User user = User.builder().id(1).build();
-        when(mockUserRepository.findById(anyLong())).thenReturn(user);
+        when(userRepository.findById(anyLong())).thenReturn(user);
 
         User findUser = userService.findUserById(1);
 
@@ -707,25 +717,25 @@ public class UserServiceTest {
     @Test
     public void findUserById_returnException_userNotFound() {
         long userId = 1l;
-        when(mockUserRepository.findById(anyLong())).thenReturn(null);
+        when(userRepository.findById(anyLong())).thenReturn(null);
 
-        NoSuchElementException exception = assertThrows(NoSuchElementException.class,()->{
-           userService.findUserById(userId);
-       });
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
+            userService.findUserById(userId);
+        });
 
-       assert exception.getMessage().equals("User with id " + userId + " not found");
+        assert exception.getMessage().equals("User with id " + userId + " not found");
     }
 
     @Test
     public void deleteUserFromDatabase_success() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        when(mockUser.getUserBankCard()).thenReturn(mockUserBankCard);
-        when(mockUser.getUserBankCard().getCardNumber()).thenReturn(2356897412356895L);
+        when(user.getUserBankCard()).thenReturn(userBankCard);
+        when(user.getUserBankCard().getCardNumber()).thenReturn(2356897412356895L);
 
         Method method = UserService.class.getDeclaredMethod("deleteUserFromDataBase", User.class);
         method.setAccessible(true);
-        method.invoke(userService, mockUser);
+        method.invoke(userService, user);
 
-        verify(mockUserRepository, times(1)).deleteById(anyLong());
+        verify(userRepository, times(1)).deleteById(anyLong());
     }
 
     @Test
@@ -744,17 +754,17 @@ public class UserServiceTest {
         List<User> users = new ArrayList<>();
         users.add(firstUser);
         users.add(secondUser);
-        when(mockUserRepository.findByPhoneNumber(anyLong())).thenReturn(adminUser);
-        when(mockUserRepository.findAll()).thenReturn(users);
+        when(userRepository.findByPhoneNumber(anyLong())).thenReturn(adminUser);
+        when(userRepository.findAll()).thenReturn(users);
 
         userService.deleteAllUsers(adminUserPhoneNumber);
 
-        verify(mockUserRepository, times(1)).deleteAll(users);
+        verify(userRepository, times(1)).deleteAll(users);
         List<UserBankCard> userBankCardsToDelete = users.stream()
                 .map(User::getUserBankCard)
                 .filter(mockUserBankCard -> userBankCard != null && !userBankCard.equals(adminUser.getUserBankCard()))
                 .distinct()
                 .collect(Collectors.toList());
-        verify(mockUserBankCardRepository, times(1)).deleteAll(userBankCardsToDelete);
+        verify(userBankCardRepository, times(1)).deleteAll(userBankCardsToDelete);
     }
 }

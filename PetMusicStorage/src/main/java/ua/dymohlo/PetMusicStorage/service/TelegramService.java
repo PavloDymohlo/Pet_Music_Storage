@@ -23,14 +23,16 @@ public class TelegramService {
     public void notifyUserAboutChangePhoneNumber(long newPhoneNumber) {
         User user = userRepository.findByPhoneNumber(newPhoneNumber);
         if (user != null && user.getTelegramChatId() != null) {
-            String message = String.format("Your phone number has been changed to the %s. If this wasn't you, please contact support.", newPhoneNumber);
+            String message = String.format("Your phone number has been changed to the %s. " +
+                    "If this wasn't you, please contact support.", newPhoneNumber);
             telegramBot.sendMessage(user.getTelegramChatId(), message);
         }
     }
-    public void notifyUserAboutChangeBankCard(long phoneNumber, String changeType) {
+    public void notifyUserAboutChangeBankCard(long phoneNumber, String bankCardNumber) {
         User user = userRepository.findByPhoneNumber(phoneNumber);
         if (user != null && user.getTelegramChatId() != null) {
-            String message = String.format("Your bank card has been changed to the %s. If this wasn't you, please contact support.", changeType);
+            String message = String.format("Your bank card has been changed to the %s. " +
+                    "If this wasn't you, please contact support.", bankCardNumber);
             telegramBot.sendMessage(user.getTelegramChatId(), message);
         }
     }
@@ -41,17 +43,18 @@ public class TelegramService {
             telegramBot.sendMessage(user.getTelegramChatId(), message);
         }
     }
-    public void notifyUserAboutChangeAutoRenewStatus(long phoneNumber, String changeType) {
+    public void notifyUserAboutChangeAutoRenewStatus(long phoneNumber, String autoRenewStatus) {
         User user = userRepository.findByPhoneNumber(phoneNumber);
         if (user != null && user.getTelegramChatId() != null) {
-            String message = String.format("Your auto-renew status has been changed to the %s. If this wasn't you, please contact support.", changeType);
+            String message = String.format("Your auto-renew status has been changed to the %s. " +
+                    "If this wasn't you, please contact support.", autoRenewStatus);
             telegramBot.sendMessage(user.getTelegramChatId(), message);
         }
     }
-    public void notifyUserAboutChangeEmail(long phoneNumber, String changeType) {
+    public void notifyUserAboutChangeEmail(long phoneNumber, String newEmail) {
         User user = userRepository.findByPhoneNumber(phoneNumber);
         if (user != null && user.getTelegramChatId() != null) {
-            String message = String.format("Your email has been changed to the %s. If this wasn't you, please contact support.", changeType);
+            String message = String.format("Your email has been changed to the %s. If this wasn't you, please contact support.", newEmail);
             telegramBot.sendMessage(user.getTelegramChatId(), message);
         }
     }

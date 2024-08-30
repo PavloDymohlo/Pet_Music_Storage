@@ -3,7 +3,6 @@ package ua.dymohlo.PetMusicStorage.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ua.dymohlo.PetMusicStorage.entity.UserBankCard;
 import ua.dymohlo.PetMusicStorage.repository.UserBankCardRepository;
 
@@ -19,9 +18,11 @@ public class UserBankCardService {
             return false;
         }
         if (!existingCard.getCardExpirationDate().equals(userBankCard.getCardExpirationDate())) {
-            throw new IllegalArgumentException("Bank card with number " + existingCard.getCardNumber() + " already exists, but card expiration date is invalid");
+            throw new IllegalArgumentException("Bank card with number " + existingCard.getCardNumber() +
+                    " already exists, but card expiration date is invalid");
         } else if (existingCard.getCvv() != userBankCard.getCvv()) {
-            throw new IllegalArgumentException("Bank card with number " + existingCard.getCardNumber() + " already exists, but card cvv is invalid");
+            throw new IllegalArgumentException("Bank card with number " + existingCard.getCardNumber() +
+                    " already exists, but card cvv is invalid");
         }
         return true;
     }

@@ -115,7 +115,7 @@ public class UserService {
         User user = userRepository.findByPhoneNumber(phoneNumber);
         Subscription subscription = user.getSubscription();
         String adminSubscription = "ADMIN";
-        return subscription == subscriptionRepository.findBySubscriptionNameIgnoreCase(adminSubscription);
+        return subscription.equals(subscriptionRepository.findBySubscriptionNameIgnoreCase(adminSubscription));
     }
 
     public void updatePhoneNumber(long currentPhoneNumber, long newPhoneNumber) {
@@ -146,6 +146,20 @@ public class UserService {
         log.debug("Parsed token: {}", parseToken);
         return jwtService.extractUserName(parseToken);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public void updateBankCard(long userPhoneNumber, UpdateUserBankCardDTO updateUserBankCardDTO) {
         if (!userPhoneNumberExists(userPhoneNumber)) {

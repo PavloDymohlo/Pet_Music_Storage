@@ -1,11 +1,10 @@
 package ua.dymohlo.PetMusicStorage.service;
 
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import ua.dymohlo.PetMusicStorage.entity.User;
@@ -13,12 +12,9 @@ import ua.dymohlo.PetMusicStorage.entity.UserBankCard;
 
 import ua.dymohlo.PetMusicStorage.repository.UserBankCardRepository;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -28,40 +24,43 @@ public class UserBankCardServiceTest {
     @InjectMocks
     private UserBankCardService userBankCardService;
     @Mock
-    private UserBankCardRepository mockUserBankCardRepository;
+    private UserBankCardRepository userBankCardRepository;
     @Mock
-    private UserBankCard mockUserBankCard;
+    private UserBankCard userBankCard;
 
-    @Test
-    public void validateBankCard_return_true() {
-        UserBankCard mockUserBankCard = UserBankCard.builder()
+    @BeforeEach
+    void setUp() {
+        userBankCard = UserBankCard.builder()
                 .cardNumber(8965214556987456L)
                 .cardExpirationDate("26/26")
                 .cvv((short) 123L).build();
-        UserBankCard findUserBankCard = UserBankCard.builder()
-                .cardNumber(8965214556987456L)
-                .cardExpirationDate("26/26")
-                .cvv((short) 123L).build();
-        when(mockUserBankCardRepository.findByCardNumber(findUserBankCard.getCardNumber())).thenReturn(mockUserBankCard);
-
-        boolean validate = userBankCardService.validateBankCard(findUserBankCard);
-
-        assertTrue(validate);
-        verify(mockUserBankCardRepository).findByCardNumber(findUserBankCard.getCardNumber());
     }
 
     @Test
-    public void validateBankCard_return_false() {
-        UserBankCard findUserBankCard = UserBankCard.builder()
+    public void validateBankCard_true() {
+
+        when(userBankCardRepository.findByCardNumber(8965214556987456L)).thenReturn(userBankCard);
+
+        boolean validate = userBankCardService.validateBankCard(userBankCard);
+
+        assertTrue(validate);
+    }
+
+    @Test
+    public void validateBankCard_expirationDateMismatch() {
+        UserBankCard existingCard = UserBankCard.builder()
                 .cardNumber(8965214556987456L)
-                .cardExpirationDate("26/26")
-                .cvv((short) 123L).build();
-        when(mockUserBankCardRepository.findByCardNumber(findUserBankCard.getCardNumber())).thenReturn(null);
+                .cardExpirationDate("12/25") 
+                .cvv((short) 123).build();
 
-        boolean validate = userBankCardService.validateBankCard(findUserBankCard);
+        when(userBankCardRepository.findByCardNumber(8965214556987456L)).thenReturn(existingCard);
 
-        assertFalse(validate);
-        verify(mockUserBankCardRepository).findByCardNumber(findUserBankCard.getCardNumber());
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userBankCardService.validateBankCard(userBankCard);
+        });
+
+        assertEquals("Bank card with number " + userBankCard.getCardNumber() +
+                " already exists, but card expiration date is invalid", exception.getMessage());
     }
 
     @Test
@@ -70,22 +69,17 @@ public class UserBankCardServiceTest {
 
         userBankCardService.deleteBankCard(bankCardNumber);
 
-        verify(mockUserBankCardRepository).deleteByCardNumber(bankCardNumber);
+        verify(userBankCardRepository).deleteByCardNumber(bankCardNumber);
     }
 
     @Test
-    public void checkBankCardUsers_return_size() {
-        UserBankCard userBankCard = UserBankCard.builder()
-                .cardNumber(8965214556987456L)
-                .cardExpirationDate("26/26")
-                .cvv((short) 123L)
-                .build();
+    public void checkBankCardUsers_returnSize() {
         User user = User.builder()
                 .userBankCard(userBankCard)
                 .build();
         userBankCard.setUsers(Collections.singletonList(user));
         long findUserBankCardNumber = 8965214556987456L;
-        when(mockUserBankCardRepository.findByCardNumber(findUserBankCardNumber)).thenReturn(userBankCard);
+        when(userBankCardRepository.findByCardNumber(findUserBankCardNumber)).thenReturn(userBankCard);
 
         int result = userBankCardService.checkBankCardUsers(findUserBankCardNumber);
 
