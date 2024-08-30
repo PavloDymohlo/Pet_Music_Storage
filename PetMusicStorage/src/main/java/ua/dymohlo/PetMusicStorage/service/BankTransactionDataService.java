@@ -27,5 +27,4 @@ public class BankTransactionDataService {
                 .bankUrlTransaction(bankUrlTransaction).build();
         bankTransactionDataRepository.save(bankTransactionData);
     }
-
 }

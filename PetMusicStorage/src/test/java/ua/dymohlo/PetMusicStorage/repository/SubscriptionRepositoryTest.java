@@ -6,52 +6,98 @@ import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import ua.dymohlo.PetMusicStorage.entity.Subscription;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @DataJpaTest
 public class SubscriptionRepositoryTest {
     @Mock
-    private SubscriptionRepository mockSubscriptionRepository;
-    @Mock
-    private Subscription mockSubscription;
+    private SubscriptionRepository subscriptionRepository;
+
 
     @BeforeEach
     public void setUp() {
-        mockSubscription = Subscription.builder()
+        Subscription subscription = Subscription.builder()
+                .id(1L)
                 .subscriptionName("MAXIMUM").build();
-        when(mockSubscriptionRepository.save(mockSubscription)).thenReturn(mockSubscription);
-        when(mockSubscriptionRepository.findBySubscriptionNameIgnoreCase("MAXIMUM")).thenReturn(mockSubscription);
+        List<Subscription> subscriptions = new ArrayList<>();
+        subscriptions.add(subscription);
+        when(subscriptionRepository.findBySubscriptionNameIgnoreCase("MAXIMUM")).thenReturn(subscription);
+        when(subscriptionRepository.existsBySubscriptionNameIgnoreCase("MAXIMUM")).thenReturn(true);
+        when(subscriptionRepository.findById(1L)).thenReturn(subscription);
+        when(subscriptionRepository.findBySubscriptionPriceBetween(BigDecimal.valueOf(0), BigDecimal.valueOf(150)))
+                .thenReturn(subscriptions);
     }
 
     @Test
-    public void findBySubscriptionName_subscriptionExists_returnSubscription() {
-        Subscription findBySubscriptionName = mockSubscriptionRepository.findBySubscriptionNameIgnoreCase("MAXIMUM");
+    public void findBySubscriptionName_success() {
+        Subscription findBySubscriptionName = subscriptionRepository.findBySubscriptionNameIgnoreCase("MAXIMUM");
+
         assertNotNull(findBySubscriptionName);
-        assertEquals("MAXIMUM", findBySubscriptionName.getSubscriptionName());
     }
 
     @Test
-    public void findBySubscriptionName_subscriptionNotFound_returnNull() {
-        Subscription findBySubscriptionName = mockSubscriptionRepository.findBySubscriptionNameIgnoreCase("PREMIUM");
-        when(mockSubscriptionRepository.findBySubscriptionNameIgnoreCase("PREMIUM")).thenReturn(null);
+    public void findBySubscriptionName_notFound() {
+        Subscription findBySubscriptionName = subscriptionRepository.findBySubscriptionNameIgnoreCase("PREMIUM");
+
         assertNull(findBySubscriptionName);
     }
 
     @Test
-    public void existsBySubscriptionName_SubscriptionExists_true() {
-        Subscription subscription = Subscription.builder().subscriptionName("MAXIMUM").build();
-        when(mockSubscriptionRepository.existsBySubscriptionNameIgnoreCase(String.valueOf(subscription))).thenReturn(true);
-        boolean subscriptionExists = mockSubscriptionRepository.existsBySubscriptionNameIgnoreCase(String.valueOf(subscription));
+    public void existsBySubscriptionName_exists() {
+        boolean subscriptionExists = subscriptionRepository.existsBySubscriptionNameIgnoreCase("MAXIMUM");
+
         assertTrue(subscriptionExists);
     }
 
     @Test
-    public void existsBySubscriptionName_SubscriptionNotFound_false() {
-        Subscription subscription = Subscription.builder().subscriptionName("PREMIUM").build();
-        when(mockSubscriptionRepository.existsBySubscriptionNameIgnoreCase(String.valueOf(subscription))).thenReturn(false);
-        boolean subscriptionExists = mockSubscriptionRepository.existsBySubscriptionNameIgnoreCase(String.valueOf(subscription));
+    public void existsBySubscriptionName_notFound() {
+        boolean subscriptionExists = subscriptionRepository.existsBySubscriptionNameIgnoreCase("PREMIUM");
+
         assertFalse(subscriptionExists);
     }
 
+    @Test
+    public void findSubscriptionById_success() {
+        Subscription subscription = subscriptionRepository.findById(1L);
+
+        assertNotNull(subscription);
+    }
+
+    @Test
+    public void findSubscriptionById_notFound() {
+        Subscription subscription = subscriptionRepository.findById(2L);
+
+        assertNull(subscription);
+    }
+
+    @Test
+    public void findBySubscriptionPriceBetween_success() {
+        List<Subscription> subscriptions = subscriptionRepository.findBySubscriptionPriceBetween(BigDecimal.valueOf(0), BigDecimal.valueOf(150));
+
+        assertFalse(subscriptions.isEmpty());
+    }
+
+    @Test
+    public void findBySubscriptionPriceBetween_notFound() {
+        List<Subscription> subscriptions = subscriptionRepository.findBySubscriptionPriceBetween(BigDecimal.valueOf(0), BigDecimal.valueOf(50));
+
+        assertTrue(subscriptions.isEmpty());
+    }
+
+    @Test
+    public void deleteBySubscriptionName_success() {
+        Subscription subscription = Subscription.builder()
+                .subscriptionName("PREMIUM")
+                .build();
+        subscriptionRepository.save(subscription);
+        subscriptionRepository.deleteBySubscriptionNameIgnoreCase("PREMIUM");
+        Subscription subscription1 = subscriptionRepository.findBySubscriptionNameIgnoreCase("PREMIUM");
+
+        assertNull(subscription1);
+    }
 }

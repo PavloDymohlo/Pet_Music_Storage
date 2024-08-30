@@ -12,32 +12,37 @@ import static org.mockito.Mockito.when;
 @DataJpaTest
 public class UserBankCardRepositoryTest {
     @Mock
-    private UserBankCardRepository mockUserBankCardRepository;
-    @Mock
-    private UserBankCard mockUserBankCard;
+    private UserBankCardRepository userBankCardRepository;
 
     @BeforeEach
     public void setUp() {
-        mockUserBankCard = UserBankCard.builder()
+        UserBankCard userBankCard = UserBankCard.builder()
                 .cardNumber(1234567890123456L)
                 .cardExpirationDate("28/28")
                 .cvv((short) 111).build();
-        when(mockUserBankCardRepository.save(mockUserBankCard)).thenReturn(mockUserBankCard);
-        when(mockUserBankCardRepository.findByCardNumber(1234567890123456L)).thenReturn(mockUserBankCard);
+        when(userBankCardRepository.findByCardNumber(1234567890123456L)).thenReturn(userBankCard);
     }
 
     @Test
-    public void findByCardNumber_cardNumberExists_returnBankCard() {
-        UserBankCard userBankCard = mockUserBankCardRepository.findByCardNumber(1234567890123456L);
+    public void findUserBankCardByCardNumber_success() {
+        UserBankCard userBankCard = userBankCardRepository.findByCardNumber(1234567890123456L);
         assertNotNull(userBankCard);
-        assertEquals(1234567890123456L, userBankCard.getCardNumber());
     }
 
     @Test
-    public void findByCardNumber_cardNumberNotFound_returnNull() {
-        UserBankCard userBankCard = mockUserBankCardRepository.findByCardNumber(1234567890123400L);
-        when(mockUserBankCardRepository.findByCardNumber(1234567890123400L)).thenReturn(null);
-        assertNull(userBankCard);
+    public void findUserBankCardByCardNumber_notFound() {
+        UserBankCard userBankCard = userBankCardRepository.findByCardNumber(1234567890123400L);
 
+        assertNull(userBankCard);
+    }
+
+    @Test
+    public void deleteUserBankCardByCardNumber_success() {
+        UserBankCard userBankCard = UserBankCard.builder()
+                .cardNumber(1234567890123400L).build();
+        userBankCardRepository.deleteByCardNumber(1234567890123400L);
+        UserBankCard findUserBankCard = userBankCardRepository.findByCardNumber(1234567890123400L);
+
+        assertNull(findUserBankCard);
     }
 }

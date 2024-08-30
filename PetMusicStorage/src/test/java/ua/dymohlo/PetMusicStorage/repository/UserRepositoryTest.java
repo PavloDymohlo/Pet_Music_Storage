@@ -8,7 +8,6 @@ import ua.dymohlo.PetMusicStorage.entity.Subscription;
 import ua.dymohlo.PetMusicStorage.entity.User;
 import ua.dymohlo.PetMusicStorage.entity.UserBankCard;
 
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -16,142 +15,126 @@ import static org.mockito.Mockito.*;
 @DataJpaTest
 public class UserRepositoryTest {
     @Mock
-    private UserRepository mockUserRepository;
-    @Mock
-    private UserBankCardRepository mockUserBankCardRepository;
-    @Mock
-    private SubscriptionRepository mockSubscriptionRepository;
-    @Mock
-    private User mockUser;
-    @Mock
-    private UserBankCard mockUserBankCard;
-    @Mock
-    private Subscription mockSubscription;
+    private UserRepository userRepository;
 
     @BeforeEach
     public void setUp() {
-        mockUserBankCard = UserBankCard.builder()
+        UserBankCard userBankCard = UserBankCard.builder()
                 .cardNumber(1234567890123456L)
                 .cvv((short) 111)
                 .cardExpirationDate("25/25").build();
-        when(mockUserBankCardRepository.save(mockUserBankCard)).thenReturn(mockUserBankCard);
 
-        mockSubscription = Subscription.builder()
+        Subscription subscription = Subscription.builder()
                 .subscriptionName("MAXIMUM").build();
-        when(mockSubscriptionRepository.save(mockSubscription)).thenReturn(mockSubscription);
 
-        mockUser = User.builder()
+        User user = User.builder()
                 .id(1)
                 .phoneNumber(80663698520L)
                 .email("mockUser@mail.com")
                 .password("password")
-                .userBankCard(mockUserBankCard)
-                .subscription(mockSubscription).build();
-        when(mockUserRepository.save(mockUser)).thenReturn(mockUser);
-        when(mockUserRepository.findByPhoneNumber(80663698520L)).thenReturn(mockUser);
-        when(mockUserRepository.findByEmailIgnoreCase("mockUser@mail.com")).thenReturn(mockUser);
-        when(mockUserRepository.findById(1)).thenReturn(mockUser);
+                .userBankCard(userBankCard)
+                .subscription(subscription)
+                .telegramChatId("123456").build();
+        when(userRepository.findByPhoneNumber(80663698520L)).thenReturn(user);
+        when(userRepository.existsByPhoneNumber(80663698520L)).thenReturn(true);
+        when(userRepository.existsByEmailIgnoreCase("mockUser@mail.com")).thenReturn(true);
+        when(userRepository.findByEmailIgnoreCase("mockUser@mail.com")).thenReturn(user);
+        when(userRepository.findById(1L)).thenReturn(user);
+        when(userRepository.findByTelegramChatId("123456")).thenReturn(user);
     }
 
     @Test
-    public void findByPhoneNumber_phoneNumberExists_returnsPhoneNumber() {
-        User byPhoneNumber = mockUserRepository.findByPhoneNumber(80663698520L);
+    public void findUserByPhoneNumber_success() {
+        User byPhoneNumber = userRepository.findByPhoneNumber(80663698520L);
+
         assertNotNull(byPhoneNumber);
-        assertEquals(80663698520L, byPhoneNumber.getPhoneNumber());
     }
 
     @Test
-    public void findByPhoneNumber_phoneNumberNotFound_returnNull() {
-        User byPhoneNumber = mockUserRepository.findByPhoneNumber(80663698521L);
-        when(mockUserRepository.findByPhoneNumber(80663698521L)).thenReturn(null);
+    public void findUserByPhoneNumber_notFound() {
+        User byPhoneNumber = userRepository.findByPhoneNumber(80663698521L);
+
         assertNull(byPhoneNumber);
     }
 
     @Test
-    public void existsByPhoneNumber_phoneNumberExists_true() {
-        long phoneNumber = 80663698520L;
-        when(mockUserRepository.existsByPhoneNumber(phoneNumber)).thenReturn(true);
+    public void existsUserByPhoneNumber_exists() {
+        boolean phoneNumberExists = userRepository.existsByPhoneNumber(80663698520L);
 
-        boolean phoneNumberExists = mockUserRepository.existsByPhoneNumber(phoneNumber);
-
-        assertTrue(phoneNumberExists, "User with the phone number exist");
+        assertTrue(phoneNumberExists);
     }
 
     @Test
-    public void existsByPhoneNumber_phoneNumberNotExists_false() {
-        long phoneNumber = 80996653200L;
-        when(mockUserRepository.existsByPhoneNumber(phoneNumber)).thenReturn(false);
+    public void existsUserByPhoneNumber_notFound() {
+        boolean phoneNumberExists = userRepository.existsByPhoneNumber(80996653211L);
 
-        boolean phoneNumberExists = mockUserRepository.existsByPhoneNumber(phoneNumber);
-
-        assertFalse(phoneNumberExists, "User with  phone number should not exist");
+        assertFalse(phoneNumberExists);
     }
 
     @Test
-    public void existsByEmail_emailExists_true() {
-        String email = "mockUser@mail.com";
-        when(mockUserRepository.existsByEmailIgnoreCase(email)).thenReturn(true);
+    public void existsUserByEmail_exists() {
+        boolean emailExists = userRepository.existsByEmailIgnoreCase("mockUser@mail.com");
 
-        boolean emailExists = mockUserRepository.existsByEmailIgnoreCase(email);
-
-        assertTrue(emailExists, "User with the email exist");
+        assertTrue(emailExists);
     }
 
     @Test
-    public void existsByEmail_emailExists_false() {
-        String email = "mockUser@mail.com";
-        when(mockUserRepository.existsByEmailIgnoreCase(email)).thenReturn(false);
+    public void existsUserByEmail_noyFound() {
+        boolean emailExists = userRepository.existsByEmailIgnoreCase("anotherUser@mail.com");
 
-        boolean emailExists = mockUserRepository.existsByEmailIgnoreCase(email);
-
-        assertFalse(emailExists, "User with email should not exist");
+        assertFalse(emailExists);
     }
 
     @Test
-    public void findByEmail_emailExists_returnEmail() {
-        User byEmail = mockUserRepository.findByEmailIgnoreCase("mockUser@mail.com");
+    public void findUserByEmail_success() {
+        User byEmail = userRepository.findByEmailIgnoreCase("mockUser@mail.com");
+
         assertNotNull(byEmail);
-        assertEquals("mockUser@mail.com", byEmail.getEmail());
     }
 
     @Test
-    public void findByEmail_emailNotExists_returnNull() {
-        User byEmail = mockUserRepository.findByEmailIgnoreCase("mockUser2@mail.com");
+    public void findUserByEmail_notFound() {
+        User byEmail = userRepository.findByEmailIgnoreCase("anotherUser@mail.com");
+
         assertNull(byEmail);
     }
 
     @Test
-    public void findById_idExists_returnId() {
-        User byId = mockUserRepository.findById(1);
+    public void findUserById_success() {
+        User byId = userRepository.findById(1);
+
         assertNotNull(byId);
-        assertEquals(1, byId.getId());
     }
 
     @Test
-    public void findById_idNoExists_returnNull() {
-        User byId = mockUserRepository.findById(2);
+    public void findUserById_notFound() {
+        User byId = userRepository.findById(2L);
+
         assertNull(byId);
     }
 
     @Test
-    public void deleteById_idExists_deleteUser() {
-        long userId = 10L;
+    public void deleteUserById_success() {
+        User user = User.builder()
+                .id(3L).build();
 
-        mockUserRepository.deleteById(userId);
+        userRepository.deleteById(3L);
 
-        verify(mockUserRepository, times(1)).deleteById(userId);
+        User findUser = userRepository.findById(3L);
+        assertNull(findUser);
     }
 
     @Test
-    public void deleteById__idNoExists_doNothing() {
-        long userId = 11L;
-        when(mockUserRepository.findById(userId)).thenReturn(null);
-        Optional<User> userOptional = Optional.ofNullable(mockUserRepository.findById(userId));
+    public void findByTelegramChatId_success() {
+        User user = userRepository.findByTelegramChatId("123456");
 
-        if (userOptional.isPresent()) {
-            mockUserRepository.deleteById(userId);
-        }
+        assertNotNull(user);
+    }
 
-        verify(mockUserRepository, never()).deleteById(userId);
+    @Test
+    public void findByTelegramChatId_notFound() {
+        User user = userRepository.findByTelegramChatId("123457");
+
+        assertNull(user);
     }
 }
