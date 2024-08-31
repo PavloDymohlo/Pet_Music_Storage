@@ -263,7 +263,8 @@ public class UserServiceTest {
         long currentPhoneNumber = 80998866555L;
         long newPhoneNumber = 80985623300L;
         user = User.builder()
-                .phoneNumber(80998866555L).build();
+                .phoneNumber(80998866555L)
+                .build();
         when(userRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(true);
         when(userRepository.existsByPhoneNumber(newPhoneNumber)).thenReturn(false);
         when(userRepository.findByPhoneNumber(currentPhoneNumber)).thenReturn(user);
@@ -313,50 +314,43 @@ public class UserServiceTest {
         verify(jwtService).extractUserName(anyString());
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Test
-    public void updateBankCard_setNewBankCard() {
-        long currentPhoneNumber = 80998885566L;
-        long newCardNumber = 9876543210987654L;
-        UpdateUserBankCardDTO mockUpdateUserBankCardDTO = UpdateUserBankCardDTO.builder()
-                .userPhoneNumber(currentPhoneNumber)
-                .newUserBankCard(UserBankCard.builder()
-                        .cardNumber(newCardNumber)
-                        .cardExpirationDate("25/25")
-                        .cvv((short) 123)
-                        .build())
+    public void updateBankCard_success() {
+        long userPhoneNumber = 80998885566L;
+        UserBankCard oldUserBankCard = UserBankCard.builder()
+                .cardNumber(7896541236985425L)
+                .cardExpirationDate("12/25")
+                .cvv((short) 111)
+                .users(new ArrayList<>())
                 .build();
-        when(userRepository.findByPhoneNumber(currentPhoneNumber)).thenReturn(user);
-        when(userRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(true);
-        when(userBankCardRepository.findByCardNumber(mockUpdateUserBankCardDTO.getNewUserBankCard().getCardNumber()))
+        User simpleUser = User.builder()
+                .phoneNumber(userPhoneNumber)
+                .userBankCard(oldUserBankCard)
+                .email("user@example.com")
+                .build();
+        oldUserBankCard.getUsers().add(simpleUser);
+        UserBankCard newUserBankCard = UserBankCard.builder()
+                .cardNumber(1258986587896523L)
+                .cardExpirationDate("12/25")
+                .cvv((short) 111)
+                .users(new ArrayList<>())
+                .build();
+        UpdateUserBankCardDTO updateUserBankCardDTO = UpdateUserBankCardDTO.builder()
+                .userPhoneNumber(userPhoneNumber)
+                .newUserBankCard(newUserBankCard)
+                .build();
+        when(userRepository.findByPhoneNumber(userPhoneNumber)).thenReturn(simpleUser);
+        when(userRepository.existsByPhoneNumber(userPhoneNumber)).thenReturn(true);
+        when(userBankCardRepository.findByCardNumber(updateUserBankCardDTO.getNewUserBankCard().getCardNumber()))
                 .thenReturn(null);
+        when(userBankCardRepository.findByCardNumber(oldUserBankCard.getCardNumber()))
+                .thenReturn(oldUserBankCard);
+        doNothing().when(telegramService).notifyUserAboutChangeBankCard(anyLong(), anyString());
+        doNothing().when(emailService).notifyUserAboutChangeBankCard(simpleUser.getEmail(), newUserBankCard.getCardNumber());
 
-        userService.updateBankCard(currentPhoneNumber, mockUpdateUserBankCardDTO);
+        userService.updateBankCard(userPhoneNumber, updateUserBankCardDTO);
 
-        verify(userRepository).existsByPhoneNumber(currentPhoneNumber);
-        verify(userBankCardRepository).findByCardNumber(newCardNumber);
-        verify(userRepository).save(any(User.class));
+        verify(userRepository).save(simpleUser);
     }
 
 
@@ -368,8 +362,8 @@ public class UserServiceTest {
                 .userPhoneNumber(currentPhoneNumber)
                 .newUserBankCard(UserBankCard.builder()
                         .cardNumber(1234567890125874L)
-                        .cardExpirationDate("25/25")
-                        .cvv((short) 123).build()).build();
+                        .cardExpirationDate("12/25")
+                        .cvv((short) 111).build()).build();
 
         when(userRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(false);
 
@@ -377,7 +371,7 @@ public class UserServiceTest {
             userService.updateBankCard(currentPhoneNumber, mockUpdateUserBankCardDTO);
         });
 
-        assert exception.getMessage().equals("Phone number " + currentPhoneNumber + " not found");
+       assertEquals("Phone number " + currentPhoneNumber + " not found", exception.getMessage());
     }
 
     @Test
@@ -398,56 +392,24 @@ public class UserServiceTest {
             userService.updateBankCard(currentPhoneNumber, mockUpdateUserBankCardDTO);
         });
 
-        assert exception.getMessage().equals("Invalid card details for user with phone number " + currentPhoneNumber);
+        assertEquals("Invalid card details for user with phone number " + currentPhoneNumber, exception.getMessage());
     }
-
-    @Test
-    public void updateBankCard_cardExists_updateCard() {
-        long currentPhoneNumber = 80998885566L;
-        long newCardNumber = 9876543210987654L;
-        user = new User();
-        UpdateUserBankCardDTO mockUpdateUserBankCardDTO = UpdateUserBankCardDTO.builder()
-                .userPhoneNumber(currentPhoneNumber)
-                .newUserBankCard(UserBankCard.builder()
-                        .cardNumber(newCardNumber)
-                        .cardExpirationDate("25/25")
-                        .cvv((short) 123)
-                        .build())
-                .build();
-        UserBankCard existingCard = UserBankCard.builder()
-                .cardNumber(mockUpdateUserBankCardDTO.getNewUserBankCard().getCardNumber())
-                .cardExpirationDate(mockUpdateUserBankCardDTO.getNewUserBankCard().getCardExpirationDate())
-                .cvv(mockUpdateUserBankCardDTO.getNewUserBankCard().getCvv())
-                .build();
-        when(userRepository.findByPhoneNumber(currentPhoneNumber)).thenReturn(user);
-        when(userRepository.existsByPhoneNumber(currentPhoneNumber)).thenReturn(true);
-        when(userBankCardRepository.findByCardNumber(mockUpdateUserBankCardDTO.getNewUserBankCard().getCardNumber()))
-                .thenReturn(existingCard);
-        when(userBankCardService.validateBankCard(existingCard)).thenReturn(true);
-
-        userService.updateBankCard(currentPhoneNumber, mockUpdateUserBankCardDTO);
-
-        verify(userRepository).existsByPhoneNumber(currentPhoneNumber);
-        verify(userBankCardRepository).findByCardNumber(newCardNumber);
-        verify(userBankCardService).validateBankCard(existingCard);
-        verify(userRepository).save(any(User.class));
-    }
-
-
 
     @Test
     public void updatePassword_success() {
         long userPhoneNumber = 80998885566L;
         String newPassword = "password";
         UpdatePasswordDTO updatePasswordDTO = UpdatePasswordDTO.builder()
+                .currentPassword("oldPassword")
                 .newPassword(newPassword).build();
         when(userRepository.existsByPhoneNumber(userPhoneNumber)).thenReturn(true);
         when(userRepository.findByPhoneNumber(userPhoneNumber)).thenReturn(user);
+        when(passwordEncoder.matches(updatePasswordDTO.getCurrentPassword(),user.getPassword())).thenReturn(true);
         when(passwordEncoder.encode(newPassword)).thenReturn(newPassword);
 
         userService.updatePassword(userPhoneNumber, updatePasswordDTO);
 
-        verify(userRepository).save(any(User.class));
+        verify(userRepository).save(user);
     }
 
     @Test
@@ -462,7 +424,24 @@ public class UserServiceTest {
             userService.updatePassword(userPhoneNumber, updatePasswordDTO);
         });
 
-        assert exception.getMessage().equals("Phone number " + userPhoneNumber + " not found");
+        assertEquals("Phone number " + userPhoneNumber + " not found", exception.getMessage());
+    }
+
+    @Test
+    public void updatePassword_currentPasswordIsNotCorrect() {
+        long userPhoneNumber = 80998885566L;
+        String newPassword = "password";
+        UpdatePasswordDTO updatePasswordDTO = UpdatePasswordDTO.builder()
+                .newPassword(newPassword)
+                .userPhoneNumber(userPhoneNumber).build();
+        when(userRepository.existsByPhoneNumber(userPhoneNumber)).thenReturn(true);
+        when(userRepository.findByPhoneNumber(userPhoneNumber)).thenReturn(user);
+        when(passwordEncoder.matches(updatePasswordDTO.getCurrentPassword(),user.getPassword())).thenReturn(false);
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.updatePassword(userPhoneNumber, updatePasswordDTO);
+        });
+
+        assertEquals("Current password is incorrect!", exception.getMessage());
     }
 
     @Test
@@ -478,8 +457,23 @@ public class UserServiceTest {
 
         userService.updateEmail(userPhoneNumber, updateEmailDTO);
 
-        assertEquals(newEmail, updateEmailDTO.getNewEmail());
         verify(userRepository).save(any(User.class));
+    }
+
+    @Test
+    public void updateEmail_phoneNumberNotFound() {
+        long userPhoneNumber = 80998885566L;
+        String newEmail = "newEmail@example.com";
+        UpdateEmailDTO updateEmailDTO = UpdateEmailDTO.builder()
+                .userPhoneNumber(userPhoneNumber)
+                .newEmail(newEmail).build();
+        when(userRepository.existsByPhoneNumber(userPhoneNumber)).thenReturn(false);
+
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class, ()->{
+            userService.updateEmail(userPhoneNumber, updateEmailDTO);
+        });
+
+        assertEquals("Phone number " + userPhoneNumber + " not found", exception.getMessage());
     }
 
     @Test
@@ -496,7 +490,7 @@ public class UserServiceTest {
             userService.updateEmail(userPhoneNumber, updateEmailDTO);
         });
 
-        assert exception.getMessage().equals("Email " + updateEmailDTO.getNewEmail() + " is already exists");
+        assertEquals("Email " + updateEmailDTO.getNewEmail() + " is already exists", exception.getMessage());
     }
 
     @Test

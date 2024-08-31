@@ -147,20 +147,6 @@ public class UserService {
         return jwtService.extractUserName(parseToken);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public void updateBankCard(long userPhoneNumber, UpdateUserBankCardDTO updateUserBankCardDTO) {
         if (!userPhoneNumberExists(userPhoneNumber)) {
             log.error("User with phone number: {} does not exists", updateUserBankCardDTO.getUserPhoneNumber());
