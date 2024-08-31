@@ -49,11 +49,17 @@ function showMusicFreeSubscription() {
     })
     .then(data => {
         const subscriptionDetails = document.getElementById('subscriptionDetails');
+        const audioElement = document.getElementById('audio');
+
         if (Array.isArray(data) && data.length > 0) {
-            subscriptionDetails.innerHTML = '';
+            subscriptionDetails.innerHTML = ''; // Очистити список файлів, якщо вони вже є
             data.forEach(file => {
                 const listItem = document.createElement('li');
-                listItem.innerText = `Music File: ${file.name}, Duration: ${file.duration}`;
+                listItem.innerText = `Music File: ${file.musicFileName}`;
+                listItem.onclick = function() {
+                    audioElement.src = file.filePath;
+                    audioElement.play();
+                };
                 subscriptionDetails.appendChild(listItem);
             });
         } else {
@@ -64,7 +70,6 @@ function showMusicFreeSubscription() {
         console.error('Failed to fetch free subscription music files: ', error);
     });
 }
-
 
 
 function logOut(event) {
@@ -95,21 +100,21 @@ function MeinMenu(event) {
 
 
 
-const audio = new Audio('/mp3/free_subscription.mp3');
-
-// Функція для відтворення аудіо
-function playAudio() {
-    audio.play();
-}
-
-// Функція для зупинки аудіо
-function pauseAudio() {
-    audio.pause();
-}
-
-// Додаємо обробники подій для кнопок
-document.getElementById('playAudio').addEventListener('click', playAudio);
-document.getElementById('pauseAudio').addEventListener('click', pauseAudio);
+//const audio = new Audio('/mp3/free_subscription.mp3');
+//
+//// Функція для відтворення аудіо
+//function playAudio() {
+//    audio.play();
+//}
+//
+//// Функція для зупинки аудіо
+//function pauseAudio() {
+//    audio.pause();
+//}
+//
+//// Додаємо обробники подій для кнопок
+//document.getElementById('playAudio').addEventListener('click', playAudio);
+//document.getElementById('pauseAudio').addEventListener('click', pauseAudio);
 
   // Call the function to fetch and display the subscription details
 showMusicFreeSubscription();
