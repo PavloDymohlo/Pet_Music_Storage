@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import ua.dymohlo.PetMusicStorage.entity.MusicFile;
+import ua.dymohlo.PetMusicStorage.entity.Subscription;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,11 +50,11 @@ public class MusicFileRepositoryTest {
         MusicFile musicFile = MusicFile.builder()
                 .id(1L)
                 .musicFileName("Music.mp3").build();
-        List<MusicFile> musicFiles = new ArrayList<>();
-        musicFiles.add(musicFile);
+        musicFileRepository.save(musicFile);
+
         List<MusicFile> foundMusicList = musicFileRepository.findAll();
 
-        assertNotNull(foundMusicList);
+        assertFalse(foundMusicList.isEmpty());
     }
 
     @Test
@@ -92,5 +93,16 @@ public class MusicFileRepositoryTest {
         MusicFile foundMusicFile = musicFileRepository.findByMusicFileNameIgnoreCase(musicName);
 
         assertNull(foundMusicFile);
+    }
+
+    @Test
+    public void findMusicFileBySubscription_success(){
+        Subscription subscription = Subscription.builder()
+                .subscriptionName("FREE").build();
+        MusicFile musicFile = MusicFile.builder()
+                .musicFileName("musicName")
+                .subscription(subscription).build();
+
+        List<MusicFile> files = musicFileRepository.findMusicFileBySubscription("FREE");
     }
 }

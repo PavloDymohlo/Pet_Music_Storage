@@ -30,6 +30,42 @@ document.getElementById('MeinMenuButton').addEventListener('click', function() {
     toggleMenu('MeinMenu');
 });
 
+function showMusicFreeSubscription() {
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    fetch('/free_subscription/list_free_subscription?subscriptionName=FREE', {
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        const subscriptionDetails = document.getElementById('subscriptionDetails');
+        if (Array.isArray(data) && data.length > 0) {
+            subscriptionDetails.innerHTML = '';
+            data.forEach(file => {
+                const listItem = document.createElement('li');
+                listItem.innerText = `Music File: ${file.name}, Duration: ${file.duration}`;
+                subscriptionDetails.appendChild(listItem);
+            });
+        } else {
+            subscriptionDetails.innerText = 'No music files found for the FREE subscription.';
+        }
+    })
+    .catch(error => {
+        console.error('Failed to fetch free subscription music files: ', error);
+    });
+}
+
+
 
 function logOut(event) {
     event.preventDefault();
@@ -53,3 +89,27 @@ function MeinMenu(event) {
         window.location.href = '/personal_office';
     }
 }
+
+
+
+
+
+
+const audio = new Audio('/mp3/free_subscription.mp3');
+
+// Функція для відтворення аудіо
+function playAudio() {
+    audio.play();
+}
+
+// Функція для зупинки аудіо
+function pauseAudio() {
+    audio.pause();
+}
+
+// Додаємо обробники подій для кнопок
+document.getElementById('playAudio').addEventListener('click', playAudio);
+document.getElementById('pauseAudio').addEventListener('click', pauseAudio);
+
+  // Call the function to fetch and display the subscription details
+showMusicFreeSubscription();

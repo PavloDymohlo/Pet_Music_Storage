@@ -14,4 +14,6 @@ public interface MusicFileRepository extends JpaRepository<MusicFile, Long> {
 
     MusicFile findByMusicFileNameIgnoreCase(String musicFileName);
 
+    List<MusicFile> findMusicFileBySubscription(String subscriptionName);
+
 }

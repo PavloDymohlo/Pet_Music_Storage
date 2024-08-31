@@ -145,4 +145,12 @@ public class MusicFileService {
         List<MusicFile> musicFiles = subscription.getMusicFiles();
         musicFileRepository.deleteAll(musicFiles);
     }
+
+    public List<MusicFile> findMusicFileBySubscription(String subscriptionName) {
+        Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(subscriptionName);
+        if (subscription == null) {
+            throw new NoSuchElementException("Subscription with name " + subscriptionName + " not found");
+        }
+        return subscription.getMusicFiles();
+    }
 }

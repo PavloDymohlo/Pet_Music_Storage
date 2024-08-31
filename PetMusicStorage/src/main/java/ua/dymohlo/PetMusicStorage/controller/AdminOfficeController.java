@@ -26,6 +26,7 @@ public class AdminOfficeController {
 
     @GetMapping
     public ModelAndView adminOfficePage() {
+
         return new ModelAndView("pages/admin_office");
     }
 
