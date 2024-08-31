@@ -9,5 +9,4 @@ class PetMusicStorageApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }
