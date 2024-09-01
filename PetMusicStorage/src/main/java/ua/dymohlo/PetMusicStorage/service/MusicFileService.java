@@ -12,6 +12,7 @@ import ua.dymohlo.PetMusicStorage.entity.Subscription;
 import ua.dymohlo.PetMusicStorage.repository.MusicFileRepository;
 import ua.dymohlo.PetMusicStorage.repository.SubscriptionRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -146,11 +147,42 @@ public class MusicFileService {
         musicFileRepository.deleteAll(musicFiles);
     }
 
+//    public List<MusicFile> findMusicFileBySubscription(String subscriptionName) {
+//        Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(subscriptionName);
+//        if (subscription == null) {
+//            throw new NoSuchElementException("Subscription with name " + subscriptionName + " not found");
+//        }
+//        return subscription.getMusicFiles();
+//    }
+
     public List<MusicFile> findMusicFileBySubscription(String subscriptionName) {
         Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(subscriptionName);
         if (subscription == null) {
             throw new NoSuchElementException("Subscription with name " + subscriptionName + " not found");
         }
-        return subscription.getMusicFiles();
+
+        List<String> subscriptionTypesToInclude = new ArrayList<>();
+        switch (subscription.getSubscriptionName().toUpperCase()) {
+            case "FREE":
+                subscriptionTypesToInclude.add("FREE");
+                break;
+            case "OPTIMAL":
+                subscriptionTypesToInclude.add("FREE");
+                subscriptionTypesToInclude.add("OPTIMAL");
+                break;
+            case "MAXIMUM":
+                subscriptionTypesToInclude.add("FREE");
+                subscriptionTypesToInclude.add("OPTIMAL");
+                subscriptionTypesToInclude.add("MAXIMUM");
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid subscription name: " + subscriptionName);
+        }
+
+        List<MusicFile> allMusicFiles = musicFileRepository.findAll();
+        return allMusicFiles.stream()
+                .filter(musicFile -> subscriptionTypesToInclude.contains(musicFile.getSubscription().getSubscriptionName()))
+                .collect(Collectors.toList());
     }
+
 }

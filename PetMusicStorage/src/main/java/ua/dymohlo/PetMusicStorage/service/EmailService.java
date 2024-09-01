@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -30,19 +31,17 @@ public class EmailService {
     private String from;
 
     public void sendSimpleMessage(String to, String topic, String text) {
-//        if (to.isEmpty()){
-//            log.info("The user did not provide an email address.");
-//        }else if (!isValidEmail(to)) {
-//            String errorMessage = "Such an address does not exist.";
-//            throw new IllegalArgumentException(errorMessage);
-//        } else {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(to);
-            message.setSubject(topic);
-            message.setText(text);
-            message.setFrom(from);
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject(topic);
+        message.setText(text);
+        message.setFrom(from);
+        try {
             javaMailSender.send(message);
+        } catch (MailSendException e) {
+            log.error("Failed to send email to {}: {}", to, e.getMessage());
         }
+    }
 
 
 //    public boolean isValidEmail(String email) {

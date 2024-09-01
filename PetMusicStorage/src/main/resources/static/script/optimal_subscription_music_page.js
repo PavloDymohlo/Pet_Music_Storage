@@ -31,6 +31,49 @@ document.getElementById('MeinMenuButton').addEventListener('click', function() {
 });
 
 
+function showMusicOptimalSubscription() {
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    fetch('/free_subscription/list_optimal_subscription?subscriptionName=OPTIMAL', {
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.blob();
+    })
+    .then(blob => {
+        const zip = new JSZip();
+        return zip.loadAsync(blob).then(zip => {
+            const container = document.getElementById('subscriptionDetails');
+            container.innerHTML = '';
+            zip.forEach((relativePath, zipEntry) => {
+                zipEntry.async('blob').then(fileBlob => {
+                    const audioElement = document.createElement('audio');
+                    audioElement.controls = true;
+                    audioElement.src = URL.createObjectURL(fileBlob);
+                    const trackName = document.createElement('div');
+                    trackName.textContent = zipEntry.name;
+                    const trackContainer = document.createElement('div');
+                    trackContainer.appendChild(trackName);
+                    trackContainer.appendChild(audioElement);
+                    container.appendChild(trackContainer);
+                });
+            });
+        });
+    })
+    .catch(error => {
+        console.error('Failed to fetch free subscription music files: ', error);
+    });
+}
+
+
 function logOut(event) {
     event.preventDefault();
     document.cookie = "JWT_TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
@@ -53,3 +96,5 @@ function MeinMenu(event) {
         window.location.href = '/personal_office';
     }
 }
+
+showMusicOptimalSubscription();

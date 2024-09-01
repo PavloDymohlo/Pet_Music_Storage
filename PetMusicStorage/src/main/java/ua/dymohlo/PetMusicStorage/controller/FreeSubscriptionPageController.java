@@ -2,7 +2,8 @@ package ua.dymohlo.PetMusicStorage.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.UrlResource;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +15,18 @@ import org.springframework.web.servlet.ModelAndView;
 import ua.dymohlo.PetMusicStorage.entity.MusicFile;
 import ua.dymohlo.PetMusicStorage.service.MusicFileService;
 import org.springframework.core.io.Resource;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.io.ByteArrayOutputStream;
+;
 
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,37 +44,31 @@ public class FreeSubscriptionPageController {
     @GetMapping("/list_free_subscription")
     public ResponseEntity<Resource> listFreeSubscription(@RequestParam("subscriptionName") String subscriptionName) {
         try {
-            MusicFile musicFile = musicFileService.findMusicFileBySubscription(subscriptionName).get(0);
-            Path filePath = Paths.get(musicFile.getFilePath());
-            Resource resource = new UrlResource(filePath.toUri());
-
+            List<MusicFile> musicFiles = musicFileService.findMusicFileBySubscription(subscriptionName);
+            if (musicFiles.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ZipOutputStream zipOut = new ZipOutputStream(baos);
+            for (MusicFile musicFile : musicFiles) {
+                Path filePath = Path.of(musicFile.getFilePath());
+                ZipEntry zipEntry = new ZipEntry(filePath.getFileName().toString());
+                zipOut.putNextEntry(zipEntry);
+                Files.copy(filePath, zipOut);
+                zipOut.closeEntry();
+            }
+            zipOut.close();
+            ByteArrayResource resource = new ByteArrayResource(baos.toByteArray());
             return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType("audio/mpeg"))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"music_files.zip\"")
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .body(resource);
         } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        } catch (Exception e) {
-            log.error("Error finding music file");
+        } catch (IOException e) {
+            log.error("Error creating ZIP file");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-
-//    @GetMapping("/list_free_subscription")
-//    public ResponseEntity<List<MusicFile>> listFreeSubscription(@RequestParam("subscriptionName") String subscriptionName) {
-//        try {
-//            List<MusicFile> musicFiles = musicFileService.findMusicFileBySubscription(subscriptionName);
-//            if (musicFiles.isEmpty()) {
-//                return ResponseEntity.noContent().build();
-//            }
-//            return ResponseEntity.ok(musicFiles);
-//        } catch (NoSuchElementException e) {
-//            log.warn(e.getMessage());
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-//        } catch (Exception e) {
-//            log.error("Error finding music files");
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-//        }
-//    }
-
 }
