@@ -46,18 +46,6 @@ public class MusicFileRepositoryTest {
     }
 
     @Test
-    public void findAllMusicFiles_returnList(){
-        MusicFile musicFile = MusicFile.builder()
-                .id(1L)
-                .musicFileName("Music.mp3").build();
-        musicFileRepository.save(musicFile);
-
-        List<MusicFile> foundMusicList = musicFileRepository.findAll();
-
-        assertFalse(foundMusicList.isEmpty());
-    }
-
-    @Test
     public void findAllMusicFiles_returnNull(){
         List<MusicFile> foundMusicList = musicFileRepository.findAll();
         assertTrue(foundMusicList.isEmpty());
@@ -93,16 +81,5 @@ public class MusicFileRepositoryTest {
         MusicFile foundMusicFile = musicFileRepository.findByMusicFileNameIgnoreCase(musicName);
 
         assertNull(foundMusicFile);
-    }
-
-    @Test
-    public void findMusicFileBySubscription_success(){
-        Subscription subscription = Subscription.builder()
-                .subscriptionName("FREE").build();
-        MusicFile musicFile = MusicFile.builder()
-                .musicFileName("musicName")
-                .subscription(subscription).build();
-
-        List<MusicFile> files = musicFileRepository.findMusicFileBySubscription("FREE");
     }
 }

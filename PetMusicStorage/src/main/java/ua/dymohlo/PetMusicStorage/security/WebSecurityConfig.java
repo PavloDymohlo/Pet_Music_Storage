@@ -11,11 +11,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 
 import javax.servlet.Filter;
-import java.util.List;
 
 
 @Configuration
@@ -30,10 +27,10 @@ public class WebSecurityConfig {
         http.csrf().disable()
                 .cors().disable()
                 .authorizeRequests(authorize -> authorize
-                        .antMatchers("/register","/host_page", "/login").permitAll()
+                        .antMatchers("/register", "/host_page", "/login").permitAll()
                         .antMatchers("/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .antMatchers("/personal_office/**").authenticated()
-                        .antMatchers("/api/get-music-page").authenticated()
+                        .antMatchers("/music/get_music_page").authenticated()
                         .antMatchers(HttpMethod.GET, "/main").permitAll()
                         .antMatchers("/free_subscription").hasAnyRole("FREE", "OPTIMAL", "MAXIMUM", "ADMIN")
                         .antMatchers("/optimal_subscription").hasAnyRole("MAXIMUM", "OPTIMAL", "ADMIN")
@@ -47,9 +44,8 @@ public class WebSecurityConfig {
         return http.build();
     }
 
-
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().antMatchers("/static/**", "/styles/**", "/images/**", "/js/**");
+        return (web) -> web.ignoring().antMatchers("/static/**", "/styles/**", "/images/**", "/js/**","/ico/**","/mp3/**");
     }
 }

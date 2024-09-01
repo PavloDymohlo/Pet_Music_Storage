@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class OptimalSubscriptionPageController {
 
     @GetMapping("/optimal_subscription")
-    public String showOptimalSubscriptionPage(){
+    public String showOptimalSubscriptionPage() {
         log.info("Optimal subscription page accessed.");
         return "pages/optimal_subscription_music_page";
     }

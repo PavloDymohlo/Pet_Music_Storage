@@ -28,6 +28,7 @@ public class TelegramService {
             telegramBot.sendMessage(user.getTelegramChatId(), message);
         }
     }
+
     public void notifyUserAboutChangeBankCard(long phoneNumber, String bankCardNumber) {
         User user = userRepository.findByPhoneNumber(phoneNumber);
         if (user != null && user.getTelegramChatId() != null) {
@@ -36,6 +37,7 @@ public class TelegramService {
             telegramBot.sendMessage(user.getTelegramChatId(), message);
         }
     }
+
     public void notifyUserAboutChangePassword(long phoneNumber) {
         User user = userRepository.findByPhoneNumber(phoneNumber);
         if (user != null && user.getTelegramChatId() != null) {
@@ -43,6 +45,7 @@ public class TelegramService {
             telegramBot.sendMessage(user.getTelegramChatId(), message);
         }
     }
+
     public void notifyUserAboutChangeAutoRenewStatus(long phoneNumber, String autoRenewStatus) {
         User user = userRepository.findByPhoneNumber(phoneNumber);
         if (user != null && user.getTelegramChatId() != null) {
@@ -51,6 +54,7 @@ public class TelegramService {
             telegramBot.sendMessage(user.getTelegramChatId(), message);
         }
     }
+
     public void notifyUserAboutChangeEmail(long phoneNumber, String newEmail) {
         User user = userRepository.findByPhoneNumber(phoneNumber);
         if (user != null && user.getTelegramChatId() != null) {
@@ -58,6 +62,7 @@ public class TelegramService {
             telegramBot.sendMessage(user.getTelegramChatId(), message);
         }
     }
+
     public void notifyUserAboutDeleteAccount(String chatId) {
         User user = userRepository.findByTelegramChatId(chatId);
         if (user != null && user.getTelegramChatId() != null) {

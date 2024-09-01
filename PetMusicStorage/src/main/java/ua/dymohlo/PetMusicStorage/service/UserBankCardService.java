@@ -28,7 +28,7 @@ public class UserBankCardService {
     }
 
     public void deleteBankCard(long userBankCard) {
-         userBankCardRepository.deleteByCardNumber(userBankCard);
+        userBankCardRepository.deleteByCardNumber(userBankCard);
     }
 
     public int checkBankCardUsers(long userBankCard) {

@@ -33,7 +33,7 @@ public class JWTTokenConfig extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("Filter starts");
-        if ("/host_page" .equals(request.getRequestURI())) {
+        if ("/host_page".equals(request.getRequestURI())) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -78,5 +78,4 @@ public class JWTTokenConfig extends OncePerRequestFilter {
         }
         filterChain.doFilter(request, response);
     }
-
 }

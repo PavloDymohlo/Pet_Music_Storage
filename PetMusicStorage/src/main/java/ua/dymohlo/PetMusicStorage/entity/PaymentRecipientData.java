@@ -24,4 +24,3 @@ public class PaymentRecipientData {
     @JoinColumn(name = "bank_name_id", nullable = false)
     private BankTransactionData bankTransactionData;
 }
-

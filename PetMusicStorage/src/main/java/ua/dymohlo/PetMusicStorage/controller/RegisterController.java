@@ -45,13 +45,6 @@ public class RegisterController {
                 String errorMessage = "User with email " + request.getEmail() + " already exists";
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
             }
-            if (!request.getEmail().isEmpty() && !emailService.isValidEmail(request.getEmail())) {
-                log.error("Email {} is not correct", request.getEmail());
-                String errorMessage = "Email " + request.getEmail() + " is not correct";
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
-
-            }
-
             BigDecimal bonusPrice = subscriptionRepository.findBySubscriptionNameIgnoreCase("REGISTRATION").getSubscriptionPrice();
             TransactionDTO transactionDTO = TransactionDTO.builder()
                     .outputCardNumber(request.getUserBankCard().getCardNumber())

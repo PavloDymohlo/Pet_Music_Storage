@@ -77,48 +77,48 @@ public class PersonalOfficeController {
         }
     }
 
-@PutMapping("/update_subscription")
-public ResponseEntity<String> updateSubscription(@RequestBody UpdateSubscriptionDTO request,
-                                                 @RequestHeader("Authorization") String jwtToken,
-                                                 HttpServletResponse response) {
-    long userPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
-    log.debug("Current user's phone number retrieved: {}", userPhoneNumber);
-    try {
-        User user = userRepository.findByPhoneNumber(userPhoneNumber);
-        Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(request.getNewSubscription().getSubscriptionName());
-        if (subscription == null) {
-            throw new NoSuchElementException("Subscription " + request.getNewSubscription().getSubscriptionName() + " not found");
-        }
+    @PutMapping("/update_subscription")
+    public ResponseEntity<String> updateSubscription(@RequestBody UpdateSubscriptionDTO request,
+                                                     @RequestHeader("Authorization") String jwtToken,
+                                                     HttpServletResponse response) {
+        long userPhoneNumber = userService.getCurrentUserPhoneNumber(jwtToken);
+        log.debug("Current user's phone number retrieved: {}", userPhoneNumber);
+        try {
+            User user = userRepository.findByPhoneNumber(userPhoneNumber);
+            Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(request.getNewSubscription().getSubscriptionName());
+            if (subscription == null) {
+                throw new NoSuchElementException("Subscription " + request.getNewSubscription().getSubscriptionName() + " not found");
+            }
 
-        if(subscription.getSubscriptionName().equals("FREE")) {
-            return handleSubscriptionUpdate(userPhoneNumber, request, subscription, response);
-        }
+            if (subscription.getSubscriptionName().equals("FREE")) {
+                return handleSubscriptionUpdate(userPhoneNumber, request, subscription, response);
+            }
 
-        TransactionDTO transactionDTO = TransactionDTO.builder()
-                .outputCardNumber(user.getUserBankCard().getCardNumber())
-                .sum(subscription.getSubscriptionPrice())
-                .cardExpirationDate(user.getUserBankCard().getCardExpirationDate())
-                .cvv(user.getUserBankCard().getCvv()).build();
+            TransactionDTO transactionDTO = TransactionDTO.builder()
+                    .outputCardNumber(user.getUserBankCard().getCardNumber())
+                    .sum(subscription.getSubscriptionPrice())
+                    .cardExpirationDate(user.getUserBankCard().getCardExpirationDate())
+                    .cvv(user.getUserBankCard().getCvv()).build();
 
-        ResponseEntity<String> paymentResponse = paymentController.payment(transactionDTO);
-        if (paymentResponse.getStatusCode().is2xxSuccessful()) {
-            return handleSubscriptionUpdate(userPhoneNumber, request, subscription, response);
-        } else if (paymentResponse.getStatusCode() == HttpStatus.BAD_REQUEST) {
-            String errorMessage = paymentResponse.getBody();
-            log.warn("Payment failed: {}", errorMessage);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment failed");
+            ResponseEntity<String> paymentResponse = paymentController.payment(transactionDTO);
+            if (paymentResponse.getStatusCode().is2xxSuccessful()) {
+                return handleSubscriptionUpdate(userPhoneNumber, request, subscription, response);
+            } else if (paymentResponse.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                String errorMessage = paymentResponse.getBody();
+                log.warn("Payment failed: {}", errorMessage);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment failed");
+            }
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("An error occurred while updating subscription", e);
+            String errorMessage = "An error occurred on the bank's server. Please try again later.";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
         }
-    } catch (NoSuchElementException e) {
-        log.warn(e.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-    } catch (Exception e) {
-        log.error("An error occurred while updating subscription", e);
-        String errorMessage = "An error occurred on the bank's server. Please try again later.";
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
     }
-}
 
     private ResponseEntity<String> handleSubscriptionUpdate(long userPhoneNumber, UpdateSubscriptionDTO request,
                                                             Subscription subscription, HttpServletResponse response) {
@@ -179,7 +179,7 @@ public ResponseEntity<String> updateSubscription(@RequestBody UpdateSubscription
         } catch (IllegalArgumentException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error("An error occurred while updating bank card", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -391,10 +391,10 @@ public ResponseEntity<String> updateSubscription(@RequestBody UpdateSubscription
             return ResponseEntity.status(HttpStatus.FOUND)
                     .location(location)
                     .build();
-        }catch (NoSuchElementException e) {
+        } catch (NoSuchElementException e) {
             log.error("User with phone number {} not found {}", userPhoneNumber, e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {

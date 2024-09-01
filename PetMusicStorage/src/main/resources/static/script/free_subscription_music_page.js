@@ -45,31 +45,65 @@ function showMusicFreeSubscription() {
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        return response.json();
-    })
-    .then(data => {
-        const subscriptionDetails = document.getElementById('subscriptionDetails');
-        const audioElement = document.getElementById('audio');
 
-        if (Array.isArray(data) && data.length > 0) {
-            subscriptionDetails.innerHTML = ''; // Очистити список файлів, якщо вони вже є
-            data.forEach(file => {
-                const listItem = document.createElement('li');
-                listItem.innerText = `Music File: ${file.musicFileName}`;
-                listItem.onclick = function() {
-                    audioElement.src = file.filePath;
-                    audioElement.play();
-                };
-                subscriptionDetails.appendChild(listItem);
-            });
-        } else {
-            subscriptionDetails.innerText = 'No music files found for the FREE subscription.';
-        }
+        return response.blob();
+    })
+    .then(blob => {
+        const url = URL.createObjectURL(blob);
+        const audioElement = document.getElementById('audio');
+        audioElement.src = url;
+        audioElement.play();
     })
     .catch(error => {
         console.error('Failed to fetch free subscription music files: ', error);
     });
 }
+
+//function showMusicFreeSubscription() {
+//    const jwtToken = getCookie('JWT_TOKEN');
+//    if (!jwtToken) {
+//        console.error('JWT token not found');
+//        return;
+//    }
+//    fetch('/free_subscription/list_free_subscription?subscriptionName=FREE', {
+//        headers: {
+//            'Authorization': `Bearer ${jwtToken}`
+//        }
+//    })
+//    .then(response => {
+//        if (!response.ok) {
+//            throw new Error('Network response was not ok');
+//        }
+//        return response.json();
+//    })
+//    .then(musicFiles => {
+//        const container = document.getElementById('subscriptionDetails');
+//        container.innerHTML = ''; // Очистити контейнер перед додаванням нових елементів
+//
+//        musicFiles.forEach(file => {
+//            const audioElement = document.createElement('audio');
+//            audioElement.controls = true;
+//
+//            // Переконайтесь, що шлях правильний
+//            audioElement.src = `/static/mp3/${file.filePath}`; // або шлях до файлів вашого серверу
+//
+//            const trackName = document.createElement('div');
+//            trackName.textContent = file.musicFileName;
+//
+//            const trackContainer = document.createElement('div');
+//            trackContainer.appendChild(trackName);
+//            trackContainer.appendChild(audioElement);
+//
+//            container.appendChild(trackContainer);
+//        });
+//    })
+//    .catch(error => {
+//        console.error('Failed to fetch free subscription music files: ', error);
+//    });
+//}
+
+
+
 
 
 function logOut(event) {
@@ -95,26 +129,6 @@ function MeinMenu(event) {
     }
 }
 
-
-
-
-
-
-//const audio = new Audio('/mp3/free_subscription.mp3');
-//
-//// Функція для відтворення аудіо
-//function playAudio() {
-//    audio.play();
-//}
-//
-//// Функція для зупинки аудіо
-//function pauseAudio() {
-//    audio.pause();
-//}
-//
-//// Додаємо обробники подій для кнопок
-//document.getElementById('playAudio').addEventListener('click', playAudio);
-//document.getElementById('pauseAudio').addEventListener('click', pauseAudio);
 
   // Call the function to fetch and display the subscription details
 showMusicFreeSubscription();

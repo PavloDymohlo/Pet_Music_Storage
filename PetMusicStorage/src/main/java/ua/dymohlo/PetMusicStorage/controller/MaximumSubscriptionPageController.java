@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class MaximumSubscriptionPageController {
 
     @GetMapping("/maximum_subscription")
-    public String showMaximumSubscriptionPage(){
+    public String showMaximumSubscriptionPage() {
         log.info("Maximum subscription page accessed.");
         return "pages/maximum_subscription_music_page";
     }

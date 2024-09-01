@@ -24,7 +24,7 @@ public class DatabaseUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(
-                        String.format("User "+ username+" not found.")
+                        String.format("User " + username + " not found.")
                 ));
         String phoneNumber = String.valueOf(user.getPhoneNumber());
         String password = user.getPassword();

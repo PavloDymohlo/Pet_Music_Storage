@@ -23,19 +23,19 @@ import java.util.regex.Pattern;
 public class EmailService {
     private final JavaMailSender javaMailSender;
     private final UserRepository userRepository;
-    private static final String EMAIL_REGEX = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
-    private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
+//    private static final String EMAIL_REGEX = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+//    private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
     private String topic = "Change report in your account";
     @Value("${spring.mail.username}")
     private String from;
 
     public void sendSimpleMessage(String to, String topic, String text) {
-        if (to.isEmpty()){
-            log.info("The user did not provide an email address.");
-        }else if (!isValidEmail(to)) {
-            String errorMessage = "Such an address does not exist.";
-            throw new IllegalArgumentException(errorMessage);
-        } else {
+//        if (to.isEmpty()){
+//            log.info("The user did not provide an email address.");
+//        }else if (!isValidEmail(to)) {
+//            String errorMessage = "Such an address does not exist.";
+//            throw new IllegalArgumentException(errorMessage);
+//        } else {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(to);
             message.setSubject(topic);
@@ -43,26 +43,26 @@ public class EmailService {
             message.setFrom(from);
             javaMailSender.send(message);
         }
-    }
 
-    public boolean isValidEmail(String email) {
-        if (!EMAIL_PATTERN.matcher(email).matches()) {
-            return false;
-        }
-        String domain = email.substring(email.indexOf('@') + 1);
-        return isValidDomain(domain);
-    }
 
-    private boolean isValidDomain(String domain) {
-        try {
-            DirContext ictx = new InitialDirContext();
-            Attributes attrs = ictx.getAttributes("dns:///" + domain, new String[]{"MX"});
-            Attribute attr = attrs.get("MX");
-            return attr != null && attr.size() > 0;
-        } catch (NamingException e) {
-            return false;
-        }
-    }
+//    public boolean isValidEmail(String email) {
+//        if (!EMAIL_PATTERN.matcher(email).matches()) {
+//            return false;
+//        }
+//        String domain = email.substring(email.indexOf('@') + 1);
+//        return isValidDomain(domain);
+//    }
+//
+//    private boolean isValidDomain(String domain) {
+//        try {
+//            DirContext ictx = new InitialDirContext();
+//            Attributes attrs = ictx.getAttributes("dns:///" + domain, new String[]{"MX"});
+//            Attribute attr = attrs.get("MX");
+//            return attr != null && attr.size() > 0;
+//        } catch (NamingException e) {
+//            return false;
+//        }
+//    }
 
 
     public void notifyUserAboutChangeSubscription(String userEmail, String subscription, String subscriptionExpiredDate) {

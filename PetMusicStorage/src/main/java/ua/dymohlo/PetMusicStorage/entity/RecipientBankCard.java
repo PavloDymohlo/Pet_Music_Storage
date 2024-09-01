@@ -27,4 +27,3 @@ public class RecipientBankCard {
     @JsonIgnore
     private PaymentRecipientData paymentRecipientData;
 }
-

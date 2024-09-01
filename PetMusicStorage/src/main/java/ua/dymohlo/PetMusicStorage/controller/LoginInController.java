@@ -30,6 +30,7 @@ public class LoginInController {
     private final UserService userService;
     private final JWTService jwtService;
     private final DatabaseUserDetailsService databaseUserDetailsService;
+
     @PostMapping
     public ResponseEntity<?> loginIn(@RequestBody UserLoginInDTO request, HttpServletResponse response) {
         try {

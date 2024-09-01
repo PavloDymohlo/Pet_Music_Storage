@@ -24,4 +24,3 @@ public class BankTransactionData {
     @JsonIgnore
     private PaymentRecipientData paymentRecipientData;
 }
-
