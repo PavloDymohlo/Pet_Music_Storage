@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import ua.dymohlo.PetMusicStorage.entity.MusicFile;
-import ua.dymohlo.PetMusicStorage.entity.Subscription;
 
 import java.util.ArrayList;
 import java.util.List;

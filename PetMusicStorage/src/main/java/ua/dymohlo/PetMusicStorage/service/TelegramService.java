@@ -15,7 +15,8 @@ public class TelegramService {
     public void notifyUserAboutChangeSubscription(long phoneNumber, String subscription, String subscriptionExpiredDate) {
         User user = userRepository.findByPhoneNumber(phoneNumber);
         if (user != null && user.getTelegramChatId() != null) {
-            String message = String.format("Your subscription has been changed to the %s. Subscription expiration date:  %s. If this wasn't you, please contact support.", subscription, subscriptionExpiredDate);
+            String message = String.format("Your subscription has been changed to the %s. Subscription expiration date:  %s. " +
+                    "If this wasn't you, please contact support.", subscription, subscriptionExpiredDate);
             telegramBot.sendMessage(user.getTelegramChatId(), message);
         }
     }
@@ -58,7 +59,8 @@ public class TelegramService {
     public void notifyUserAboutChangeEmail(long phoneNumber, String newEmail) {
         User user = userRepository.findByPhoneNumber(phoneNumber);
         if (user != null && user.getTelegramChatId() != null) {
-            String message = String.format("Your email has been changed to the %s. If this wasn't you, please contact support.", newEmail);
+            String message = String.format("Your email has been changed to the %s. " +
+                    "If this wasn't you, please contact support.", newEmail);
             telegramBot.sendMessage(user.getTelegramChatId(), message);
         }
     }

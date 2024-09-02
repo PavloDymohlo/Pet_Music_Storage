@@ -191,7 +191,8 @@ public class PersonalOfficeControllerTest {
                         .header("Authorization", jwtToken)
                         .content(requestJson))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Bank card for user with phone number " + currentPhoneNumber + " updated successful"));
+                .andExpect(content().string("Bank card for user with phone number "
+                        + currentPhoneNumber + " updated successful"));
     }
 
     @Test
@@ -237,7 +238,8 @@ public class PersonalOfficeControllerTest {
                         .header("Authorization", jwtToken)
                         .content(requestJson))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Invalid card details for user with phone number " + currentPhoneNumber));
+                .andExpect(content().string("Invalid card details for user with phone number "
+                        + currentPhoneNumber));
     }
 
     @Test
@@ -257,7 +259,8 @@ public class PersonalOfficeControllerTest {
                         .header("Authorization", jwtToken)
                         .content(requestJson))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Password for user with phone number " + currentPhoneNumber + " updated successful"));
+                .andExpect(content().string("Password for user with phone number "
+                        + currentPhoneNumber + " updated successful"));
     }
 
     @Test
@@ -319,7 +322,8 @@ public class PersonalOfficeControllerTest {
                         .header("Authorization", jwtToken)
                         .content(requestJson))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Email for user with phone number " + currentPhoneNumber + " updated successful"));
+                .andExpect(content().string("Email for user with phone number "
+                        + currentPhoneNumber + " updated successful"));
     }
 
     @Test
@@ -381,7 +385,8 @@ public class PersonalOfficeControllerTest {
                         .header("Authorization", jwtToken)
                         .content(requestJson))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Auto renew status for user with phone number " + currentPhoneNumber + " set successfully"));
+                .andExpect(content().string("Auto renew status for user with phone number "
+                        + currentPhoneNumber + " set successfully"));
     }
 
     @Test
@@ -508,7 +513,8 @@ public class PersonalOfficeControllerTest {
                         .param("minPrice", String.valueOf(minPrice))
                         .param("maxPrice", String.valueOf(maxPrice)))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Subscriptions between price " + minPrice + " and " + maxPrice + " not found"));
+                .andExpect(content().string("Subscriptions between price " + minPrice + " and "
+                        + maxPrice + " not found"));
     }
 
     @Test
@@ -538,7 +544,8 @@ public class PersonalOfficeControllerTest {
         mvc.perform(get("/personal_office/subscription_by_name")
                         .param("subscriptionName", subscriptionName))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Subscription with subscriptionName " + subscriptionName + " not found"));
+                .andExpect(content().string("Subscription with subscriptionName "
+                        + subscriptionName + " not found"));
     }
 
     @Test

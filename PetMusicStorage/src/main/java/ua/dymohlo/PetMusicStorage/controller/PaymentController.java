@@ -39,7 +39,6 @@ public class PaymentController {
                     .sum(paymentPrice)
                     .cardExpirationDate(request.getCardExpirationDate())
                     .cvv(request.getCvv()).build();
-
             Mono<ResponseEntity<String>> bankResponseMono = webClientBuilder.build()
                     .post()
                     .uri(bankUrlTransaction)

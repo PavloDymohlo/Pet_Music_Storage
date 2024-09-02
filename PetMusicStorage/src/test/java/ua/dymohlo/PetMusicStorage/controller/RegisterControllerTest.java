@@ -79,13 +79,15 @@ public class RegisterControllerTest {
         when(webClientBuilder.build().post()).thenReturn(requestBodyUriSpecMock);
         when(webClientBuilder.build().post().uri(anyString())).thenReturn(requestBodySpecMock);
         when(webClientBuilder.build().post().uri(anyString()).contentType(any())).thenReturn(requestBodySpecMock);
-        when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any())).thenReturn(requestHeadersSpecMock);
-        when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any()).retrieve()).thenReturn(responseSpecMock);
-        when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any()).retrieve().toEntity(String.class)).thenReturn(Mono.just(ResponseEntity.ok().body("mockResponse")));
+        when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any()))
+                .thenReturn(requestHeadersSpecMock);
+        when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any()).retrieve())
+                .thenReturn(responseSpecMock);
+        when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any()).retrieve()
+                .toEntity(String.class)).thenReturn(Mono.just(ResponseEntity.ok().body("mockResponse")));
         when(userService.isPhoneNumberRegistered(anyLong())).thenReturn(false);
         when(userService.isEmailRegistered(anyString())).thenReturn(false);
         when(jwtService.generateJwtToken(any(UserDetails.class))).thenReturn(jwtToken);
-        when(emailService.isValidEmail(anyString())).thenReturn(true);
         when(paymentController.payment(any(TransactionDTO.class)))
                 .thenReturn(ResponseEntity.ok("success"));
         when(userService.registerUser(any(UserRegistrationDTO.class))).thenReturn(user);
@@ -118,14 +120,16 @@ public class RegisterControllerTest {
         when(webClientBuilder.build().post()).thenReturn(requestBodyUriSpecMock);
         when(webClientBuilder.build().post().uri(anyString())).thenReturn(requestBodySpecMock);
         when(webClientBuilder.build().post().uri(anyString()).contentType(any())).thenReturn(requestBodySpecMock);
-        when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any())).thenReturn(requestHeadersSpecMock);
-        when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any()).retrieve()).thenReturn(responseSpecMock);
-        when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any()).retrieve().toEntity(String.class))
+        when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any()))
+                .thenReturn(requestHeadersSpecMock);
+        when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any()).retrieve())
+                .thenReturn(responseSpecMock);
+        when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any()).retrieve()
+                .toEntity(String.class))
                 .thenReturn(Mono.just(ResponseEntity.badRequest().body("mockResponse")));
         when(userService.isPhoneNumberRegistered(anyLong())).thenReturn(false);
         when(userService.isEmailRegistered(anyString())).thenReturn(false);
         when(jwtService.generateJwtToken(any(UserDetails.class))).thenReturn(jwtToken);
-        when(emailService.isValidEmail(request.getEmail())).thenReturn(true);
         when(paymentController.payment(any(TransactionDTO.class)))
                 .thenReturn(ResponseEntity.badRequest().body("Payment failed"));
 
@@ -155,7 +159,8 @@ public class RegisterControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("User with phone number " + request.getPhoneNumber() + " already exists"));
+                .andExpect(content().string("User with phone number "
+                        + request.getPhoneNumber() + " already exists"));
     }
 
     @Test

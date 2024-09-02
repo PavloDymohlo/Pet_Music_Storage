@@ -60,9 +60,12 @@ public class PaymentControllerTest {
         when(webClientBuilder.build().post()).thenReturn(requestBodyUriSpecMock);
         when(webClientBuilder.build().post().uri(anyString())).thenReturn(requestBodySpecMock);
         when(webClientBuilder.build().post().uri(anyString()).contentType(any())).thenReturn(requestBodySpecMock);
-        when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any())).thenReturn(requestHeadersSpecMock);
-        when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any()).retrieve()).thenReturn(responseSpecMock);
-        when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any()).retrieve().toEntity(String.class)).thenReturn(Mono.just(ResponseEntity.ok().body("mockResponse")));
+        when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any()))
+                .thenReturn(requestHeadersSpecMock);
+        when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any()).retrieve())
+                .thenReturn(responseSpecMock);
+        when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any()).retrieve()
+                .toEntity(String.class)).thenReturn(Mono.just(ResponseEntity.ok().body("mockResponse")));
 
         when(paymentController.payment(any(TransactionDTO.class)))
                 .thenReturn(ResponseEntity.ok("success"));
@@ -91,9 +94,12 @@ public class PaymentControllerTest {
         when(webClientBuilder.build().post()).thenReturn(requestBodyUriSpecMock);
         when(webClientBuilder.build().post().uri(anyString())).thenReturn(requestBodySpecMock);
         when(webClientBuilder.build().post().uri(anyString()).contentType(any())).thenReturn(requestBodySpecMock);
-        when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any())).thenReturn(requestHeadersSpecMock);
-        when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any()).retrieve()).thenReturn(responseSpecMock);
-        when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any()).retrieve().toEntity(String.class)).thenReturn(Mono.just(ResponseEntity.ok().body("mockResponse")));
+        when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any()))
+                .thenReturn(requestHeadersSpecMock);
+        when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any()).retrieve())
+                .thenReturn(responseSpecMock);
+        when(webClientBuilder.build().post().uri(anyString()).contentType(any()).bodyValue(any()).retrieve()
+                .toEntity(String.class)).thenReturn(Mono.just(ResponseEntity.ok().body("mockResponse")));
 
         when(paymentController.payment(any(TransactionDTO.class)))
                 .thenReturn(ResponseEntity.badRequest().body("Payment failed"));

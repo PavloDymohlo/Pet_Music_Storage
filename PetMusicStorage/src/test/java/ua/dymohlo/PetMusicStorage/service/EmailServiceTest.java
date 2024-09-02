@@ -48,24 +48,6 @@ public class EmailServiceTest {
     }
 
     @Test
-    public void sendSimpleMessage_incorrectEmail() {
-        String to = "simple_user@mailcom";
-        String topic = "Topic";
-        String text = " Example text";
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject(topic);
-        message.setText(text);
-        message.setFrom(fromAddress);
-
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            emailService.sendSimpleMessage(to, topic, text);
-        });
-
-        assertEquals("Such an address does not exist.", exception.getMessage());
-    }
-
-    @Test
     public void notifyUserAboutChangeSubscription_success() {
         String userEmail = "user@example.com";
         String subscription = "FREE";

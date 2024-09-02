@@ -47,6 +47,7 @@ function showMusicFreeSubscription() {
             container.innerHTML = '';
             const emptyMessage = document.createElement('div');
             emptyMessage.textContent = 'List is empty!';
+            emptyMessage.className = 'header-text'; // Add the class for styling
             container.appendChild(emptyMessage);
             return;
         }
@@ -65,6 +66,7 @@ function showMusicFreeSubscription() {
                 if (Object.keys(zip.files).length === 0) {
                     const emptyMessage = document.createElement('div');
                     emptyMessage.textContent = 'List is empty!';
+                    emptyMessage.className = 'header-text'; // Add the class for styling
                     container.appendChild(emptyMessage);
                     return;
                 }
@@ -76,6 +78,7 @@ function showMusicFreeSubscription() {
                         audioElement.dataset.index = audioElements.length;
                         const trackName = document.createElement('div');
                         trackName.textContent = zipEntry.name;
+                        trackName.className = 'header-text';
                         const trackContainer = document.createElement('div');
                         trackContainer.appendChild(trackName);
                         trackContainer.appendChild(audioElement);
@@ -104,8 +107,6 @@ function showMusicFreeSubscription() {
 }
 
 
-
-
 function logOut(event) {
     event.preventDefault();
     document.cookie = "JWT_TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
@@ -128,7 +129,6 @@ function MeinMenu(event) {
         window.location.href = '/personal_office';
     }
 }
-
 
   // Call the function to fetch and display the subscription details
 showMusicFreeSubscription();

@@ -156,7 +156,7 @@ public class MusicFileService {
         switch (subscription.getSubscriptionName().toUpperCase()) {
             case "FREE":
                 musicFileList.addAll(freeSubscription.getMusicFiles());
-            break;
+                break;
             case "OPTIMAL":
                 musicFileList.addAll(freeSubscription.getMusicFiles());
                 musicFileList.addAll(optimalSubscription.getMusicFiles());
@@ -171,5 +171,4 @@ public class MusicFileService {
         }
         return musicFileList;
     }
-
 }

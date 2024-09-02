@@ -156,7 +156,8 @@ public class UserService {
                 .cardNumber(updateUserBankCardDTO.getNewUserBankCard().getCardNumber())
                 .cardExpirationDate(updateUserBankCardDTO.getNewUserBankCard().getCardExpirationDate())
                 .cvv(updateUserBankCardDTO.getNewUserBankCard().getCvv()).build();
-        UserBankCard existingCard = userBankCardRepository.findByCardNumber(updateUserBankCardDTO.getNewUserBankCard().getCardNumber());
+        UserBankCard existingCard = userBankCardRepository
+                .findByCardNumber(updateUserBankCardDTO.getNewUserBankCard().getCardNumber());
         if (existingCard == null) {
             userBankCardRepository.save(newUserBankCard);
         } else {
@@ -177,7 +178,8 @@ public class UserService {
         }
 
         log.info("Bank card updated successful for user with id: {}", user);
-        telegramService.notifyUserAboutChangeBankCard(userPhoneNumber, String.valueOf(updateUserBankCardDTO.getNewUserBankCard().getCardNumber()));
+        telegramService.notifyUserAboutChangeBankCard(userPhoneNumber,
+                String.valueOf(updateUserBankCardDTO.getNewUserBankCard().getCardNumber()));
         emailService.notifyUserAboutChangeBankCard(user.getEmail(), newUserBankCard.getCardNumber());
     }
 
@@ -234,7 +236,8 @@ public class UserService {
             throw new NoSuchElementException("User with phone number " + userPhoneNumber + " not found");
         }
         Subscription newSubscription = updateSubscriptionDTO.getNewSubscription();
-        Subscription existingSubscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(newSubscription.getSubscriptionName());
+        Subscription existingSubscription = subscriptionRepository
+                .findBySubscriptionNameIgnoreCase(newSubscription.getSubscriptionName());
         if (existingSubscription == null) {
             log.error("Subscription with name: {} does not exist", newSubscription.getSubscriptionName());
             throw new NoSuchElementException("Subscription with name " + newSubscription.getSubscriptionName() + " not found");
@@ -245,13 +248,15 @@ public class UserService {
         userRepository.save(user);
         if (user.getSubscription().getSubscriptionName().equals("FREE")) {
             String formattedDate = "Infinity";
-            telegramService.notifyUserAboutChangeSubscription(userPhoneNumber, user.getSubscription().getSubscriptionName(), formattedDate);
+            telegramService.notifyUserAboutChangeSubscription(userPhoneNumber,
+                    user.getSubscription().getSubscriptionName(), formattedDate);
             emailService.notifyUserAboutChangeSubscription(user.getEmail(), newSubscription.getSubscriptionName(), formattedDate);
         } else {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy HH:mm:ss", Locale.ENGLISH);
             String formattedDate = user.getEndTime().format(formatter);
             log.info("Subscription updated successfully for user with phone number: {}", userPhoneNumber);
-            telegramService.notifyUserAboutChangeSubscription(userPhoneNumber, newSubscription.getSubscriptionName(), formattedDate);
+            telegramService
+                    .notifyUserAboutChangeSubscription(userPhoneNumber, newSubscription.getSubscriptionName(), formattedDate);
             emailService.notifyUserAboutChangeSubscription(user.getEmail(), newSubscription.getSubscriptionName(), formattedDate);
         }
     }
@@ -351,7 +356,6 @@ public class UserService {
         }
         deleteUserFromDataBase(user);
     }
-
 
     @Transactional
     public void deleteUserByBankCardNumber(long bankCardNumber, long phoneNumber) {

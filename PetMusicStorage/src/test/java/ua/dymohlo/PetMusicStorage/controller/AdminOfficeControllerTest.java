@@ -94,7 +94,8 @@ public class AdminOfficeControllerTest {
                         .param("bankCardNumber", String.valueOf(userBankCardNumber))
                         .header("Authorization", "Bearer " + anyString()))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Users with bankCardNumber " + userBankCardNumber + " delete successful"));
+                .andExpect(content().string("Users with bankCardNumber "
+                        + userBankCardNumber + " delete successful"));
     }
 
     @Test
@@ -267,14 +268,16 @@ public class AdminOfficeControllerTest {
         when(subscriptionService.findSubscriptionsByPrice(request.getMinPrice(), request.getMaxPrice()))
                 .thenReturn(null);
 
-        doThrow(new NoSuchElementException("Subscriptions between price " + request.getMinPrice() + " and " + request.getMaxPrice() + " not found"))
+        doThrow(new NoSuchElementException("Subscriptions between price "
+                + request.getMinPrice() + " and " + request.getMaxPrice() + " not found"))
                 .when(subscriptionService).findSubscriptionsByPrice(request.getMinPrice(), request.getMaxPrice());
 
         mvc.perform(get("/admin_office/subscription_by_price")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Subscriptions between price " + request.getMinPrice() + " and " + request.getMaxPrice() + " not found"));
+                .andExpect(content().string("Subscriptions between price "
+                        + request.getMinPrice() + " and " + request.getMaxPrice() + " not found"));
     }
 
     @Test
@@ -304,7 +307,8 @@ public class AdminOfficeControllerTest {
         mvc.perform(get("/admin_office/subscription_by_name")
                         .param("subscriptionName", findSubscriptionName))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Subscription with subscriptionName " + findSubscriptionName + " not found"));
+                .andExpect(content().string("Subscription with subscriptionName "
+                        + findSubscriptionName + " not found"));
     }
 
     @Test
@@ -320,7 +324,8 @@ public class AdminOfficeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"currentSubscriptionName\":\"FREE\", \"newSubscriptionName\":\"PREMIUM\"}"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Subscription with new subscriptionName " + request.getNewSubscriptionName() + " updated successful"));
+                .andExpect(content().string("Subscription with new subscriptionName "
+                        + request.getNewSubscriptionName() + " updated successful"));
     }
 
     @Test
@@ -330,7 +335,8 @@ public class AdminOfficeControllerTest {
                 .currentSubscriptionName("FREE")
                 .newSubscriptionName("PREMIUM").build();
 
-        doThrow(new NoSuchElementException("Subscription with subscriptionName " + request.getCurrentSubscriptionName() + " not found"))
+        doThrow(new NoSuchElementException("Subscription with subscriptionName "
+                + request.getCurrentSubscriptionName() + " not found"))
                 .when(subscriptionService).updateSubscriptionName(request);
         String requestJson = objectMapper.writeValueAsString(request);
 
@@ -338,7 +344,8 @@ public class AdminOfficeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Subscription with subscriptionName " + request.getCurrentSubscriptionName() + " not found"));
+                .andExpect(content().string("Subscription with subscriptionName "
+                        + request.getCurrentSubscriptionName() + " not found"));
     }
 
     @Test
@@ -355,7 +362,8 @@ public class AdminOfficeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Subscription with subscriptionName " + request.getSubscriptionName() + " has updated price"));
+                .andExpect(content().string("Subscription with subscriptionName "
+                        + request.getSubscriptionName() + " has updated price"));
     }
 
     @Test
@@ -372,7 +380,8 @@ public class AdminOfficeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Subscription with subscriptionName " + request.getSubscriptionName() + " has updated duration time"));
+                .andExpect(content().string("Subscription with subscriptionName "
+                        + request.getSubscriptionName() + " has updated duration time"));
     }
 
     @Test
@@ -398,7 +407,8 @@ public class AdminOfficeControllerTest {
         mvc.perform(delete("/admin_office/delete_subscription_by_id")
                         .param("id", String.valueOf(subscriptionId)))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Subscription with id " + subscriptionId + " has users and cannot be deleted"));
+                .andExpect(content().string("Subscription with id "
+                        + subscriptionId + " has users and cannot be deleted"));
     }
 
     @Test
@@ -410,13 +420,15 @@ public class AdminOfficeControllerTest {
         mvc.perform(delete("/admin_office/delete_subscription_by_subscription_name")
                         .param("subscriptionName", subscriptionName))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Subscription with subscriptionName " + subscriptionName + " deleted successful"));
+                .andExpect(content().string("Subscription with subscriptionName "
+                        + subscriptionName + " deleted successful"));
     }
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void deleteAllSubscriptions_success() throws Exception {
-        String report = "Deleted subscriptions: FREE, OPTIMAL\nSubscription with subscriptionName ADMIN has users and cannot be deleted";
+        String report = "Deleted subscriptions: FREE, OPTIMAL" +
+                "\nSubscription with subscriptionName ADMIN has users and cannot be deleted";
         when(subscriptionService.deleteAllSubscription()).thenReturn(report);
 
         mvc.perform(delete("/admin_office/delete_all_subscriptions"))
@@ -437,7 +449,8 @@ public class AdminOfficeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk())
-                .andExpect(content().string("New music file " + request.getMusicFileName() + " add in data base"));
+                .andExpect(content().string("New music file "
+                        + request.getMusicFileName() + " add in data base"));
     }
 
     @Test
@@ -453,7 +466,8 @@ public class AdminOfficeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Music file with musicName " + request.getMusicFileName() + " already exists"));
+                .andExpect(content().string("Music file with musicName "
+                        + request.getMusicFileName() + " already exists"));
 
     }
 
@@ -607,7 +621,8 @@ public class AdminOfficeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk())
-                .andExpect(content().string("The music file named " + request.getCurrentMusicFileName() + " has been renamed to " + request.getNewMusicFileName()));
+                .andExpect(content().string("The music file named "
+                        + request.getCurrentMusicFileName() + " has been renamed to " + request.getNewMusicFileName()));
     }
 
     @Test
@@ -625,7 +640,8 @@ public class AdminOfficeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Music file with name " + request.getCurrentMusicFileName() + " not found"));
+                .andExpect(content().string("Music file with name "
+                        + request.getCurrentMusicFileName() + " not found"));
     }
 
     @Test
@@ -643,7 +659,8 @@ public class AdminOfficeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("This music name " + request.getNewMusicFileName() + " already exists"));
+                .andExpect(content().string("This music name "
+                        + request.getNewMusicFileName() + " already exists"));
     }
 
     @Test
@@ -660,7 +677,8 @@ public class AdminOfficeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Music file with name " + request.getMusicFileName() + " has received a new subscription " + request.getNewMusicFileSubscription()));
+                .andExpect(content().string("Music file with name "
+                        + request.getMusicFileName() + " has received a new subscription " + request.getNewMusicFileSubscription()));
     }
 
     @Test
@@ -688,7 +706,8 @@ public class AdminOfficeControllerTest {
                 .musicFileName("Music")
                 .newMusicFileSubscription("OPTIMAL").build();
 
-        doThrow(new NoSuchElementException("Subscription with subscriptionName " + request.getNewMusicFileSubscription() + " not found"))
+        doThrow(new NoSuchElementException("Subscription with subscriptionName "
+                + request.getNewMusicFileSubscription() + " not found"))
                 .when(musicFileService).updateMusicFileSubscription(request);
         String requestJson = objectMapper.writeValueAsString(request);
 
@@ -696,7 +715,8 @@ public class AdminOfficeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Subscription with subscriptionName " + request.getNewMusicFileSubscription() + " not found"));
+                .andExpect(content().string("Subscription with subscriptionName "
+                        + request.getNewMusicFileSubscription() + " not found"));
     }
 
     @Test
@@ -713,8 +733,9 @@ public class AdminOfficeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk())
-                .andExpect(content().string("All music files have been successfully transferred from the " + request.getCurrentMusicFilesSubscription() +
-                        " subscription to the " + request.getNewMusicFileSubscription() + " subscription"));
+                .andExpect(content().string("All music files have been successfully transferred from the "
+                        + request.getCurrentMusicFilesSubscription() + " subscription to the "
+                        + request.getNewMusicFileSubscription() + " subscription"));
     }
 
     @Test
@@ -724,7 +745,8 @@ public class AdminOfficeControllerTest {
                 .currentMusicFilesSubscription("FREE")
                 .newMusicFileSubscription("MAXIMUM").build();
 
-        doThrow(new NoSuchElementException("Subscription with subscriptionName " + request.getNewMusicFileSubscription() + " not found"))
+        doThrow(new NoSuchElementException("Subscription with subscriptionName "
+                + request.getNewMusicFileSubscription() + " not found"))
                 .when(musicFileService).transferMusicFilesToAnotherSubscription(request);
         String requestJson = objectMapper.writeValueAsString(request);
 
@@ -732,7 +754,8 @@ public class AdminOfficeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Subscription with subscriptionName " + request.getNewMusicFileSubscription() + " not found"));
+                .andExpect(content().string("Subscription with subscriptionName "
+                        + request.getNewMusicFileSubscription() + " not found"));
     }
 
     @Test
@@ -816,7 +839,8 @@ public class AdminOfficeControllerTest {
         mvc.perform(delete("/admin_office/delete_music_files_by_subscription")
                         .param("subscription", subscriptionName))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Music file with subscription " + subscriptionName + " delete successful"));
+                .andExpect(content().string("Music file with subscription "
+                        + subscriptionName + " delete successful"));
     }
 
     @Test

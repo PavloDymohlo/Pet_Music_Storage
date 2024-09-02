@@ -255,7 +255,8 @@ public class AllUsersPageControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk())
-                .andExpect(content().string("New phone number " + request.getNewPhoneNumber() + " updated successfully!"));
+                .andExpect(content().string("New phone number "
+                        + request.getNewPhoneNumber() + " updated successfully!"));
     }
 
     @Test
@@ -308,7 +309,8 @@ public class AllUsersPageControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Password for user with phone number " + request.getUserPhoneNumber() + " updated successful"));
+                .andExpect(content().string("Password for user with phone number "
+                        + request.getUserPhoneNumber() + " updated successful"));
     }
 
     @Test
@@ -361,7 +363,8 @@ public class AllUsersPageControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Auto renew status for user with phone number " + request.getUserPhoneNumber() + " set successfully"));
+                .andExpect(content().string("Auto renew status for user with phone number "
+                        + request.getUserPhoneNumber() + " set successfully"));
     }
 
     @Test
@@ -396,7 +399,8 @@ public class AllUsersPageControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Email for user with phone number " + request.getUserPhoneNumber() + " updated successful"));
+                .andExpect(content().string("Email for user with phone number "
+                        + request.getUserPhoneNumber() + " updated successful"));
     }
 
     @Test
@@ -450,7 +454,8 @@ public class AllUsersPageControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Bank card for user with phone number " + request.getUserPhoneNumber() + " updated successful"));
+                .andExpect(content().string("Bank card for user with phone number "
+                        + request.getUserPhoneNumber() + " updated successful"));
     }
 
     @Test
@@ -488,7 +493,8 @@ public class AllUsersPageControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Invalid card details for user with phone number " + request.getUserPhoneNumber()));
+                .andExpect(content().string("Invalid card details for user with phone number "
+                        + request.getUserPhoneNumber()));
     }
 
     @Test
@@ -516,7 +522,8 @@ public class AllUsersPageControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Subscription for user with phone number " + request.getUserPhoneNumber() + " updated successful"));
+                .andExpect(content().string("Subscription for user with phone number "
+                        + request.getUserPhoneNumber() + " updated successful"));
     }
 
     @Test
@@ -545,7 +552,8 @@ public class AllUsersPageControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("User with phone number " + request.getUserPhoneNumber() + " not found"));
+                .andExpect(content().string("User with phone number "
+                        + request.getUserPhoneNumber() + " not found"));
     }
 
     @Test

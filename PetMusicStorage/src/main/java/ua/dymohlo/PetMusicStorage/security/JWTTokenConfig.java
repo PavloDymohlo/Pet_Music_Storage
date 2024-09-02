@@ -47,12 +47,9 @@ public class JWTTokenConfig extends OncePerRequestFilter {
             log.info("Jwt Token: " + authHeader);
             String username = null;
             String jwt = null;
-
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 jwt = authHeader.substring(7);
-
                 log.info("Received JWT token: {}", jwt);
-
                 try {
                     username = jwtService.extractUserName(jwt);
                 } catch (ExpiredJwtException e) {

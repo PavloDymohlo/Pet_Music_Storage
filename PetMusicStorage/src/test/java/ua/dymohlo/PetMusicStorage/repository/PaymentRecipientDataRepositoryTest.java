@@ -27,14 +27,16 @@ public class PaymentRecipientDataRepositoryTest {
 
     @Test
     public void findByTransactionalName_success() {
-        PaymentRecipientData paymentRecipientData = paymentRecipientDataRepository.findByTransactionalNameIgnoreCase("transactionalName");
+        PaymentRecipientData paymentRecipientData = paymentRecipientDataRepository
+                .findByTransactionalNameIgnoreCase("transactionalName");
 
         assertNotNull(paymentRecipientData);
     }
 
     @Test
     public void findByTransactionalName_notFound() {
-        PaymentRecipientData paymentRecipientData = paymentRecipientDataRepository.findByTransactionalNameIgnoreCase("anotherTransactionalName");
+        PaymentRecipientData paymentRecipientData = paymentRecipientDataRepository
+                .findByTransactionalNameIgnoreCase("anotherTransactionalName");
 
         assertNull(paymentRecipientData);
     }

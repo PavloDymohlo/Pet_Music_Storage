@@ -2,13 +2,20 @@ package ua.dymohlo.PetMusicStorage.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ua.dymohlo.PetMusicStorage.Enum.AutoRenewStatus;
+import ua.dymohlo.PetMusicStorage.controller.PaymentController;
 import ua.dymohlo.PetMusicStorage.dto.*;
 import ua.dymohlo.PetMusicStorage.entity.MusicFile;
 import ua.dymohlo.PetMusicStorage.entity.Subscription;
+import ua.dymohlo.PetMusicStorage.entity.User;
 import ua.dymohlo.PetMusicStorage.repository.MusicFileRepository;
 import ua.dymohlo.PetMusicStorage.repository.SubscriptionRepository;
+import ua.dymohlo.PetMusicStorage.security.DatabaseUserDetailsService;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,16 +28,20 @@ import java.util.stream.Collectors;
 public class SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final MusicFileRepository musicFileRepository;
+    private final PaymentController paymentController;
+    private final UserService userService;
+    private final DatabaseUserDetailsService databaseUserDetailsService;
+    private final JWTService jwtService;
 
     public void addNewSubscription(NewSubscriptionDTO newSubscriptionDTO) {
         if (subscriptionRepository.existsBySubscriptionNameIgnoreCase(newSubscriptionDTO.getSubscriptionName())) {
-            throw new IllegalArgumentException("Subscription with name " + newSubscriptionDTO.getSubscriptionName() + " already exists");
+            throw new IllegalArgumentException("Subscription with name "
+                    + newSubscriptionDTO.getSubscriptionName() + " already exists");
         }
         Subscription newSubscription = Subscription.builder()
                 .subscriptionName(newSubscriptionDTO.getSubscriptionName())
                 .subscriptionPrice(newSubscriptionDTO.getSubscriptionPrice())
                 .subscriptionDurationTime(newSubscriptionDTO.getSubscriptionDurationTime()).build();
-
         subscriptionRepository.save(newSubscription);
     }
 
@@ -82,18 +93,22 @@ public class SubscriptionService {
     }
 
     public void updateSubscriptionPrice(UpdateSubscriptionPriceDTO updateSubscriptionPriceDTO) {
-        Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(updateSubscriptionPriceDTO.getSubscriptionName());
+        Subscription subscription = subscriptionRepository
+                .findBySubscriptionNameIgnoreCase(updateSubscriptionPriceDTO.getSubscriptionName());
         if (subscription == null) {
-            throw new NoSuchElementException("Subscription with subscriptionName " + updateSubscriptionPriceDTO.getSubscriptionName() + " not found");
+            throw new NoSuchElementException("Subscription with subscriptionName "
+                    + updateSubscriptionPriceDTO.getSubscriptionName() + " not found");
         }
         subscription.setSubscriptionPrice(updateSubscriptionPriceDTO.getNewPrice());
         subscriptionRepository.save(subscription);
     }
 
     public void updateSubscriptionDurationTime(UpdateSubscriptionDurationTimeDTO updateSubscriptionDurationTimeDTO) {
-        Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(updateSubscriptionDurationTimeDTO.getSubscriptionName());
+        Subscription subscription = subscriptionRepository
+                .findBySubscriptionNameIgnoreCase(updateSubscriptionDurationTimeDTO.getSubscriptionName());
         if (subscription == null) {
-            throw new NoSuchElementException("Subscription with subscriptionName " + updateSubscriptionDurationTimeDTO.getSubscriptionName() + " not found");
+            throw new NoSuchElementException("Subscription with subscriptionName "
+                    + updateSubscriptionDurationTimeDTO.getSubscriptionName() + " not found");
         }
         subscription.setSubscriptionDurationTime(updateSubscriptionDurationTimeDTO.getNewDurationTime());
         subscriptionRepository.save(subscription);
@@ -135,7 +150,8 @@ public class SubscriptionService {
             throw new NoSuchElementException("Subscription with subscriptionName " + subscriptionName + " not found");
         }
         if (!subscription.getUsers().isEmpty()) {
-            throw new IllegalArgumentException("Subscription with subscriptionName " + subscriptionName + " has users and cannot be deleted");
+            throw new IllegalArgumentException("Subscription with subscriptionName "
+                    + subscriptionName + " has users and cannot be deleted");
         }
         if (!subscription.getMusicFiles().isEmpty()) {
             transferMusicFiles(subscription);
@@ -160,21 +176,55 @@ public class SubscriptionService {
         List<Subscription> subscriptionsWithUsers = subscriptions.stream()
                 .filter(subscription -> !subscription.getUsers().isEmpty())
                 .collect(Collectors.toList());
-
         deletableSubscriptions.forEach(subscription -> {
             transferMusicFiles(subscription);
             subscriptionRepository.delete(subscription);
         });
-
         String deletedSubscriptions = deletableSubscriptions.stream()
                 .map(Subscription::getSubscriptionName)
                 .collect(Collectors.joining(", "));
         String notDeleteSubscriptions = subscriptionsWithUsers.stream()
                 .map(Subscription::getSubscriptionName)
                 .collect(Collectors.joining(", "));
-
         String deletingSubscriptions = "Deleted subscriptions: " + deletedSubscriptions;
-        String notDeletingSubscriptions = "Subscription with subscriptionName " + notDeleteSubscriptions + " has users and cannot be deleted";
+        String notDeletingSubscriptions = "Subscription with subscriptionName "
+                + notDeleteSubscriptions + " has users and cannot be deleted";
         return deletingSubscriptions + "\n" + notDeletingSubscriptions;
+    }
+
+    private void handleUpdateSubscription(User user) {
+        Subscription subscription = subscriptionRepository
+                .findBySubscriptionNameIgnoreCase(user.getSubscription().getSubscriptionName());
+        TransactionDTO transactionDTO = TransactionDTO.builder()
+                .outputCardNumber(user.getUserBankCard().getCardNumber())
+                .sum(subscription.getSubscriptionPrice())
+                .cardExpirationDate(user.getUserBankCard().getCardExpirationDate())
+                .cvv(user.getUserBankCard().getCvv()).build();
+        ResponseEntity<String> paymentResponse = paymentController.payment(transactionDTO);
+        if (paymentResponse.getStatusCode().is2xxSuccessful()) {
+            UpdateSubscriptionDTO updateSubscriptionDTO = UpdateSubscriptionDTO.builder()
+                    .newSubscription(subscription).build();
+            userService.updateSubscription(user.getPhoneNumber(), updateSubscriptionDTO);
+        } else if (paymentResponse.getStatusCode() == HttpStatus.BAD_REQUEST) {
+            handleFreeSubscription(user);
+        }
+    }
+
+    private void handleFreeSubscription(User user) {
+        userService.setFreeSubscription(user.getPhoneNumber());
+        UserDetails userDetails = databaseUserDetailsService.loadUserByUsername(String.valueOf(user.getPhoneNumber()));
+        jwtService.generateJwtToken(userDetails);
+    }
+
+    public void autoRenewSubscriptionForUser(User user) {
+        try {
+            if (user.getAutoRenew().equals(AutoRenewStatus.YES)) {
+                handleUpdateSubscription(user);
+            } else {
+                handleFreeSubscription(user);
+            }
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+        }
     }
 }

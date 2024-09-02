@@ -50,6 +50,7 @@ function showMusicOptimalSubscription() {
             container.innerHTML = '';
             const emptyMessage = document.createElement('div');
             emptyMessage.textContent = 'List is empty!';
+            emptyMessage.className = 'header-text';
             container.appendChild(emptyMessage);
             return;
         }
@@ -68,6 +69,7 @@ function showMusicOptimalSubscription() {
                 if (Object.keys(zip.files).length === 0) {
                     const emptyMessage = document.createElement('div');
                     emptyMessage.textContent = 'List is empty!';
+                    emptyMessage.className = 'header-text';
                     container.appendChild(emptyMessage);
                     return;
                 }
@@ -79,6 +81,7 @@ function showMusicOptimalSubscription() {
                         audioElement.dataset.index = audioElements.length;
                         const trackName = document.createElement('div');
                         trackName.textContent = zipEntry.name;
+                        trackName.className = 'header-text';
                         const trackContainer = document.createElement('div');
                         trackContainer.appendChild(trackName);
                         trackContainer.appendChild(audioElement);
@@ -102,9 +105,10 @@ function showMusicOptimalSubscription() {
         }
     })
     .catch(error => {
-        console.error('Failed to fetch free subscription music files: ', error);
+        console.error('Failed to fetch optimal subscription music files: ', error);
     });
 }
+
 
 
 
@@ -133,42 +137,62 @@ function MeinMenu(event) {
     }
 }
 
-function ReturnMeinMenu() {
+function updateJWTToken() {
     const jwtToken = getCookie('JWT_TOKEN');
-    const payload = JSON.parse(atob(jwtToken.split('.')[1]));
-    if (payload.role === 'ROLE_OPTIMAL') {
-        console.log('User has OPTIMAL role');
-    } else {
-        window.location.href = '/personal_office';
-    }
+   if (!jwtToken) {
+       console.error('JWT token not found. User might not be authenticated.');
+       return;
+     }
+    fetch('/update_cookie', {
+        method: 'POST',
+        headers: {
+           'Authorization': `Bearer ${jwtToken}`
+        },
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.text();
+    })
+    .then(responseMessage => {
+        console.log(responseMessage);
+        const newJwtToken = getCookie('JWT_TOKEN');
+        if (newJwtToken) {
+            console.log('JWT Token updated successfully');
+        }
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+    });
 }
 
 
+function returnMeinMenu() {
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT Token not found');
+        return;
+    }
+    try {
+        const parts = jwtToken.split('.');
+        if (parts.length !== 3) {
+            console.error('JWT Token format is invalid');
+            return;
+        }
+        const payload = JSON.parse(atob(parts[1]));
+        if (payload.roles && payload.roles.includes('ROLE_OPTIMAL')) {
+            console.log('User has OPTIMAL role');
+        } else {
+         console.log('time to go');
+            window.location.href = '/personal_office';
+        }
+    } catch (error) {
+        console.error('Error decoding JWT Token:', error);
+    }
+}
 
-
-//function ReturnMeinMenu() {
-//    const jwtToken = getCookie('JWT_TOKEN');
-//    if (!jwtToken) {
-//        console.error('JWT Token not found');
-//        return;
-//    }
-//    try {
-//        const parts = jwtToken.split('.');
-//        if (parts.length !== 3) {
-//            console.error('JWT Token format is invalid');
-//            return;
-//        }
-//        const payload = JSON.parse(atob(parts[1]));
-//        if (payload.roles && payload.roles.includes('ROLE_OPTIMAL')) {
-//            console.log('User has OPTIMAL role');
-//        } else {
-//            window.location.href = '/personal_office';
-//        }
-//    } catch (error) {
-//        console.error('Error decoding JWT Token:', error);
-//    }
-//}
-
-setInterval(ReturnMeinMenu, 75000);
+setInterval(returnMeinMenu, 60000);
+setInterval(updateJWTToken, 60000);
 
 showMusicOptimalSubscription();

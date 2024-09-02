@@ -89,17 +89,14 @@ public class PersonalOfficeController {
             if (subscription == null) {
                 throw new NoSuchElementException("Subscription " + request.getNewSubscription().getSubscriptionName() + " not found");
             }
-
             if (subscription.getSubscriptionName().equals("FREE")) {
                 return handleSubscriptionUpdate(userPhoneNumber, request, subscription, response);
             }
-
             TransactionDTO transactionDTO = TransactionDTO.builder()
                     .outputCardNumber(user.getUserBankCard().getCardNumber())
                     .sum(subscription.getSubscriptionPrice())
                     .cardExpirationDate(user.getUserBankCard().getCardExpirationDate())
                     .cvv(user.getUserBankCard().getCvv()).build();
-
             ResponseEntity<String> paymentResponse = paymentController.payment(transactionDTO);
             if (paymentResponse.getStatusCode().is2xxSuccessful()) {
                 return handleSubscriptionUpdate(userPhoneNumber, request, subscription, response);
@@ -124,22 +121,18 @@ public class PersonalOfficeController {
                                                             Subscription subscription, HttpServletResponse response) {
         userService.updateSubscription(userPhoneNumber, request);
         log.info("Subscription for user with phone number {} updated successfully", userPhoneNumber);
-
         String responseMessage = "Subscription " + subscription.getSubscriptionName() + " successfully activated";
         UserDetails userDetails = databaseUserDetailsService.loadUserByUsername(String.valueOf(userPhoneNumber));
         String newJwtToken = jwtService.generateJwtToken(userDetails);
-
         ResponseCookie jwtCookie = ResponseCookie.from("JWT_TOKEN", newJwtToken)
                 .httpOnly(false)
                 .secure(false)
                 .path("/")
                 .maxAge(Duration.ofHours(1))
                 .build();
-
         response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
         return ResponseEntity.ok(responseMessage);
     }
-
 
     @PutMapping("/update_bank_card")
     public ResponseEntity<String> updateBankCard(@RequestBody UpdateUserBankCardDTO request,
@@ -225,7 +218,6 @@ public class PersonalOfficeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
 
     @GetMapping("/subscription")
     public ResponseEntity<?> findUsersCurrentSubscription(@RequestHeader("Authorization") String jwtToken) {

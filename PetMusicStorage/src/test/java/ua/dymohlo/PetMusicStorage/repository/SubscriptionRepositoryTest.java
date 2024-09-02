@@ -77,14 +77,16 @@ public class SubscriptionRepositoryTest {
 
     @Test
     public void findBySubscriptionPriceBetween_success() {
-        List<Subscription> subscriptions = subscriptionRepository.findBySubscriptionPriceBetween(BigDecimal.valueOf(0), BigDecimal.valueOf(150));
+        List<Subscription> subscriptions = subscriptionRepository
+                .findBySubscriptionPriceBetween(BigDecimal.valueOf(0), BigDecimal.valueOf(150));
 
         assertFalse(subscriptions.isEmpty());
     }
 
     @Test
     public void findBySubscriptionPriceBetween_notFound() {
-        List<Subscription> subscriptions = subscriptionRepository.findBySubscriptionPriceBetween(BigDecimal.valueOf(0), BigDecimal.valueOf(50));
+        List<Subscription> subscriptions = subscriptionRepository
+                .findBySubscriptionPriceBetween(BigDecimal.valueOf(0), BigDecimal.valueOf(50));
 
         assertTrue(subscriptions.isEmpty());
     }

@@ -559,7 +559,8 @@ public class UserServiceTest {
             userService.updateSubscription(phoneNumber, updateSubscriptionDTO);
         });
 
-        assertEquals("Subscription with name " + newSubscription.getSubscriptionName() + " not found", exception.getMessage());
+        assertEquals("Subscription with name "
+                + newSubscription.getSubscriptionName() + " not found", exception.getMessage());
     }
 
     @Test
