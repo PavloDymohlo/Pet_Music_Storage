@@ -1,0 +1,7 @@
+body {
+  background-image: url("/images/images/forbidden.jpg");
+ background-size: 50%; /* Менший розмір картинки (можна коригувати) */
+  background-position: center center; /* Центрування картинки */
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}

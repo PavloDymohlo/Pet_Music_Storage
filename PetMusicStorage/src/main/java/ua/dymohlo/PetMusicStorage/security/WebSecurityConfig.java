@@ -22,27 +22,56 @@ import javax.servlet.Filter;
 public class WebSecurityConfig {
     private final JWTTokenConfig jwtTokenConfig;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .cors().disable()
-                .authorizeRequests(authorize -> authorize
-                        .antMatchers("/register", "/host_page", "/login").permitAll()
-                        .antMatchers("/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-                        .antMatchers("/personal_office/**").authenticated()
-                        .antMatchers("/music/get_music_page").authenticated()
-                        .antMatchers(HttpMethod.GET, "/main").permitAll()
-                        .antMatchers("/free_subscription").hasAnyRole("FREE", "OPTIMAL", "MAXIMUM", "ADMIN")
-                        .antMatchers("/optimal_subscription").hasAnyRole("MAXIMUM", "OPTIMAL", "ADMIN")
-                        .antMatchers("/maximum_subscription").hasAnyRole("MAXIMUM", "ADMIN")
-                        .antMatchers("/admin_office/**", "/users").hasRole("ADMIN")
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .addFilterBefore((Filter) jwtTokenConfig, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http.csrf().disable()
+//                .cors().disable()
+//                .authorizeRequests(authorize -> authorize
+//                        .antMatchers("/register", "/host_page", "/login").permitAll()
+//                        .antMatchers("/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+//                        .antMatchers("/personal_office/**").authenticated()
+//                        .antMatchers("/music/get_music_page").authenticated()
+//                        .antMatchers(HttpMethod.GET, "/main").permitAll()
+//                        .antMatchers("/free_subscription").hasAnyRole("FREE", "OPTIMAL", "MAXIMUM", "ADMIN")
+//                        .antMatchers("/optimal_subscription").hasAnyRole("MAXIMUM", "OPTIMAL", "ADMIN")
+//                        .antMatchers("/maximum_subscription").hasAnyRole("MAXIMUM", "ADMIN")
+//                        .antMatchers("/admin_office/**", "/users").hasRole("ADMIN")
+//                        .anyRequest().authenticated()
+//                )
+//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .and()
+//                .addFilterBefore((Filter) jwtTokenConfig, UsernamePasswordAuthenticationFilter.class)
+//                .exceptionHandling()
+//                .accessDeniedPage("/error");
+//        return http.build();
+//    }
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+            .csrf().disable()
+            .cors().disable()
+            .authorizeRequests(authorize -> authorize
+                    .antMatchers("/register", "/host_page", "/login", "/error").permitAll()
+                    .antMatchers("/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+                    .antMatchers("/personal_office/**").authenticated()
+                    .antMatchers("/music/get_music_page").authenticated()
+                    .antMatchers(HttpMethod.GET, "/main").permitAll()
+                    .antMatchers("/free_subscription").hasAnyRole("FREE", "OPTIMAL", "MAXIMUM", "ADMIN")
+                    .antMatchers("/optimal_subscription").hasAnyRole("MAXIMUM", "OPTIMAL", "ADMIN")
+                    .antMatchers("/maximum_subscription").hasAnyRole("MAXIMUM", "ADMIN")
+                    .antMatchers("/admin_office/**", "/users").hasRole("ADMIN")
+                    .anyRequest().authenticated()
+            )
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+            .addFilterBefore((Filter) jwtTokenConfig, UsernamePasswordAuthenticationFilter.class)
+            .exceptionHandling()
+            .accessDeniedHandler((request, response, accessDeniedException) -> {
+                response.sendRedirect("/error");
+            });
+
+    return http.build();
+}
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
