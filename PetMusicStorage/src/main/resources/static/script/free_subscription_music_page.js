@@ -42,35 +42,69 @@ function showMusicFreeSubscription() {
         }
     })
     .then(response => {
+        if (response.status === 404) {
+            const container = document.getElementById('subscriptionDetails');
+            container.innerHTML = '';
+            const emptyMessage = document.createElement('div');
+            emptyMessage.textContent = 'List is empty!';
+            container.appendChild(emptyMessage);
+            return;
+        }
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
         return response.blob();
     })
     .then(blob => {
-        const zip = new JSZip();
-        return zip.loadAsync(blob).then(zip => {
-            const container = document.getElementById('subscriptionDetails');
-            container.innerHTML = '';
-            zip.forEach((relativePath, zipEntry) => {
-                zipEntry.async('blob').then(fileBlob => {
-                    const audioElement = document.createElement('audio');
-                    audioElement.controls = true;
-                    audioElement.src = URL.createObjectURL(fileBlob);
-                    const trackName = document.createElement('div');
-                    trackName.textContent = zipEntry.name;
-                    const trackContainer = document.createElement('div');
-                    trackContainer.appendChild(trackName);
-                    trackContainer.appendChild(audioElement);
-                    container.appendChild(trackContainer);
+        if (blob) {
+            const zip = new JSZip();
+            return zip.loadAsync(blob).then(zip => {
+                const container = document.getElementById('subscriptionDetails');
+                container.innerHTML = '';
+                const audioElements = [];
+                if (Object.keys(zip.files).length === 0) {
+                    const emptyMessage = document.createElement('div');
+                    emptyMessage.textContent = 'List is empty!';
+                    container.appendChild(emptyMessage);
+                    return;
+                }
+                zip.forEach((relativePath, zipEntry) => {
+                    zipEntry.async('blob').then(fileBlob => {
+                        const audioElement = document.createElement('audio');
+                        audioElement.controls = true;
+                        audioElement.src = URL.createObjectURL(fileBlob);
+                        audioElement.dataset.index = audioElements.length;
+                        const trackName = document.createElement('div');
+                        trackName.textContent = zipEntry.name;
+                        const trackContainer = document.createElement('div');
+                        trackContainer.appendChild(trackName);
+                        trackContainer.appendChild(audioElement);
+                        container.appendChild(trackContainer);
+                        audioElements.push(audioElement);
+                        audioElement.addEventListener('ended', function() {
+                            const nextIndex = (parseInt(audioElement.dataset.index) + 1) % audioElements.length;
+                            audioElements[nextIndex].play();
+                        });
+                        audioElement.addEventListener('play', function() {
+                            audioElements.forEach((el, index) => {
+                                if (index !== parseInt(audioElement.dataset.index)) {
+                                    el.pause();
+                                    el.currentTime = 0;
+                                }
+                            });
+                        });
+                    });
                 });
             });
-        });
+        }
     })
     .catch(error => {
         console.error('Failed to fetch free subscription music files: ', error);
     });
 }
+
+
+
 
 function logOut(event) {
     event.preventDefault();

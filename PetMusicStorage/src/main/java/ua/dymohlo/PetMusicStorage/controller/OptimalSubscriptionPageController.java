@@ -40,7 +40,7 @@ public class OptimalSubscriptionPageController {
     }
 
     @GetMapping("/list_optimal_subscription")
-    public ResponseEntity<Resource> listFreeSubscription(@RequestParam("subscriptionName") String subscriptionName) {
+    public ResponseEntity<Resource> listOptimalSubscription(@RequestParam("subscriptionName") String subscriptionName) {
         try {
             List<MusicFile> musicFiles = musicFileService.findMusicFileBySubscription(subscriptionName);
             if (musicFiles.isEmpty()) {

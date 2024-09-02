@@ -147,42 +147,29 @@ public class MusicFileService {
         musicFileRepository.deleteAll(musicFiles);
     }
 
-//    public List<MusicFile> findMusicFileBySubscription(String subscriptionName) {
-//        Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(subscriptionName);
-//        if (subscription == null) {
-//            throw new NoSuchElementException("Subscription with name " + subscriptionName + " not found");
-//        }
-//        return subscription.getMusicFiles();
-//    }
-
     public List<MusicFile> findMusicFileBySubscription(String subscriptionName) {
         Subscription subscription = subscriptionRepository.findBySubscriptionNameIgnoreCase(subscriptionName);
-        if (subscription == null) {
-            throw new NoSuchElementException("Subscription with name " + subscriptionName + " not found");
-        }
-
-        List<String> subscriptionTypesToInclude = new ArrayList<>();
+        Subscription freeSubscription = subscriptionRepository.findBySubscriptionNameIgnoreCase("FREE");
+        Subscription optimalSubscription = subscriptionRepository.findBySubscriptionNameIgnoreCase("OPTIMAL");
+        Subscription maximumSubscription = subscriptionRepository.findBySubscriptionNameIgnoreCase("MAXIMUM");
+        List<MusicFile> musicFileList = new ArrayList<>();
         switch (subscription.getSubscriptionName().toUpperCase()) {
             case "FREE":
-                subscriptionTypesToInclude.add("FREE");
-                break;
+                musicFileList.addAll(freeSubscription.getMusicFiles());
+            break;
             case "OPTIMAL":
-                subscriptionTypesToInclude.add("FREE");
-                subscriptionTypesToInclude.add("OPTIMAL");
+                musicFileList.addAll(freeSubscription.getMusicFiles());
+                musicFileList.addAll(optimalSubscription.getMusicFiles());
                 break;
             case "MAXIMUM":
-                subscriptionTypesToInclude.add("FREE");
-                subscriptionTypesToInclude.add("OPTIMAL");
-                subscriptionTypesToInclude.add("MAXIMUM");
+                musicFileList.addAll(freeSubscription.getMusicFiles());
+                musicFileList.addAll(optimalSubscription.getMusicFiles());
+                musicFileList.addAll(maximumSubscription.getMusicFiles());
                 break;
             default:
-                throw new IllegalArgumentException("Invalid subscription name: " + subscriptionName);
+                throw new NoSuchElementException("Subscription with name " + subscriptionName + " not found");
         }
-
-        List<MusicFile> allMusicFiles = musicFileRepository.findAll();
-        return allMusicFiles.stream()
-                .filter(musicFile -> subscriptionTypesToInclude.contains(musicFile.getSubscription().getSubscriptionName()))
-                .collect(Collectors.toList());
+        return musicFileList;
     }
 
 }
