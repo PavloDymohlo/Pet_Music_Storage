@@ -36,6 +36,10 @@ function showMusicMaximumSubscription() {
         console.error('JWT token not found');
         return;
     }
+    const spinner = document.getElementById('spinner');
+    const container = document.getElementById('subscriptionDetails');
+    spinner.style.display = 'block';
+    container.innerHTML = '';
     fetch('/maximum_subscription/list_maximum_subscription?subscriptionName=MAXIMUM', {
         headers: {
             'Authorization': `Bearer ${jwtToken}`
@@ -43,12 +47,11 @@ function showMusicMaximumSubscription() {
     })
     .then(response => {
         if (response.status === 404) {
-            const container = document.getElementById('subscriptionDetails');
-            container.innerHTML = '';
             const emptyMessage = document.createElement('div');
-            emptyMessage.textContent = 'List is empty!';
+            emptyMessage.textContent = 'Список порожній!';
             emptyMessage.className = 'header-text';
             container.appendChild(emptyMessage);
+            spinner.style.display = 'none';
             return;
         }
         if (!response.ok) {
@@ -60,7 +63,6 @@ function showMusicMaximumSubscription() {
         if (blob) {
             const zip = new JSZip();
             return zip.loadAsync(blob).then(zip => {
-                const container = document.getElementById('subscriptionDetails');
                 container.innerHTML = '';
                 const audioElements = [];
                 if (Object.keys(zip.files).length === 0) {
@@ -68,6 +70,7 @@ function showMusicMaximumSubscription() {
                     emptyMessage.textContent = 'List is empty!';
                     emptyMessage.className = 'header-text';
                     container.appendChild(emptyMessage);
+                    spinner.style.display = 'none';
                     return;
                 }
                 zip.forEach((relativePath, zipEntry) => {
@@ -98,11 +101,13 @@ function showMusicMaximumSubscription() {
                         });
                     });
                 });
+                spinner.style.display = 'none';
             });
         }
     })
     .catch(error => {
-        console.error('Failed to fetch maximum subscription music files: ', error);
+        console.error('Failed to fetch free subscription music files: ', error);
+        spinner.style.display = 'none';
     });
 }
 

@@ -107,156 +107,188 @@ body {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@media screen and (max-width: 980px) {
-  body {
-    background-image: url("/images/images/background.jpg");
-    background-size: cover;
-    background-position: 80%;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-  }
-
-  .header {
-    padding-top: 20px;
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .header-text {
-    justify-content: center;
-    font-style: oblique 10deg;
-    font-weight: bold;
-    font-size: 48px;
-    color: #8b008b;
-    margin-bottom: 10px;
-     text-shadow: -1.3px -1.3px 0 #FFFFFF,
-                     1.3px -1.3px 0 #FFFFFF,
-                     -1.3px 1.3px 0 #FFFFFF,
-                     1.3px 1.3px 0 #FFFFFF;
-    text-align: center;
-  }
-
-  .nav-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    gap: 40px;
-    margin-top: 10px;
-  }
-
-  .button-nav-list-main-menu,
-  .button-nav-list-exit {
-    background-color: #8b008b;
-    color: white;
-    padding: 5px;
-    text-decoration: none;
-    cursor: pointer;
-    border-radius: 35px;
-    margin: 5px;
-    font-size: 33px;
-    width: 350px;
-    height: 100px;
-    box-sizing: border-box;
-    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
-  }
-
-  .button-nav-list-exit:hover,
-  .button-nav-list-main-menu:hover,
-  .log-out-button:hover {
-    background-color: #8a2be2;
-
-  }
-
-  .button-nav-list-exit:active,
-  .button-nav-list-main-menu:active,
-  .log-out-button:active {
-    background-color: #6a1b9a;
-    transform: scale(0.5, 0.5);
-    box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.3);
-  }
-
-.button-nav-list-main-menu,
-.button-nav-list-exit {
-    margin-top: 90px;
-     margin-right: 70px
-}
-#subscriptionDetails {
-margin-top: 100px;
- text-shadow: -1.3px -1.3px 0 #FFFFFF,
-                 1.3px -1.3px 0 #FFFFFF,
-                 -1.3px 1.3px 0 #FFFFFF,
-                 1.3px 1.3px 0 #FFFFFF;
-}
-audio {
-    width: 70%; /* Ширина плеєра відповідно до ширини батьківського елемента */
-    height: 150px; /* Встановлює висоту плеєра, залежно від того, як плеєр рендериться у вашому браузері */
-    margin: 0 auto; /* Центрування плеєра */
-    display: block; /* Робить плеєр блочним елементом для кращого вирівнювання */
-    z-index: 1;
-}
-
-
-.log-out {
+.spinner {
+    border: 16px solid #f3f3f3;
+    border-top: 16px solid #3498db;
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
     position: absolute;
-    top: 120%;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
-    width: 250px;
-    height: 150px;
-    background-color: #e6e6fa;
-    color: #8b008b;
-    padding: 10px;
-    border-radius: 25px;
-    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: center;
-    z-index: 10;
+    margin-top: -60px;
+    margin-left: -60px;
 }
 
-.log-out p {
-font-size: 30px !important;
-    margin: 5px;
-    padding: 0;
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-.log-out-button {
-    background-color: #8b008b;
-    color: white;
-    padding: 0;
-    border: none;
-    font-size: 30px;
-    border-radius: 20px;
-    cursor: pointer;
-    width: 230px;
-    height: 70px;
-    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
-}
+ @media screen and (max-width: 980px) {
+            body {
+                background-image: url("/images/images/background.jpg");
+                background-size: cover;
+                background-position: 80%;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+                margin: 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+            }
+
+            .header {
+                padding-top: 20px;
+                margin-top: 10px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+
+            }
+
+            .header-text {
+                justify-content: center;
+                font-style: oblique 10deg;
+                font-weight: bold;
+                font-size: 48px;
+                color: #8b008b;
+                margin-bottom: 10px;
+                text-shadow: -1.3px -1.3px 0 #FFFFFF,
+                1.3px -1.3px 0 #FFFFFF,
+                -1.3px 1.3px 0 #FFFFFF,
+                1.3px 1.3px 0 #FFFFFF;
+                text-align: center;
+            }
+
+            .nav-container {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                gap: 40px;
+                margin-top: 10px;
+                  z-index: 10; !important
+            }
+
+            .button-nav-list-main-menu, .button-nav-list-exit {
+                background-color: #8b008b;
+                color: white;
+                padding: 5px;
+                text-decoration: none;
+                cursor: pointer;
+                border-radius: 35px;
+                margin: 5px;
+                font-size: 33px;
+                width: 350px;
+                height: 100px;
+                box-sizing: border-box;
+                box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+            }
+
+            .button-nav-list-exit:hover, .button-nav-list-main-menu:hover, .log-out-button:hover {
+                background-color: #8a2be2;
+            }
+
+            .button-nav-list-exit:active, .button-nav-list-main-menu:active, .log-out-button:active {
+                background-color: #6a1b9a;
+                transform: scale(0.5, 0.5);
+                box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.3);
+            }
+
+            .button-nav-list-main-menu, .button-nav-list-exit {
+                margin-top: 90px;
+                margin-right: 70px;
+            }
+
+           #audio-player-container {
+               width: 90%;
+               max-width: 400px;
+               margin: 100px auto;
+               border-radius: 10px;
+               padding: 20px;
+
+           }
+
+           #subscriptionDetails {
+               margin-top: 20px;
+               text-shadow: -1.3px -1.3px 0 #FFFFFF, 1.3px -1.3px 0 #FFFFFF, -1.3px 1.3px 0 #FFFFFF, 1.3px 1.3px 0 #FFFFFF;
+           }
+
+           audio {
+               width: 100%;
+               margin-bottom: 20px;
+               height: 50px;
+           }
 
 
-}
+           audio::-webkit-media-controls {
+               width: 100%;
+               height: 50px;
+           }
+
+           audio::-webkit-media-controls-panel {
+               background-color: #f1f3f4;
+               height: 50px;
+           }
+
+           audio::-webkit-media-controls-play-button {
+               background-color: #8b008b;
+               border-radius: 50%;
+               transform: scale(1.5);
+           }
+
+           audio::-webkit-media-controls-play-button:hover {
+               background-color: #8a2be2;
+           }
+
+
+           audio::-webkit-media-controls-current-time-display,
+           audio::-webkit-media-controls-time-remaining-display,
+           audio::-webkit-media-controls-mute-button,
+           audio::-webkit-media-controls-volume-slider {
+               transform: scale(1.2);
+           }
+
+           audio::-webkit-media-controls-timeline {
+               transform: scaleY(1.5);
+           }
+            .log-out {
+                position: absolute;
+                top: 120%;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 250px;
+                height: 150px;
+                background-color: #e6e6fa;
+                color: #8b008b;
+                padding: 0;
+                border-radius: 25px;
+                box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+                align-items: end;
+
+            }
+
+            .log-out p {
+                font-size: 30px !important;
+                margin-bottom: 20px;
+                padding: 0;
+            }
+
+            .log-out-button {
+                background-color: #8b008b;
+                color: white;
+                margin-bottom: 0;
+                padding: 0;
+                border: none;
+                font-size: 30px;
+                border-radius: 20px;
+                cursor: pointer;
+                width: 230px;
+                height: 70px;
+                box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+            }
+        }

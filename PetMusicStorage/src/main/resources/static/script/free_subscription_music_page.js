@@ -30,12 +30,17 @@ document.getElementById('MeinMenuButton').addEventListener('click', function() {
     toggleMenu('MeinMenu');
 });
 
+
 function showMusicFreeSubscription() {
     const jwtToken = getCookie('JWT_TOKEN');
     if (!jwtToken) {
         console.error('JWT token not found');
         return;
     }
+    const spinner = document.getElementById('spinner');
+    const container = document.getElementById('subscriptionDetails');
+    spinner.style.display = 'block';
+    container.innerHTML = '';
     fetch('/free_subscription/list_free_subscription?subscriptionName=FREE', {
         headers: {
             'Authorization': `Bearer ${jwtToken}`
@@ -43,12 +48,11 @@ function showMusicFreeSubscription() {
     })
     .then(response => {
         if (response.status === 404) {
-            const container = document.getElementById('subscriptionDetails');
-            container.innerHTML = '';
             const emptyMessage = document.createElement('div');
-            emptyMessage.textContent = 'List is empty!';
-            emptyMessage.className = 'header-text'; // Add the class for styling
+            emptyMessage.textContent = 'Список порожній!';
+            emptyMessage.className = 'header-text';
             container.appendChild(emptyMessage);
+            spinner.style.display = 'none';
             return;
         }
         if (!response.ok) {
@@ -60,7 +64,6 @@ function showMusicFreeSubscription() {
         if (blob) {
             const zip = new JSZip();
             return zip.loadAsync(blob).then(zip => {
-                const container = document.getElementById('subscriptionDetails');
                 container.innerHTML = '';
                 const audioElements = [];
                 if (Object.keys(zip.files).length === 0) {
@@ -68,6 +71,7 @@ function showMusicFreeSubscription() {
                     emptyMessage.textContent = 'List is empty!';
                     emptyMessage.className = 'header-text';
                     container.appendChild(emptyMessage);
+                    spinner.style.display = 'none';
                     return;
                 }
                 zip.forEach((relativePath, zipEntry) => {
@@ -98,13 +102,18 @@ function showMusicFreeSubscription() {
                         });
                     });
                 });
+                spinner.style.display = 'none';
             });
         }
     })
     .catch(error => {
         console.error('Failed to fetch free subscription music files: ', error);
+        spinner.style.display = 'none';
     });
 }
+
+
+
 
 
 function logOut(event) {
@@ -130,5 +139,5 @@ function MeinMenu(event) {
     }
 }
 
-  // Call the function to fetch and display the subscription details
+
 showMusicFreeSubscription();
