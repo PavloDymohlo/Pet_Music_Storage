@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personal office</title>
-    <link rel="stylesheet" type="text/css" href="/styles/css/personal_office.css" />
+    <link rel="stylesheet" type="text/css" href="/styles/css/personal_office.css"/>
     <link rel="icon" href="ico/background.ico" type="image/x-icon">
 </head>
 <body>
@@ -12,7 +12,7 @@
     <ul class="nav-list">
         <li>
             <div class="header-text">
-                 <p>Your subscription: <span id="subscriptionDetails">Loading...</span> </p>
+                <p>Your subscription: <span id="subscriptionDetails">Loading...</span></p>
                 <p>Subscription expired: <span class="subscription-date" id="subscriptionExpiry">Loading...</span></p>
             </div>
             <div class="AutoRenewText">
@@ -32,51 +32,63 @@
                 <form id="findAllSubmenu" class="subscription-list" style="display: none;"></form>
             </div>
             <div class="personal-data-container">
-                <button id="PersonalDataButton" class="button-nav-list" >Personal data</button>
+                <button id="PersonalDataButton" class="button-nav-list">Personal data</button>
                 <div class="form-nav-list">
                     <div id="changePersonalData" class="form-change-personal-data" style="display: none;">
                         <div class="user-details-row">
                             <p id="currentPhoneNumber">Phone: loading</p>
                             <div class="input-button-container">
-                                <input id="newPhoneNumber" class="input-personal-data" placeholder="New phone number" type="number" required />
-                                <button class="update-user-data-button" onclick="updateUsersPhoneNumber(event)">Update</button>
+                                <input id="newPhoneNumber" class="input-personal-data" placeholder="New phone number"
+                                       type="number" required/>
+                                <button class="update-user-data-button" onclick="updateUsersPhoneNumber(event)">Update
+                                </button>
                             </div>
                         </div>
                         <div class="user-details-row">
                             <p id="userPassword">Password: hidden</p>
                             <div class="input-button-container">
-                                <input id="currentPassword" class="input-personal-data" placeholder="Current password" type="text" required />
-                                <input id="newPassword" class="input-personal-data" placeholder="New password" type="text" required />
-                                <button class="update-user-data-button" onclick="updateUsersPassword(event)">Update</button>
+                                <input id="currentPassword" class="input-personal-data" placeholder="Current password"
+                                       type="text" required/>
+                                <input id="newPassword" class="input-personal-data" placeholder="New password"
+                                       type="text" required/>
+                                <button class="update-user-data-button" onclick="updateUsersPassword(event)">Update
+                                </button>
                             </div>
                         </div>
                         <div class="user-details-row">
                             <p id="currentEmail">Email: loading</p>
                             <div class="input-button-container">
-                                <input id="newEmail" class="input-personal-data" placeholder="New email" type="text" required />
-                                <button class="update-user-data-button" onclick="updateUsersEmail(event)">Update</button>
+                                <input id="newEmail" class="input-personal-data" placeholder="New email" type="text"
+                                       required/>
+                                <button class="update-user-data-button" onclick="updateUsersEmail(event)">Update
+                                </button>
                             </div>
                         </div>
                         <div class="user-details-row">
                             <p id="currentBankCardNumber">Bank card number: loading</p>
                             <div>
-                                <input id="newBankCardNumber" class="input-bank-personal-data" placeholder="Bank card number" type="number" required>
+                                <input id="newBankCardNumber" class="input-bank-personal-data"
+                                       placeholder="Bank card number" type="number" required>
                                 <div class="bank-card-details">
-                                    <input id="newBankCardExpirationDate" class="input-bank-card-expiration-data" placeholder="Expiration date" type="text" required>
-                                    <input id="newBankCardCVV" class="input-bank-card-cvv" placeholder="CVV" type="number" required>
+                                    <input id="newBankCardExpirationDate" class="input-bank-card-expiration-data"
+                                           placeholder="Expiration date" type="text" required>
+                                    <input id="newBankCardCVV" class="input-bank-card-cvv" placeholder="CVV"
+                                           type="number" required>
                                 </div>
                             </div>
                             <button class="update-bank-card-button" onclick="updateUsersBankCard(event)">Update</button>
                         </div>
                         <div>
-                                <a class="telegram_bot_link" href="https://t.me/musicStorageMessage_bot?start={{userPhoneNumber}}" target="_blank">
-                                    Click to join the Telegram bot
-                                </a>
+                            <a class="telegram_bot_link"
+                               href="https://t.me/musicStorageMessage_bot?start={{userPhoneNumber}}" target="_blank">
+                                Click to join the Telegram bot
+                            </a>
                         </div>
                         <div class="delete-account">
                             <p id="deleteAccount">Delete account:</p>
                             <div class="input-button-container">
-                                <input id="Password" class="input-personal-data" placeholder="Enter your password" type="text" required />
+                                <input id="Password" class="input-personal-data" placeholder="Enter your password"
+                                       type="text" required/>
                                 <button class="delete-account-button" onclick="deleteUserAccount(event)">Delete</button>
                             </div>
                         </div>
@@ -93,9 +105,6 @@
         </li>
     </ul>
 </div>
-
-
-
 
 
 <script src="/js/script/personal_office.js"></script>

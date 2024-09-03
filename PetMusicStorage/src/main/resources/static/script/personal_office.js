@@ -1,8 +1,8 @@
 function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-    }
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
 
 function closeAllMenus() {
     const menus = ['findAllSubmenu', 'changePersonalData', 'logOut', 'manualFindUserByPhoneNumber'];
@@ -26,39 +26,38 @@ function toggleMenu(menuId) {
 document.getElementById('PersonalDataButton').addEventListener('click', function() {
     toggleMenu('changePersonalData');
 });
+
 document.getElementById('LogOutButton').addEventListener('click', function() {
     toggleMenu('logOut');
 });
+
 document.getElementById('SubscriptionButton').addEventListener('click', submitFindSubscriptionsList);
 
-
-
-
 function showSubscriptionOnScreen() {
-        const jwtToken = getCookie('JWT_TOKEN');
-        if (!jwtToken) {
-            console.error('JWT token not found');
-            return;
-        }
-        fetch('/personal_office/subscription', {
-            headers: {
-                'Authorization': `Bearer ${jwtToken}`
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            const subscriptionDetails = document.getElementById('subscriptionDetails');
-            subscriptionDetails.innerText = data.subscriptionName;
-        })
-        .catch(error => {
-            console.error('Failed to fetch subscription details: ', error);
-        });
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
     }
+    fetch('/personal_office/subscription', {
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`
+        }
+    })
+        .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+        .then(data => {
+        const subscriptionDetails = document.getElementById('subscriptionDetails');
+        subscriptionDetails.innerText = data.subscriptionName;
+    })
+        .catch(error => {
+        console.error('Failed to fetch subscription details: ', error);
+    });
+}
 
 function showSubscriptionEndTimeOnScreen() {
     const jwtToken = getCookie('JWT_TOKEN');
@@ -71,13 +70,13 @@ function showSubscriptionEndTimeOnScreen() {
             'Authorization': `Bearer ${jwtToken}`
         }
     })
-    .then(response => {
+        .then(response => {
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
         return response.text();
     })
-    .then(data => {
+        .then(data => {
         const subscriptionExpiry = document.getElementById('subscriptionExpiry');
         const trimmedData = data.trim();
         if (trimmedData === '0') {
@@ -97,7 +96,7 @@ function showSubscriptionEndTimeOnScreen() {
             }
         }
     })
-    .catch(error => {
+        .catch(error => {
         console.error('Failed to fetch subscription details: ', error);
     });
 }
@@ -122,20 +121,20 @@ function checkUsersAutoRenewStatus() {
             'Authorization': `Bearer ${jwtToken}`
         }
     })
-    .then(response => {
+        .then(response => {
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
         return response.text();
     })
-    .then(status => {
+        .then(status => {
         if (status === "YES") {
             document.getElementById('YES').checked = true;
         } else {
             document.getElementById('NO').checked = true;
         }
     })
-    .catch(error => {
+        .catch(error => {
         console.error('Failed to fetch auto-renew status: ', error);
     });
 }
@@ -157,16 +156,16 @@ function changeUsersAutoRenewStatus(newStatus) {
         },
         body: JSON.stringify(requestData)
     })
-    .then(response => {
+        .then(response => {
         if (!response.ok) {
             throw new Error('Failed to update auto-renew status');
         }
         return response.text();
     })
-    .then(responseMessage => {
+        .then(responseMessage => {
         console.log(responseMessage);
     })
-    .catch(error => {
+        .catch(error => {
         console.error('Failed to update auto-renew status: ', error);
     });
 }
@@ -191,7 +190,7 @@ function submitFindSubscriptionsList() {
                 'Authorization': `Bearer ${jwtToken}`
             }
         })
-        .then(response => {
+            .then(response => {
             if (!response.ok) {
                 return response.text().then(errorMessage => {
                     throw new Error(errorMessage);
@@ -199,14 +198,14 @@ function submitFindSubscriptionsList() {
             }
             return response.json();
         })
-        .then(data => {
+            .then(data => {
             console.log('Fetched subscriptions data:', data);
             subscriptions = data;
             displayAllSubscription();
             findAllSubmenu.style.display = 'block';
             console.log("Menu should be visible now");
         })
-        .catch(error => {
+            .catch(error => {
             console.error('Failed to fetch subscriptions: ', error);
             displayErrorMessage(error.message);
         });
@@ -247,32 +246,32 @@ function updateSubscription(subscriptionName) {
         return;
     }
     const requestData = { newSubscription: { subscriptionName: subscriptionName } };
-   fetch('/personal_office/update_subscription', {
-     method: 'PUT',
-     headers: {
-       'Authorization': `Bearer ${jwtToken}`,
-       'Content-Type': 'application/json',
-       'Accept': 'application/json'
-     },
-     body: JSON.stringify(requestData)
-   })
-   .then(response => {
-     if (!response.ok) {
-       return response.text().then(text => {
-         throw new Error(response.status + ': ' + text);
-       });
-     }
-     return response.text();
-   })
-   .then(responseMessage => {
-     displayMessage(responseMessage, 'success');
-     showSubscriptionOnScreen();
-     showSubscriptionEndTimeOnScreen();
-   })
-   .catch(error => {
-     console.error('Failed to update subscription: ', error);
-     displayMessage(error.message, 'error');
-   });
+    fetch('/personal_office/update_subscription', {
+        method: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify(requestData)
+    })
+        .then(response => {
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(response.status + ': ' + text);
+            });
+        }
+        return response.text();
+    })
+        .then(responseMessage => {
+        displayMessage(responseMessage, 'success');
+        showSubscriptionOnScreen();
+        showSubscriptionEndTimeOnScreen();
+    })
+        .catch(error => {
+        console.error('Failed to update subscription: ', error);
+        displayMessage(error.message, 'error');
+    });
 }
 
 function displayMessage(message, type) {
@@ -295,17 +294,17 @@ function getUserPhoneNumber() {
             'Authorization': `Bearer ${jwtToken}`
         }
     })
-    .then(response => {
+        .then(response => {
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
         return response.json();
     })
-   .then(data => {
-       const currentPhoneNumber = document.getElementById('currentPhoneNumber');
-       currentPhoneNumber.innerHTML = `Phone: ${data}`;
-   })
-    .catch(error => {
+        .then(data => {
+        const currentPhoneNumber = document.getElementById('currentPhoneNumber');
+        currentPhoneNumber.innerHTML = `Phone: ${data}`;
+    })
+        .catch(error => {
         console.error('Failed to fetch phone number: ', error);
     });
 }
@@ -333,19 +332,19 @@ function updateUsersPhoneNumber(event) {
         },
         body: JSON.stringify(requestData)
     })
-    .then(response => {
+        .then(response => {
         if (response.ok) {
             return response.text();
         } else {
             return response.text().then(text => Promise.reject(text));
         }
     })
- .then(responseMessage => {
+        .then(responseMessage => {
         getUserPhoneNumber();
     })
-    .catch(error => {
+        .catch(error => {
         console.error('Failed to update phone number:', error);
-         displayErrorMessageForCurrentPhoneNumber(error);
+        displayErrorMessageForCurrentPhoneNumber(error);
     });
 }
 
@@ -384,17 +383,17 @@ function updateUsersPassword(event) {
         },
         body: JSON.stringify(requestData)
     })
-    .then(response => {
+        .then(response => {
         if (response.ok) {
             return response.text();
         } else {
             return response.text().then(text => Promise.reject(text));
         }
     })
-    .then(responseMessage => {
+        .then(responseMessage => {
         displayMessageForUserPassword(responseMessage, 'success');
     })
-    .catch(error => {
+        .catch(error => {
         console.error('Failed to update password:', error);
         displayMessageForUserPassword(error, 'error');
     });
@@ -432,23 +431,23 @@ function getUserEmail() {
             'Authorization': `Bearer ${jwtToken}`
         }
     })
-    .then(response => {
+        .then(response => {
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
         return response.text();
     })
-    .then(data => {
+        .then(data => {
         const currentEmail = document.getElementById('currentEmail');
         currentEmail.innerHTML = `Email: ${data}`;
     })
-    .catch(error => {
+        .catch(error => {
         console.error('Failed to fetch phone number: ', error);
     });
 }
 
 function updateUsersEmail(event) {
-     event.preventDefault();
+    event.preventDefault();
     const newEmail = document.getElementById('newEmail').value;
     const jwtToken = getCookie('JWT_TOKEN');
     if (!jwtToken) {
@@ -466,19 +465,19 @@ function updateUsersEmail(event) {
         },
         body: JSON.stringify(requestData)
     })
-    .then(response => {
+        .then(response => {
         if (response.ok) {
             return response.text();
         } else {
             return response.text().then(text => Promise.reject(text));
         }
     })
- .then(responseMessage => {
+        .then(responseMessage => {
         getUserEmail();
     })
-    .catch(error => {
+        .catch(error => {
         console.error('Failed to update phone number:', error);
-         displayErrorMessageForUserEmail(error);
+        displayErrorMessageForUserEmail(error);
     });
 }
 
@@ -507,33 +506,33 @@ function getUserBankCardNumber() {
             'Authorization': `Bearer ${jwtToken}`
         }
     })
-    .then(response => {
+        .then(response => {
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
         return response.json();
     })
-    .then(data => {
+        .then(data => {
         const currentBankCardNumber = document.getElementById('currentBankCardNumber');
         currentBankCardNumber.innerHTML = `Bank card number: ${data}`;
     })
-    .catch(error => {
+        .catch(error => {
         console.error('Failed to fetch phone number: ', error);
     });
 }
 
 function updateUsersBankCard(event) {
-     event.preventDefault();
+    event.preventDefault();
     const newBankCardNumber = document.getElementById('newBankCardNumber').value;
-     const newBankCardExpirationDate = document.getElementById('newBankCardExpirationDate').value;
-      const newBankCardCVV = document.getElementById('newBankCardCVV').value;
+    const newBankCardExpirationDate = document.getElementById('newBankCardExpirationDate').value;
+    const newBankCardCVV = document.getElementById('newBankCardCVV').value;
     const jwtToken = getCookie('JWT_TOKEN');
     if (!jwtToken) {
         console.error('JWT token not found');
         return;
     }
     const requestData = {
-       newUserBankCard: {
+        newUserBankCard: {
             cardNumber: newBankCardNumber,
             cvv: newBankCardCVV,
             cardExpirationDate: newBankCardExpirationDate
@@ -547,19 +546,19 @@ function updateUsersBankCard(event) {
         },
         body: JSON.stringify(requestData)
     })
-    .then(response => {
+        .then(response => {
         if (response.ok) {
             return response.text();
         } else {
             return response.text().then(text => Promise.reject(text));
         }
     })
- .then(responseMessage => {
+        .then(responseMessage => {
         getUserBankCardNumber();
     })
-    .catch(error => {
+        .catch(error => {
         console.error('Failed to update phone number:', error);
-         displayErrorMessageForUserBankCard(error);
+        displayErrorMessageForUserBankCard(error);
     });
 }
 
@@ -597,7 +596,7 @@ function deleteUserAccount(event) {
         },
         body: JSON.stringify(requestData)
     })
-    .then(response => {
+        .then(response => {
         if (response.redirected) {
             window.location.href = response.url;
         } else if (response.ok) {
@@ -606,7 +605,7 @@ function deleteUserAccount(event) {
             return response.text().then(text => Promise.reject(text));
         }
     })
-    .catch(error => {
+        .catch(error => {
         console.error('Failed to delete account:', error);
         displayErrorMessageForDeleteAccount(error);
     });
@@ -639,42 +638,42 @@ function logOut(event) {
 }
 
 function navigateToMusic() {
-   const jwtToken = getCookie('JWT_TOKEN');
-  if (!jwtToken) {
-    console.error('JWT token not found. User might not be authenticated.');
-    return;
-  }
-  fetch('/music/get_music_page', {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${jwtToken}`,
-      'Content-Type': 'application/json'
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found. User might not be authenticated.');
+        return;
     }
-  })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return response.json();
-  })
-  .then(data => {
-    if (data && data.url) {
-      window.location.href = data.url;
-    } else {
-      console.error('Invalid response from server');
-    }
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
+    fetch('/music/get_music_page', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`,
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+        .then(data => {
+        if (data && data.url) {
+            window.location.href = data.url;
+        } else {
+            console.error('Invalid response from server');
+        }
+    })
+        .catch(error => {
+        console.error('Error:', error);
+    });
 }
 
-    // Call the function to fetch and display the subscription details
-    showSubscriptionOnScreen();
-    showSubscriptionEndTimeOnScreen()
-     checkUsersAutoRenewStatus();
-     getUserPhoneNumber();
-     getUserEmail();
-     getUserBankCardNumber();
-    startUpdatingSubscriptionInfo(3);
+// Call the function to fetch and display the subscription details
+showSubscriptionOnScreen();
+showSubscriptionEndTimeOnScreen()
+checkUsersAutoRenewStatus();
+getUserPhoneNumber();
+getUserEmail();
+getUserBankCardNumber();
+startUpdatingSubscriptionInfo(3);
 

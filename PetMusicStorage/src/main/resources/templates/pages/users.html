@@ -3,42 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <title>Users</title>
-    <link rel="stylesheet" type="text/css" href="/styles/css/users.css" />
+    <link rel="stylesheet" type="text/css" href="/styles/css/users.css"/>
     <link rel="icon" href="ico/background.ico" type="image/x-icon">
 </head>
 <body>
 <div class="header">
     <ul class="nav-list">
         <li>
-            <button id="getAllUsers" class="button-nav-list" type="button" onclick="submitFindAllUsers()">Get all users</button>
-            <button class="button-nav-list" onclick="showForm('manualFindUserByPhoneNumber')">Find by phone number</button>
+            <button id="getAllUsers" class="button-nav-list" type="button" onclick="submitFindAllUsers()">Get all
+                users
+            </button>
+            <button class="button-nav-list" onclick="showForm('manualFindUserByPhoneNumber')">Find by phone number
+            </button>
             <button class="button-nav-list" onclick="showForm('findUserByBankCard')">Find by bank card</button>
-            <button class="button-nav-list" type="button" onclick="submitFindSubscriptionsList()">Find by subscription</button>
+            <button class="button-nav-list" type="button" onclick="submitFindSubscriptionsList()">Find by subscription
+            </button>
             <button class="button-nav-list" onclick="showForm('findUsersByEmail')">Find by email</button>
             <button class="button-nav-list" onclick="showForm('findUsersById')">Find by Id</button>
             <button class="button-nav-list-delete-users" onclick="showForm('deleteAllUsers')">Delete all users</button>
             <button class="button-nav-list-main-menu" onclick="showForm('mainMenu')">Main menu</button>
             <div class="form-nav-list">
-                <form id="manualFindUserByPhoneNumber" class="form-find-by-phone-number" style="display: none;" onsubmit="submitManualFindUserByPhoneNumber(event)">
-                    <input id="userPhoneNumber" class="input-new-personal-data" placeholder="Enter phone number" type="number" required>
+                <form id="manualFindUserByPhoneNumber" class="form-find-by-phone-number" style="display: none;"
+                      onsubmit="submitManualFindUserByPhoneNumber(event)">
+                    <input id="userPhoneNumber" class="input-new-personal-data" placeholder="Enter phone number"
+                           type="number" required>
                     <button type="submit" class="update-button">Find</button>
                 </form>
-                <form id="findUserByBankCard" class="form-find-by-bank-card" style="display: none;" onsubmit="submitFindUserByBankCard(event)">
-                    <input id="userBankCardNumber" class="input-new-personal-data" placeholder="Enter bank card number" type="number" required>
+                <form id="findUserByBankCard" class="form-find-by-bank-card" style="display: none;"
+                      onsubmit="submitFindUserByBankCard(event)">
+                    <input id="userBankCardNumber" class="input-new-personal-data" placeholder="Enter bank card number"
+                           type="number" required>
                     <button type="submit" class="update-button">Find</button>
                 </form>
-                <form id="findAllSubmenu" class="form-find-by-subscription" style="display: none;" onsubmit="submitFindSubscriptionsList()">
+                <form id="findAllSubmenu" class="form-find-by-subscription" style="display: none;"
+                      onsubmit="submitFindSubscriptionsList()">
                     <div id="subscriptionList"></div>
                 </form>
-                <form id="findUsersByEmail" class="form-find-by-email" style="display: none;" onsubmit="submitFindUserByEmail(event)">
-                    <input id="userEmail" class="input-new-personal-data" placeholder="Enter user's email" type="text" required>
+                <form id="findUsersByEmail" class="form-find-by-email" style="display: none;"
+                      onsubmit="submitFindUserByEmail(event)">
+                    <input id="userEmail" class="input-new-personal-data" placeholder="Enter user's email" type="text"
+                           required>
                     <button type="submit" class="update-button">Find</button>
                 </form>
-                <form id="findUsersById" class="form-find-by-id" style="display: none;" onsubmit="submitFindUserById(event)">
-                    <input id="userId" class="input-new-personal-data" placeholder="Enter user's id" type="number" required>
+                <form id="findUsersById" class="form-find-by-id" style="display: none;"
+                      onsubmit="submitFindUserById(event)">
+                    <input id="userId" class="input-new-personal-data" placeholder="Enter user's id" type="number"
+                           required>
                     <button type="submit" class="update-button">Find</button>
                 </form>
-                <form id="deleteAllUsers" class="form-delete-all-users" style="display: none;" onsubmit="submitDeleteAllUser(event)">
+                <form id="deleteAllUsers" class="form-delete-all-users" style="display: none;"
+                      onsubmit="submitDeleteAllUser(event)">
                     <p class="delete-user-text">Are you sure? </p>
                     <button type="submit" class="update-button">Delete</button>
                 </form>

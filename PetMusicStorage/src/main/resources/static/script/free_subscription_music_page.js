@@ -1,27 +1,28 @@
 function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-    }
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
 
-    function closeAllMenus() {
-        const menus = [, 'MeinMenu', 'logOut'];
-        menus.forEach(menuId => {
-            const menu = document.getElementById(menuId);
-            if (menu) {
-                menu.style.display = 'none';
-            }
-        });
-    }
-
-    function toggleMenu(menuId) {
+function closeAllMenus() {
+    const menus = [, 'MeinMenu', 'logOut'];
+    menus.forEach(menuId => {
         const menu = document.getElementById(menuId);
-        const isCurrentlyOpen = menu.style.display === 'block';
-        closeAllMenus();
-        if (!isCurrentlyOpen) {
-            menu.style.display = 'block';
+        if (menu) {
+            menu.style.display = 'none';
         }
+    });
+}
+
+function toggleMenu(menuId) {
+    const menu = document.getElementById(menuId);
+    const isCurrentlyOpen = menu.style.display === 'block';
+    closeAllMenus();
+    if (!isCurrentlyOpen) {
+        menu.style.display = 'block';
     }
+}
+
 document.getElementById('LogOutButton').addEventListener('click', function() {
     toggleMenu('logOut');
 });
@@ -29,7 +30,6 @@ document.getElementById('LogOutButton').addEventListener('click', function() {
 document.getElementById('MeinMenuButton').addEventListener('click', function() {
     toggleMenu('MeinMenu');
 });
-
 
 function showMusicFreeSubscription() {
     const jwtToken = getCookie('JWT_TOKEN');
@@ -46,7 +46,7 @@ function showMusicFreeSubscription() {
             'Authorization': `Bearer ${jwtToken}`
         }
     })
-    .then(response => {
+        .then(response => {
         if (response.status === 404) {
             const emptyMessage = document.createElement('div');
             emptyMessage.textContent = 'Список порожній!';
@@ -60,7 +60,7 @@ function showMusicFreeSubscription() {
         }
         return response.blob();
     })
-    .then(blob => {
+        .then(blob => {
         if (blob) {
             const zip = new JSZip();
             return zip.loadAsync(blob).then(zip => {
@@ -106,15 +106,11 @@ function showMusicFreeSubscription() {
             });
         }
     })
-    .catch(error => {
+        .catch(error => {
         console.error('Failed to fetch free subscription music files: ', error);
         spinner.style.display = 'none';
     });
 }
-
-
-
-
 
 function logOut(event) {
     event.preventDefault();
@@ -138,6 +134,5 @@ function MeinMenu(event) {
         window.location.href = '/personal_office';
     }
 }
-
 
 showMusicFreeSubscription();

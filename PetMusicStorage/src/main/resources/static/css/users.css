@@ -1,11 +1,11 @@
 body {
-  background-image: url("/images/images/background.jpg");
-  background-size: cover;
-  background-position: center -100px;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-   margin: 0;
-      padding: 0;
+    background-image: url("/images/images/background.jpg");
+    background-size: cover;
+    background-position: center -100px;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    margin: 0;
+    padding: 0;
 }
 
 .header {
@@ -13,13 +13,12 @@ body {
     flex-wrap: wrap;
     margin-bottom: 10px;
     padding: 10px;
-     border: 5px;
-     border-radius: 25px;
+    border: 5px;
+    border-radius: 25px;
 }
 
 .form-nav-list {
     display: flex;
-
 }
 
 .nav-list {
@@ -48,7 +47,7 @@ body {
     width: 150px;
     height: 50px;
     box-sizing: border-box;
-      box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
 }
 
 .button-nav-list-main-menu {
@@ -69,8 +68,9 @@ body {
     right: 50px;
     top: 10px;
 }
+
 .button-nav-list-delete-users{
- background-color: #FF0000;
+    background-color: #FF0000;
     justify-content: start;
     color: white;
     padding: 5px 5px;
@@ -82,7 +82,7 @@ body {
     width: 150px;
     height: 50px;
     box-sizing: border-box;
-      box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
 }
 
 .button-nav-list:hover,
@@ -95,8 +95,8 @@ body {
 .subscription-pagination-button:hover,
 .subscribe-button:hover,
 .subscription-list-button:hover{
-  background-color: #8a2be2;
-  transform: scale(1.1,1.1);
+    background-color: #8a2be2;
+    transform: scale(1.1,1.1);
 }
 
 .button-nav-list:active,
@@ -104,80 +104,80 @@ body {
 .submenu-all-users-button:active,
 .pagination-button:active,
 .button-nav-list-delete-users:active,
- .change-button:active,
- .update-button:active,
- .subscription-pagination-button:active,
- .subscribe-button:active,
- .delete-button:active,
- .form-delete-button:active,
- .subscription-list-button:active{
-  background-color: #6a1b9a;
-  transform: scale(0.95, 0.95);
-  box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.3);
+.change-button:active,
+.update-button:active,
+.subscription-pagination-button:active,
+.subscribe-button:active,
+.delete-button:active,
+.form-delete-button:active,
+.subscription-list-button:active{
+    background-color: #6a1b9a;
+    transform: scale(0.95, 0.95);
+    box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.3);
 }
 
 .button-nav-list-delete-users:hover,
 .delete-button:hover,
 .form-delete-button:hover{
-  background-color: #FF6600;
-  transform: scale(1.1,1.1);
+    background-color: #FF6600;
+    transform: scale(1.1,1.1);
 }
 
 .submenu-all-users-item {
-  list-style-type: none;
-  color: #8b008b;
-  font-weight: bold;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid #dcdcdc;
+    list-style-type: none;
+    color: #8b008b;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #dcdcdc;
 }
 
 .submenu-all-users-item p {
- margin: 0;
-  padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 .user-info {
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
 }
 
 .dashed-line {
-  margin: 0;
-  padding:0;
-  border: 0;
-  border-top: 1px dashed #8b008b;
+    margin: 0;
+    padding:0;
+    border: 0;
+    border-top: 1px dashed #8b008b;
 }
 
 #usersContainer {
- display: none;
-     position: start;
-     top: 0;
-     right: 50px;
-     color: white;
-     padding: 5px;
-     text-decoration: none;
-     cursor: pointer;
-     border-radius: 25px;
-     margin: 5px 10px;
-     font-size: 24px;
-     width: 520px;
-     height: auto;
-     box-sizing: border-box;
-     margin-right: 20px;
-     box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
-     background-color: #FAF0E6;
+    display: none;
+    position: start;
+    top: 0;
+    right: 50px;
+    color: white;
+    padding: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 25px;
+    margin: 5px 10px;
+    font-size: 24px;
+    width: 520px;
+    height: auto;
+    box-sizing: border-box;
+    margin-right: 20px;
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+    background-color: #FAF0E6;
 }
 
 #usersInfo {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  margin: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    margin: 20px;
 }
 
 .pagination-controls{
@@ -189,16 +189,16 @@ body {
 
 .pagination-button {
     background-color: #8b008b;
-      color: white;
-       font-size: 10px;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 20px;
-      cursor: pointer;
-      display: block;
-      width: 100px;
-      margin-bottom: 5px;
-      box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+    color: white;
+    font-size: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    display: block;
+    width: 100px;
+    margin-bottom: 5px;
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
 }
 
 .pagination-button:disabled,
@@ -216,21 +216,18 @@ body {
 }
 
 .input-new-personal-data {
-  width: 190px;
-  padding: 10px;
-  border-radius: 20px;
-  border: 1px solid #ccc;
-  margin: 0px;
-  box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+    width: 190px;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    margin: 0px;
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
 }
 
-
-
-
 #userDetails {
-margin-left: 20px;
+    margin-left: 20px;
     display: flex;
-     right: 50px;
+    right: 50px;
     flex-direction: column;
     padding: 15px;
     background-color: #FAF0E6;
@@ -239,15 +236,17 @@ margin-left: 20px;
     width: 750px;
     color: #8b008b;
 }
+
 .user-details-row {
     font-size: 18px;
-     font-weight: bold;
+    font-weight: bold;
     display: flex;
     align-items: center;
     position: relative;
     margin-top: 20px;
     margin-bottom: 20px;
 }
+
 .user-details-row p,
 .user-details-row input,
 .user-details-row button {
@@ -263,6 +262,7 @@ margin-left: 20px;
     padding: 5px;
     box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
 }
+
 .submenu-all-users-button {
     background-color: #8b008b;
     color: white;
@@ -279,21 +279,25 @@ margin-left: 20px;
     box-sizing: border-box;
     margin-left: auto;
     margin-right: 10px;
-     box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
 }
+
 .auto-renew-options {
     display: flex;
     justify-content: flex-end;
     margin-left: auto;
-        margin-right: 10px;
+    margin-right: 10px;
     align-items: center;
 }
+
 .radio-spacing {
     width: 10px;
 }
+
 input[name="Auto-renew"] {
     display: none;
 }
+
 input[name="Auto-renew"] + label {
     position: relative;
     padding-left: 30px;
@@ -301,6 +305,7 @@ input[name="Auto-renew"] + label {
     display: inline-flex;
     align-items: center;
 }
+
 input[name="Auto-renew"] + label::before {
     content: '';
     position: absolute;
@@ -312,33 +317,36 @@ input[name="Auto-renew"] + label::before {
     background-color: transparent;
     transition: background-color 0.2s;
 }
+
 input[name="Auto-renew"]:checked + label::before {
     background-color: #8b008b;
 }
+
 .users-personal-data-text {
-  font-style: normal;
-  font-style: italic;
-  font-style: oblique;
-  font-style: oblique 10deg;
-  font-weight: bold;
-  font-size: 20px;
-  color: #8b008b;
-  margin-top: 0px;
-  margin-bottom: 0px;
-  padding-top: 0px;
-  padding-bottom: 0px;
-  text-shadow: -0.4px -0.4px 0 #000, 0.4px -0.4px 0 #000,
+    font-style: normal;
+    font-style: italic;
+    font-style: oblique;
+    font-style: oblique 10deg;
+    font-weight: bold;
+    font-size: 20px;
+    color: #8b008b;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    text-shadow: -0.4px -0.4px 0 #000, 0.4px -0.4px 0 #000,
     -0.4px 0.4px 0 #000, 0.4px 0.4px 0 #000;
 }
 
 .input-bank-personal-data {
-  width: 185px;
-  padding: 10px;
-  border-radius: 20px;
-  border: 1px solid #ccc;
-  margin: 0px;
-  box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+    width: 185px;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    margin: 0px;
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
 }
+
 .bank-card-group {
     position: absolute;
     right: 120px;
@@ -361,17 +369,17 @@ input[name="Auto-renew"]:checked + label::before {
     position: absolute;
     right: 0;
     top: 0;
-     background-color: #8b008b;
-          color: white;
-          margin: 0;
-          padding: 0;
-          border: none;
-          border-radius: 20px;
-          cursor: pointer;
-          display: block;
-          width: 100px;
-          height: 40px;
-           box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+    background-color: #8b008b;
+    color: white;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    display: block;
+    width: 100px;
+    height: 40px;
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
 }
 
 /*.form-submenu-personal-data{
@@ -396,65 +404,65 @@ input[name="Auto-renew"]:checked + label::before {
 
 
 .update-button {
-  background-color: #8b008b;
-  color: white;
-  margin-top: 10px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  display: block;
-  width: 210px;
-   box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+    background-color: #8b008b;
+    color: white;
+    margin-top: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    display: block;
+    width: 210px;
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
 }
 
 #usersPersonalDataContainer {
-display: flex;
-     position: relative;
-      top: 0;
-          left:150%;
-     min-width: 160px;
-     color: white;
-     padding: 15px 30px;
-     text-decoration: none;
-     cursor: pointer;
-     border-radius: 25px;
-     margin: 5px 0;
-     font-size: 18px;
-     width: 265px;
-     height: auto;
-     box-sizing: border-box;
-     margin-bottom: 50px;
-     background-color: rgba(153, 102, 255, 0.0);
+    display: flex;
+    position: relative;
+    top: 0;
+    left:150%;
+    min-width: 160px;
+    color: white;
+    padding: 15px 30px;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 25px;
+    margin: 5px 0;
+    font-size: 18px;
+    width: 265px;
+    height: auto;
+    box-sizing: border-box;
+    margin-bottom: 50px;
+    background-color: rgba(153, 102, 255, 0.0);
 }
 
 .submenu-personal-data-error {
-  position: relative;
-  top: 0;
-  left: 510px !important;
-  width: 250px;
-  height: 100px;
-  background-color: #f8d7da !important;
-  padding: 10px;
-  box-sizing: border-box;
-  box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9)
+    position: relative;
+    top: 0;
+    left: 510px !important;
+    width: 250px;
+    height: 100px;
+    background-color: #f8d7da !important;
+    padding: 10px;
+    box-sizing: border-box;
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9)
 }
 
 
 .input-bank-card-expiration-data {
-  width: 90px;
-  padding: 10px;
-  border-radius: 20px;
-  border: 1px solid #ccc;
-  box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+    width: 90px;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
 }
 
 .input-bank-card-cvv {
-  width: 70px;
-  padding: 10px;
-  border-radius: 20px;
-  border: 1px solid #ccc;
-  box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+    width: 70px;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
 }
 
 .subscription-page-info {
@@ -462,9 +470,9 @@ display: flex;
     font-weight: bold;
     margin: 0 10px;
     color: #FFFFFF;
-     text-align: center;
-     text-shadow: -0.4px -0.4px 0 #000, 0.4px -0.4px 0 #000,
-         -0.4px 0.4px 0 #000, 0.4px 0.4px 0 #000;
+    text-align: center;
+    text-shadow: -0.4px -0.4px 0 #000, 0.4px -0.4px 0 #000,
+    -0.4px 0.4px 0 #000, 0.4px 0.4px 0 #000;
 }
 
 
@@ -483,24 +491,24 @@ display: flex;
 }
 
 .delete-user-text {
-  font-style: normal;
-  font-style: italic;
-  font-style: oblique;
-  font-style: oblique 10deg;
-  font-weight: bold;
-  font-size: 24px;
-  text-align: center;
-  color: #FFFFFF;
-  margin-top: 0px;
-  margin-bottom: 0px;
-  padding-top: 0px;
-  padding-bottom: 0px;
-   text-shadow: -0.4px -0.4px 0 #000, 0.4px -0.4px 0 #000,
-          -0.4px 0.4px 0 #000, 0.4px 0.4px 0 #000;
+    font-style: normal;
+    font-style: italic;
+    font-style: oblique;
+    font-style: oblique 10deg;
+    font-weight: bold;
+    font-size: 24px;
+    text-align: center;
+    color: #FFFFFF;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    text-shadow: -0.4px -0.4px 0 #000, 0.4px -0.4px 0 #000,
+    -0.4px 0.4px 0 #000, 0.4px 0.4px 0 #000;
 }
 
 .subscription-item {
-font-size: 18px;
+    font-size: 18px;
     list-style-type: block;
     color: #FFFFFF;
     margin: 0;
@@ -510,7 +518,7 @@ font-size: 18px;
     align-items: flex-start;
     text-align: left;;
     text-shadow: -0.4px -0.4px 0 #000, 0.4px -0.4px 0 #000,
-        -0.4px 0.4px 0 #000, 0.4px 0.4px 0 #000;
+    -0.4px 0.4px 0 #000, 0.4px 0.4px 0 #000;
 }
 
 .subscription-item p {
@@ -522,127 +530,127 @@ font-size: 18px;
     position: absolute;
     right: 0;
     top: 0;
-     background-color: #FF0000;
-          color: white;
-          margin: 0;
-          padding: 0;
-          border: none;
-          border-radius: 20px;
-          cursor: pointer;
-          display: block;
-          width: 100px;
-          height: 40px;
-           box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+    background-color: #FF0000;
+    color: white;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    display: block;
+    width: 100px;
+    height: 40px;
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
 }
 
 .form-delete-button{
-  background-color: #FF0000;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  display: block;
-  width: 210px;
-   box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+    background-color: #FF0000;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    display: block;
+    width: 210px;
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
 }
 
 
 
 .display-error-message-for-personal-data-update {
-  position: relative;
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  font-size: 18px;
-  font-weight: bold;
-  color: #ff0000;
-  text-shadow: -0.3px -0.3px 0 #000, 0.3px -0.3px 0 #000,
-               -0.3px 0.3px 0 #000, 0.3px 0.3px 0 #000;
-  z-index: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+    color: #ff0000;
+    text-shadow: -0.3px -0.3px 0 #000, 0.3px -0.3px 0 #000,
+    -0.3px 0.3px 0 #000, 0.3px 0.3px 0 #000;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 }
 
 .submenu-personal-data-success {
-  position: absolute;
-  top: 0;
-  left: 510px !important;
-  width: 250px;
-  height: 100px;
-  background-color: #99FFCC !important;
-  padding: 10px;
-  box-sizing: border-box;
-  box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9)
+    position: absolute;
+    top: 0;
+    left: 510px !important;
+    width: 250px;
+    height: 100px;
+    background-color: #99FFCC !important;
+    padding: 10px;
+    box-sizing: border-box;
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9)
 }
 
 .display-message-for-personal-data-update {
-  position: relative;
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  font-size: 18px;
-  font-weight: bold;
-  color: #006600;
-  text-shadow: -0.3px -0.3px 0 #000, 0.3px -0.3px 0 #000,
-                 -0.3px 0.3px 0 #000, 0.3px 0.3px 0 #000;
-  z-index: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+    color: #006600;
+    text-shadow: -0.3px -0.3px 0 #000, 0.3px -0.3px 0 #000,
+    -0.3px 0.3px 0 #000, 0.3px 0.3px 0 #000;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 }
 
 .form-find-by-phone-number {
-  display: none;
-  position: absolute;
-  top: 120%;
-  left: 120px;
-  border: 1px solid #ccc;
-  padding: 15px;
-  background-color: #f9f9f9;
-  width: 210px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
-  border: none;
+    display: none;
+    position: absolute;
+    top: 120%;
+    left: 120px;
+    border: 1px solid #ccc;
+    padding: 15px;
+    background-color: #f9f9f9;
+    width: 210px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    border: none;
     border-radius: 20px;
-   background-color: rgba(153, 102, 255, 0.8);
-  box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9)
+    background-color: rgba(153, 102, 255, 0.8);
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9)
 }
 
 .form-find-by-bank-card {
-  display: none;
-  position: absolute;
-  top: 120%;
-  left: 280px;
-  border: 1px solid #ccc;
-  padding: 15px;
-  background-color: #f9f9f9;
-  width: 210px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
-  border: none;
+    display: none;
+    position: absolute;
+    top: 120%;
+    left: 280px;
+    border: 1px solid #ccc;
+    padding: 15px;
+    background-color: #f9f9f9;
+    width: 210px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    border: none;
     border-radius: 20px;
-   background-color: rgba(153, 102, 255, 0.7);
-  box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9)
+    background-color: rgba(153, 102, 255, 0.7);
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9)
 }
 
 .form-find-by-subscription {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: absolute;
-  top: 120%;
-  left: 480px;
-  border: 1px solid #ccc;
-  padding: 15px;
-  width: 140px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 20px;
-  background-color: rgba(153, 102, 255, 0.8);
-  box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    top: 120%;
+    left: 480px;
+    border: 1px solid #ccc;
+    padding: 15px;
+    width: 140px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    background-color: rgba(153, 102, 255, 0.8);
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
 }
 
 .subscription-list-button {
@@ -664,71 +672,71 @@ font-size: 18px;
 
 
 .form-find-by-email {
-  display: none;
-  position: absolute;
-  top: 120%;
-  right: 680px;
-  border: 1px solid #ccc;
-  padding: 15px;
-  background-color: #f9f9f9;
-  width: 210px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
-  border: none;
+    display: none;
+    position: absolute;
+    top: 120%;
+    right: 680px;
+    border: 1px solid #ccc;
+    padding: 15px;
+    background-color: #f9f9f9;
+    width: 210px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    border: none;
     border-radius: 20px;
-   background-color: rgba(153, 102, 255, 0.8);
-  box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9)
+    background-color: rgba(153, 102, 255, 0.8);
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9)
 }
 
 .form-find-by-id {
-  display: none;
-  position: absolute;
-  top: 120%;
-  right: 510px;
-  border: 1px solid #ccc;
-  padding: 15px;
-  background-color: #f9f9f9;
-  width: 210px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
-  border: none;
+    display: none;
+    position: absolute;
+    top: 120%;
+    right: 510px;
+    border: 1px solid #ccc;
+    padding: 15px;
+    background-color: #f9f9f9;
+    width: 210px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    border: none;
     border-radius: 20px;
-   background-color: rgba(153, 102, 255, 0.8);
-  box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9)
+    background-color: rgba(153, 102, 255, 0.8);
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9)
 }
 
 .form-delete-all-users {
-  display: none;
-  position: absolute;
-  top: 120%;
-  right: 350px;
-  border: 1px solid #ccc;
-  padding: 15px;
-  background-color: #f9f9f9;
-  width: 210px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
-  border: none;
+    display: none;
+    position: absolute;
+    top: 120%;
+    right: 350px;
+    border: 1px solid #ccc;
+    padding: 15px;
+    background-color: #f9f9f9;
+    width: 210px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    border: none;
     border-radius: 20px;
-   background-color: rgba(153, 102, 255, 0.8);
-  box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9)
+    background-color: rgba(153, 102, 255, 0.8);
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9)
 }
 
 .form-main-menu {
-  display: none;
-  position: absolute;
-  top: 120%;
-  right: 0;
-  border: 1px solid #ccc;
-  padding: 15px;
-  background-color: #f9f9f9;
-  width: 210px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
-  border: none;
+    display: none;
+    position: absolute;
+    top: 120%;
+    right: 0;
+    border: 1px solid #ccc;
+    padding: 15px;
+    background-color: #f9f9f9;
+    width: 210px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    border: none;
     border-radius: 20px;
-   background-color: rgba(153, 102, 255, 0.8);
-  box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9)
+    background-color: rgba(153, 102, 255, 0.8);
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9)
 }
 
 

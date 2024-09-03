@@ -1,10 +1,10 @@
 body {
-  background-image: url("/images/images/forbidden.jpg");
-  background-size: 50%;
-  background-position: center top;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  padding-top: 100px;
+    background-image: url("/images/images/forbidden.jpg");
+    background-size: 50%;
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    padding-top: 100px;
 }
 
 .button {
@@ -33,25 +33,26 @@ body {
 }
 
 @media screen and (max-width: 900px) {
-body {
-  background-image: url("/images/images/forbidden.jpg");
-  background-size: 50%;
-  background-position: center 30%;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  padding-top: 200px;
-}
-.button {
-    display: block;
-    background-color: #8b008b;
-    color: white;
-    padding: 15px 30px;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 16px;
-    margin: 200px auto;
-    transition: background-color 0.3s ease;
-    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
-}
+    body {
+        background-image: url("/images/images/forbidden.jpg");
+        background-size: 50%;
+        background-position: center 30%;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        padding-top: 200px;
+    }
+
+    .button {
+        display: block;
+        background-color: #8b008b;
+        color: white;
+        padding: 15px 30px;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 16px;
+        margin: 200px auto;
+        transition: background-color 0.3s ease;
+        box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.9);
+    }
 }

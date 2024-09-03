@@ -40,7 +40,6 @@ document.addEventListener('click', function(event) {
             usersContainer.style.display = 'none';
         }
     }
-
 });
 
 let currentActiveFormId = null;
@@ -140,7 +139,7 @@ function submitFindAllUsers() {
             'Authorization': `Bearer ${jwtToken}`
         }
     })
-    .then(response => {
+        .then(response => {
         if (!response.ok) {
             return response.text().then(errorMessage => {
                 throw new Error(errorMessage);
@@ -148,13 +147,13 @@ function submitFindAllUsers() {
         }
         return response.json();
     })
-    .then(data => {
+        .then(data => {
         users = data;
         currentPage = 1;
         displayUsers(users);
         isUsersVisible = true;
     })
-    .catch(error => {
+        .catch(error => {
         console.error('Failed to fetch user details: ', error);
     });
 }
@@ -162,9 +161,9 @@ function submitFindAllUsers() {
 function findUserByPhoneNumber(event, phoneNumber) {
     event.preventDefault();
     const usersElement = document.getElementById('usersInfo');
-        if (usersElement) {
-            usersElement.style.display = 'none';
-        }
+    if (usersElement) {
+        usersElement.style.display = 'none';
+    }
     const jwtToken = getCookie('JWT_TOKEN');
     if (!jwtToken) {
         console.error('JWT token not found');
@@ -176,18 +175,18 @@ function findUserByPhoneNumber(event, phoneNumber) {
             'Authorization': `Bearer ${jwtToken}`
         },
     })
-    .then(response => {
+        .then(response => {
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
         return response.json();
     })
-    .then(user => {
+        .then(user => {
         console.log('User details:', user);
 
         displayUserDetails(user);
     })
-    .catch(error => {
+        .catch(error => {
         console.error('Error fetching user details:', error);
         alert('Failed to fetch user details.');
     });
@@ -327,9 +326,8 @@ function displayUserDetails(user) {
     if (usersContainer) {
         usersContainer.style.display = 'none';
     }
-
     showForm(null, true);
-     isUserDetailsVisible = true;
+    isUserDetailsVisible = true;
 }
 
 function submitFindAlSubscriptions() {
@@ -343,7 +341,7 @@ function submitFindAlSubscriptions() {
             'Authorization': `Bearer ${jwtToken}`
         }
     })
-    .then(response => {
+        .then(response => {
         if (!response.ok) {
             return response.text().then(errorMessage => {
                 throw new Error(errorMessage);
@@ -351,11 +349,11 @@ function submitFindAlSubscriptions() {
         }
         return response.json();
     })
-    .then(data => {
+        .then(data => {
         subscriptions = data;
         displaySubscriptions();
     })
-    .catch(error => {
+        .catch(error => {
         console.error('Failed to fetch subscriptions: ', error);
         displayErrorMessage(error.message);
     });
@@ -378,10 +376,6 @@ function displaySubscriptions() {
     });
 }
 
-
-
-
-
 function updateUsersPhoneNumber(event, currentPhoneNumber) {
     const newPhoneNumber = document.getElementById('newPhoneNumber').value;
     const jwtToken = getCookie('JWT_TOKEN');
@@ -401,7 +395,7 @@ function updateUsersPhoneNumber(event, currentPhoneNumber) {
         },
         body: JSON.stringify(payload)
     })
-    .then(response => {
+        .then(response => {
         if (!response.ok) {
             return response.text().then(text => {
                 throw new Error(text);
@@ -409,11 +403,11 @@ function updateUsersPhoneNumber(event, currentPhoneNumber) {
         }
         return response.text();
     })
-    .then(data => {
+        .then(data => {
         console.log('Server response:', data);
         displayMessageForPersonalDataUpdate(data, 'success');
     })
-    .catch(error => {
+        .catch(error => {
         console.error('Error updating phone number:', error);
         displayErrorMessageForPersonalDataUpdate(error.message);
     });
@@ -429,7 +423,7 @@ function displayErrorMessageForPersonalDataUpdate(message) {
 
 function displayMessageForPersonalDataUpdate(message) {
     const submenuPersonalData = document.getElementById('usersPersonalDataContainer');
-     submenuPersonalData.classList.add('submenu-personal-data-success');
+    submenuPersonalData.classList.add('submenu-personal-data-success');
     submenuPersonalData.innerHTML = `
         <p class="display-message-for-personal-data-update">${message}</p>
     `;
@@ -459,7 +453,7 @@ function updateUsersPassword(event, userPhoneNumber) {
         },
         body: JSON.stringify(payload)
     })
-    .then(response => {
+        .then(response => {
         if (!response.ok) {
             return response.text().then(text => {
                 throw new Error(text);
@@ -467,11 +461,11 @@ function updateUsersPassword(event, userPhoneNumber) {
         }
         return response.text();
     })
-    .then(data => {
+        .then(data => {
         console.log('Server response:', data);
         displayMessageForPersonalDataUpdate(data, 'success');
     })
-    .catch(error => {
+        .catch(error => {
         console.error('Error updating password:', error);
         displayErrorMessageForPersonalDataUpdate(error.message);
     });
@@ -496,7 +490,7 @@ function updateUsersAutoRenewStatus(event, currentPhoneNumber) {
         },
         body: JSON.stringify(payload)
     })
-    .then(response => {
+        .then(response => {
         if (!response.ok) {
             return response.text().then(text => {
                 throw new Error(text);
@@ -504,10 +498,10 @@ function updateUsersAutoRenewStatus(event, currentPhoneNumber) {
         }
         return response.text();
     })
-    .then(data => {
+        .then(data => {
         console.log('Server response:', data);
     })
-    .catch(error => {
+        .catch(error => {
         console.error('Error updating auto-renew status:', error);
     });
 }
@@ -532,7 +526,7 @@ function updateUsersEmail(event, userPhoneNumber) {
         },
         body: JSON.stringify(payload)
     })
-    .then(response => {
+        .then(response => {
         if (!response.ok) {
             return response.text().then(text => {
                 throw new Error(text);
@@ -540,11 +534,11 @@ function updateUsersEmail(event, userPhoneNumber) {
         }
         return response.text();
     })
-    .then(data => {
+        .then(data => {
         console.log('Server response:', data);
         displayMessageForPersonalDataUpdate(data, 'success');
     })
-    .catch(error => {
+        .catch(error => {
         console.error('Error updating password:', error);
         displayErrorMessageForPersonalDataUpdate(error.message);
     });
@@ -560,14 +554,14 @@ function updateUsersBankCard(event, userPhoneNumber) {
         console.error('JWT token not found');
         return;
     }
-     const payload = {
-            userPhoneNumber: userPhoneNumber,
-            newUserBankCard: {
-                cardNumber: newBankCardNumber,
-                cvv: newBankCardCVV,
-                cardExpirationDate: newBankCardExpirationDate
-            }
-        };
+    const payload = {
+        userPhoneNumber: userPhoneNumber,
+        newUserBankCard: {
+            cardNumber: newBankCardNumber,
+            cvv: newBankCardCVV,
+            cardExpirationDate: newBankCardExpirationDate
+        }
+    };
     fetch('/users/update_bank_card', {
         method: 'PUT',
         headers: {
@@ -576,7 +570,7 @@ function updateUsersBankCard(event, userPhoneNumber) {
         },
         body: JSON.stringify(payload)
     })
-    .then(response => {
+        .then(response => {
         if (!response.ok) {
             return response.text().then(text => {
                 throw new Error(text);
@@ -584,201 +578,192 @@ function updateUsersBankCard(event, userPhoneNumber) {
         }
         return response.text();
     })
-    .then(data => {
+        .then(data => {
         console.log('Server response:', data);
         displayMessageForPersonalDataUpdate(data, 'success');
     })
-    .catch(error => {
+        .catch(error => {
         console.error('Error updating bank card:', error);
         displayErrorMessageForPersonalDataUpdate(error.message);
     });
 }
 function updateUsersSubscription(event) {
-     const userPhoneNumber = parseInt(document.getElementById('currentPhoneNumber').textContent, 10);
-     if (isNaN(userPhoneNumber)) {
-         alert('Invalid phone number.');
-         return;
-     }
-     const jwtToken = getCookie('JWT_TOKEN');
-     if (!jwtToken) {
-         console.error('JWT token not found');
-         return;
-     }
-      const payload = {
-             userPhoneNumber: userPhoneNumber,
-             newSubscription: {
-                 subscriptionName: event,
-             }
-         };
-
-     fetch('/users/update_subscription', {
-         method: 'PUT',
-         headers: {
-             'Content-Type': 'application/json',
-             'Authorization': `Bearer ${jwtToken}`
-         },
-         body: JSON.stringify(payload)
-     })
-     .then(response => {
-         if (!response.ok) {
-             return response.text().then(text => {
-                 throw new Error(text);
-             });
-         }
-         return response.text();
-     })
-     .then(data => {
-         console.log('Server response:', data);
-         displayMessageForPersonalDataUpdate(data, 'success');
-     })
-     .catch(error => {
-         console.error('Error updating bank card:', error);
-         displayErrorMessageForPersonalDataUpdate(error.message);
-     });
- }
-//
-// function displayErrorMessage(message) {
-//     const usersElement = document.getElementById('usersInfo');
-//     if (!usersElement) return;
-//     usersElement.innerHTML = `
-//         <p class="display-error-message">${message}</p>
-//     `;
-// }
-
- function deleteUserByPhoneNumber(userPhoneNumber) {
-     event.preventDefault();
-     const jwtToken = getCookie('JWT_TOKEN');
-     if (!jwtToken) {
-         console.error('JWT token not found');
-         return;
-     }
-     fetch(`/users/delete_user_by_phone_number?phoneNumber=${encodeURIComponent(userPhoneNumber)}`, {
-         method: 'DELETE',
-         headers: {
-             'Content-Type': 'application/json',
-             'Authorization': `Bearer ${jwtToken}`
-         }
-     })
-     .then(response => {
-         if (!response.ok) {
-             return response.text().then(text => {
-                 throw new Error(text);
-             });
-         }
-         return response.text();
-     })
-     .then(data => {
-         console.log('Server response:', data);
-         displayMessageForPersonalDataUpdate(data, 'success');
-     })
-     .catch(error => {
-         console.error('Error deleting user:', error);
-         displayErrorMessageForPersonalDataUpdate(error.message);
-     });
- }
-
- function submitManualFindUserByPhoneNumber(event) {
-     event.preventDefault();
-            const phoneNumber = document.getElementById('userPhoneNumber').value;
-            const jwtToken = getCookie('JWT_TOKEN');
-               if (!jwtToken) {
-                   console.error('JWT token not found');
-                   return;
-               }
-               fetch(`/users/user_by_phone?phoneNumber=${phoneNumber}`, {
-                   method: 'GET',
-                   headers: {
-                       'Authorization': `Bearer ${jwtToken}`
-                   },
-               })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error(text);
-                    });
-                }
-                return response.json();
-            })
-            .then(user => {
-                    console.log('User details:', user);
-                   displayUserDetails(user);
-            })
-            .catch(error => {
-                console.error('Error finding user:', error);
-                displayErrorMessageForPersonalDataUpdate(error.message);
+    const userPhoneNumber = parseInt(document.getElementById('currentPhoneNumber').textContent, 10);
+    if (isNaN(userPhoneNumber)) {
+        alert('Invalid phone number.');
+        return;
+    }
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    const payload = {
+        userPhoneNumber: userPhoneNumber,
+        newSubscription: {
+            subscriptionName: event,
+        }
+    };
+    fetch('/users/update_subscription', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwtToken}`
+        },
+        body: JSON.stringify(payload)
+    })
+        .then(response => {
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(text);
             });
- }
+        }
+        return response.text();
+    })
+        .then(data => {
+        console.log('Server response:', data);
+        displayMessageForPersonalDataUpdate(data, 'success');
+    })
+        .catch(error => {
+        console.error('Error updating bank card:', error);
+        displayErrorMessageForPersonalDataUpdate(error.message);
+    });
+}
 
- function submitFindUserByBankCard() {
- event.preventDefault();
- const userBankCardNumber = document.getElementById('userBankCardNumber').value;
-     if (isUsersVisible || isUserDetailsVisible) {
-         hideAllMenus();
-         isUsersVisible = false;
-         isUserDetailsVisible = false;
-         return;
-     }
-     const jwtToken = getCookie('JWT_TOKEN');
-     if (!jwtToken) {
-         console.error('JWT token not found');
-         return;
-     }
-     fetch(`/users/user_by_bank_card?bankCardNumber=${userBankCardNumber}`, {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${jwtToken}`
-                        },
-                    })
-     .then(response => {
-         if (!response.ok) {
-             return response.text().then(errorMessage => {
-                 throw new Error(errorMessage);
-             });
-         }
-         return response.json();
-     })
-     .then(data => {
-         users = data;
-         currentPage = 1;
-         displayUsers(users);
-         showForm(null, true);
-         isUsersVisible = true;
-     })
-     .catch(error => {
-                     console.error('Error finding user:', error);
-                     displayErrorMessageForPersonalDataUpdate(error.message);
-                 });
- }
+function deleteUserByPhoneNumber(userPhoneNumber) {
+    event.preventDefault();
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    fetch(`/users/delete_user_by_phone_number?phoneNumber=${encodeURIComponent(userPhoneNumber)}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwtToken}`
+        }
+    })
+        .then(response => {
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(text);
+            });
+        }
+        return response.text();
+    })
+        .then(data => {
+        console.log('Server response:', data);
+        displayMessageForPersonalDataUpdate(data, 'success');
+    })
+        .catch(error => {
+        console.error('Error deleting user:', error);
+        displayErrorMessageForPersonalDataUpdate(error.message);
+    });
+}
 
- function submitFindSubscriptionsList() {
-     const jwtToken = getCookie('JWT_TOKEN');
-     if (!jwtToken) {
-         console.error('JWT token not found');
-         return;
-     }
-     fetch('/admin_office/subscriptions', {
-         headers: {
-             'Authorization': `Bearer ${jwtToken}`
-         }
-     })
-     .then(response => {
-         if (!response.ok) {
-             return response.text().then(errorMessage => {
-                 throw new Error(errorMessage);
-             });
-         }
-         return response.json();
-     })
-     .then(data => {
-     console.log('Fetched subscriptions data:', data);
-         subscriptions = data;
-         displaySubscriptionsForFindUser();
-     })
-     .catch(error => {
-         console.error('Failed to fetch subscriptions: ', error);
-         displayErrorMessage(error.message);
-     });
- }
+function submitManualFindUserByPhoneNumber(event) {
+    event.preventDefault();
+    const phoneNumber = document.getElementById('userPhoneNumber').value;
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    fetch(`/users/user_by_phone?phoneNumber=${phoneNumber}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`
+        },
+    })
+        .then(response => {
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(text);
+            });
+        }
+        return response.json();
+    })
+        .then(user => {
+        console.log('User details:', user);
+        displayUserDetails(user);
+    })
+        .catch(error => {
+        console.error('Error finding user:', error);
+        displayErrorMessageForPersonalDataUpdate(error.message);
+    });
+}
+
+function submitFindUserByBankCard() {
+    event.preventDefault();
+    const userBankCardNumber = document.getElementById('userBankCardNumber').value;
+    if (isUsersVisible || isUserDetailsVisible) {
+        hideAllMenus();
+        isUsersVisible = false;
+        isUserDetailsVisible = false;
+        return;
+    }
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    fetch(`/users/user_by_bank_card?bankCardNumber=${userBankCardNumber}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`
+        },
+    })
+        .then(response => {
+        if (!response.ok) {
+            return response.text().then(errorMessage => {
+                throw new Error(errorMessage);
+            });
+        }
+        return response.json();
+    })
+        .then(data => {
+        users = data;
+        currentPage = 1;
+        displayUsers(users);
+        showForm(null, true);
+        isUsersVisible = true;
+    })
+        .catch(error => {
+        console.error('Error finding user:', error);
+        displayErrorMessageForPersonalDataUpdate(error.message);
+    });
+}
+
+function submitFindSubscriptionsList() {
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    fetch('/admin_office/subscriptions', {
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`
+        }
+    })
+        .then(response => {
+        if (!response.ok) {
+            return response.text().then(errorMessage => {
+                throw new Error(errorMessage);
+            });
+        }
+        return response.json();
+    })
+        .then(data => {
+        console.log('Fetched subscriptions data:', data);
+        subscriptions = data;
+        displaySubscriptionsForFindUser();
+    })
+        .catch(error => {
+        console.error('Failed to fetch subscriptions: ', error);
+        displayErrorMessage(error.message);
+    });
+}
 
 function displaySubscriptionsForFindUser() {
     const subscriptionsElement = document.getElementById('subscriptionList');
@@ -800,142 +785,140 @@ function displaySubscriptionsForFindUser() {
     });
 }
 
-
 function submitFindUsersBySubscription(subscriptionName) {
- event.preventDefault();
-     if (isUsersVisible || isUserDetailsVisible) {
-         hideAllMenus();
-         isUsersVisible = false;
-         isUserDetailsVisible = false;
-         return;
-     }
-     const jwtToken = getCookie('JWT_TOKEN');
-     if (!jwtToken) {
-         console.error('JWT token not found');
-         return;
-     }
-     fetch(`/users/user_by_subscription?subscription=${subscriptionName}`, {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${jwtToken}`
-                        },
-                    })
-     .then(response => {
-         if (!response.ok) {
-             return response.text().then(errorMessage => {
-                 throw new Error(errorMessage);
-             });
-         }
-         return response.json();
-     })
-     .then(data => {
-         users = data;
-         currentPage = 1;
-         displayUsers(users);
-         showForm(null, true);
-         isUsersVisible = true;
-     })
-     .catch(error => {
-                     console.error('Error finding user:', error);
-                     displayErrorMessageForPersonalDataUpdate(error.message);
-                 });
- }
-
-
- function submitFindUserByEmail(event) {
-      event.preventDefault();
-             const email = document.getElementById('userEmail').value;
-             const jwtToken = getCookie('JWT_TOKEN');
-                if (!jwtToken) {
-                    console.error('JWT token not found');
-                    return;
-                }
-                fetch(`/users/user_by_email?email=${email}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${jwtToken}`
-                    },
-                })
-             .then(response => {
-                 if (!response.ok) {
-                     return response.text().then(text => {
-                         throw new Error(text);
-                     });
-                 }
-                 return response.json();
-             })
-             .then(user => {
-                     console.log('User details:', user);
-                    displayUserDetails(user);
-             })
-             .catch(error => {
-                 console.error('Error finding user:', error);
-                 displayErrorMessageForPersonalDataUpdate(error.message);
-             });
-  }
-
-  function submitFindUserById(event) {
-        event.preventDefault();
-               const userId = document.getElementById('userId').value;
-               const jwtToken = getCookie('JWT_TOKEN');
-                  if (!jwtToken) {
-                      console.error('JWT token not found');
-                      return;
-                  }
-                  fetch(`/users/user_by_id?id=${userId}`, {
-                      method: 'GET',
-                      headers: {
-                          'Authorization': `Bearer ${jwtToken}`
-                      },
-                  })
-               .then(response => {
-                   if (!response.ok) {
-                       return response.text().then(text => {
-                           throw new Error(text);
-                       });
-                   }
-                   return response.json();
-               })
-               .then(user => {
-                       console.log('User details:', user);
-                      displayUserDetails(user);
-               })
-               .catch(error => {
-                   console.error('Error finding user:', error);
-                   displayErrorMessageForPersonalDataUpdate(error.message);
-               });
+    event.preventDefault();
+    if (isUsersVisible || isUserDetailsVisible) {
+        hideAllMenus();
+        isUsersVisible = false;
+        isUserDetailsVisible = false;
+        return;
     }
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    fetch(`/users/user_by_subscription?subscription=${subscriptionName}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`
+        },
+    })
+        .then(response => {
+        if (!response.ok) {
+            return response.text().then(errorMessage => {
+                throw new Error(errorMessage);
+            });
+        }
+        return response.json();
+    })
+        .then(data => {
+        users = data;
+        currentPage = 1;
+        displayUsers(users);
+        showForm(null, true);
+        isUsersVisible = true;
+    })
+        .catch(error => {
+        console.error('Error finding user:', error);
+        displayErrorMessageForPersonalDataUpdate(error.message);
+    });
+}
 
-  function submitDeleteAllUser(event) {
-      const jwtToken = getCookie('JWT_TOKEN');
-      if (!jwtToken) {
-          console.error('JWT token not found');
-          return;
-      }
-      fetch('/users/delete_all_users', {
-          method: 'DELETE',
-          headers: {
-              'Authorization': `Bearer ${jwtToken}`,
-              'Content-Type': 'application/json'
-          },
-      })
-      .then(response => {
-          if (!response.ok) {
-              return response.text().then(text => {
-                  throw new Error(text);
-              });
-          }
-          return response.json();
-      })
-      .then(data => {
-          console.log('Response data:', data);
-          displayMessageForPersonalDataUpdate(data);
-      })
-      .catch(error => {
-          console.error('Error:', error);
-          displayErrorMessageForPersonalDataUpdate(error.message);
-      });
-  }
+function submitFindUserByEmail(event) {
+    event.preventDefault();
+    const email = document.getElementById('userEmail').value;
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    fetch(`/users/user_by_email?email=${email}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`
+        },
+    })
+        .then(response => {
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(text);
+            });
+        }
+        return response.json();
+    })
+        .then(user => {
+        console.log('User details:', user);
+        displayUserDetails(user);
+    })
+        .catch(error => {
+        console.error('Error finding user:', error);
+        displayErrorMessageForPersonalDataUpdate(error.message);
+    });
+}
+
+function submitFindUserById(event) {
+    event.preventDefault();
+    const userId = document.getElementById('userId').value;
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    fetch(`/users/user_by_id?id=${userId}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`
+        },
+    })
+        .then(response => {
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(text);
+            });
+        }
+        return response.json();
+    })
+        .then(user => {
+        console.log('User details:', user);
+        displayUserDetails(user);
+    })
+        .catch(error => {
+        console.error('Error finding user:', error);
+        displayErrorMessageForPersonalDataUpdate(error.message);
+    });
+}
+
+function submitDeleteAllUser(event) {
+    const jwtToken = getCookie('JWT_TOKEN');
+    if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+    }
+    fetch('/users/delete_all_users', {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`,
+            'Content-Type': 'application/json'
+        },
+    })
+        .then(response => {
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(text);
+            });
+        }
+        return response.json();
+    })
+        .then(data => {
+        console.log('Response data:', data);
+        displayMessageForPersonalDataUpdate(data);
+    })
+        .catch(error => {
+        console.error('Error:', error);
+        displayErrorMessageForPersonalDataUpdate(error.message);
+    });
+}
 
 function returnMainMenu(event) {
     const jwtToken = getCookie('JWT_TOKEN');
@@ -949,25 +932,14 @@ function returnMainMenu(event) {
             'Authorization': `Bearer ${jwtToken}`
         }
     })
-    .then(response => {
+        .then(response => {
         if (response.ok) {
             window.location.href = 'http://localhost:8080/admin_office';
         } else {
             throw new Error('Invalid token or request failed');
         }
     })
-    .catch(error => {
+        .catch(error => {
         console.error('Error:', error);
     });
 }
-
-
-
-
-
-
-
-
-
-
-

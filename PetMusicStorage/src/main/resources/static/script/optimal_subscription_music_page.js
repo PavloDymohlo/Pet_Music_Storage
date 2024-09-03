@@ -1,27 +1,28 @@
 function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-    }
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
 
-    function closeAllMenus() {
-        const menus = [, 'MeinMenu', 'logOut'];
-        menus.forEach(menuId => {
-            const menu = document.getElementById(menuId);
-            if (menu) {
-                menu.style.display = 'none';
-            }
-        });
-    }
-
-    function toggleMenu(menuId) {
+function closeAllMenus() {
+    const menus = [, 'MeinMenu', 'logOut'];
+    menus.forEach(menuId => {
         const menu = document.getElementById(menuId);
-        const isCurrentlyOpen = menu.style.display === 'block';
-        closeAllMenus();
-        if (!isCurrentlyOpen) {
-            menu.style.display = 'block';
+        if (menu) {
+            menu.style.display = 'none';
         }
+    });
+}
+
+function toggleMenu(menuId) {
+    const menu = document.getElementById(menuId);
+    const isCurrentlyOpen = menu.style.display === 'block';
+    closeAllMenus();
+    if (!isCurrentlyOpen) {
+        menu.style.display = 'block';
     }
+}
+
 document.getElementById('LogOutButton').addEventListener('click', function() {
     toggleMenu('logOut');
 });
@@ -29,9 +30,6 @@ document.getElementById('LogOutButton').addEventListener('click', function() {
 document.getElementById('MeinMenuButton').addEventListener('click', function() {
     toggleMenu('MeinMenu');
 });
-
-
-
 
 function showMusicOptimalSubscription() {
     const jwtToken = getCookie('JWT_TOKEN');
@@ -48,7 +46,7 @@ function showMusicOptimalSubscription() {
             'Authorization': `Bearer ${jwtToken}`
         }
     })
-    .then(response => {
+        .then(response => {
         if (response.status === 404) {
             const emptyMessage = document.createElement('div');
             emptyMessage.textContent = 'Список порожній!';
@@ -62,7 +60,7 @@ function showMusicOptimalSubscription() {
         }
         return response.blob();
     })
-    .then(blob => {
+        .then(blob => {
         if (blob) {
             const zip = new JSZip();
             return zip.loadAsync(blob).then(zip => {
@@ -108,7 +106,7 @@ function showMusicOptimalSubscription() {
             });
         }
     })
-    .catch(error => {
+        .catch(error => {
         console.error('Failed to fetch free subscription music files: ', error);
         spinner.style.display = 'none';
     });
@@ -139,34 +137,33 @@ function MeinMenu(event) {
 
 function updateJWTToken() {
     const jwtToken = getCookie('JWT_TOKEN');
-   if (!jwtToken) {
-       console.error('JWT token not found. User might not be authenticated.');
-       return;
-     }
+    if (!jwtToken) {
+        console.error('JWT token not found. User might not be authenticated.');
+        return;
+    }
     fetch('/update_cookie', {
         method: 'POST',
         headers: {
-           'Authorization': `Bearer ${jwtToken}`
+            'Authorization': `Bearer ${jwtToken}`
         },
     })
-    .then(response => {
+        .then(response => {
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
         return response.text();
     })
-    .then(responseMessage => {
+        .then(responseMessage => {
         console.log(responseMessage);
         const newJwtToken = getCookie('JWT_TOKEN');
         if (newJwtToken) {
             console.log('JWT Token updated successfully');
         }
     })
-    .catch(error => {
+        .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
     });
 }
-
 
 function returnMeinMenu() {
     const jwtToken = getCookie('JWT_TOKEN');
@@ -184,7 +181,7 @@ function returnMeinMenu() {
         if (payload.roles && payload.roles.includes('ROLE_OPTIMAL')) {
             console.log('User has OPTIMAL role');
         } else {
-         console.log('time to go');
+            console.log('time to go');
             window.location.href = '/personal_office';
         }
     } catch (error) {
@@ -194,5 +191,4 @@ function returnMeinMenu() {
 
 setInterval(returnMeinMenu, 60000);
 setInterval(updateJWTToken, 60000);
-
 showMusicOptimalSubscription();

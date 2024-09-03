@@ -13,14 +13,14 @@ document.getElementById('usersButton').addEventListener('click', function() {
             'Content-Type': 'application/json'
         }
     })
-    .then(response => {
+        .then(response => {
         if (response.ok) {
             window.location.href = '/users';
         } else {
             throw new Error('Failed to load users page');
         }
     })
-    .catch(error => {
+        .catch(error => {
         console.error('Error:', error);
     });
 });

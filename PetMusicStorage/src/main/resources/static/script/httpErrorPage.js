@@ -1,3 +1,3 @@
 function returnToMainMenu() {
-         window.location.href = "/host_page";
+    window.location.href = "/host_page";
 }
