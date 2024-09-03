@@ -626,14 +626,6 @@ function displayErrorMessageForDeleteAccount(message) {
     submenuPersonalData.style.display = 'block';
 }
 
-
-//This function is intended for further training on security.
-//function logOut(event) {
-//    event.preventDefault();
-//    window.location.href = '/host_page';
-//}
-
-
 function logOut(event) {
     event.preventDefault();
     document.cookie = "JWT_TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
@@ -685,3 +677,4 @@ function navigateToMusic() {
      getUserEmail();
      getUserBankCardNumber();
     startUpdatingSubscriptionInfo(3);
+

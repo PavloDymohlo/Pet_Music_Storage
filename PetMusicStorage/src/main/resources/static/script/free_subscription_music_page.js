@@ -66,7 +66,7 @@ function showMusicFreeSubscription() {
                 if (Object.keys(zip.files).length === 0) {
                     const emptyMessage = document.createElement('div');
                     emptyMessage.textContent = 'List is empty!';
-                    emptyMessage.className = 'header-text'; // Add the class for styling
+                    emptyMessage.className = 'header-text';
                     container.appendChild(emptyMessage);
                     return;
                 }
