@@ -1,4 +1,4 @@
-package ua.dymohlo.PetMusicStorage.component;
+package ua.dymohlo.PetMusicStorage.configuration;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

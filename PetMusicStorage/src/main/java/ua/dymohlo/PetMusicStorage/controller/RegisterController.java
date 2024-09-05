@@ -69,10 +69,9 @@ public class RegisterController {
                 response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
                 String redirectUrl = "/personal_office";
                 URI location = URI.create(redirectUrl);
-                String emailThemes = "Congratulations!";
                 String emailText = "You register successful!";
                 try {
-                    emailService.sendSimpleMessage(request.getEmail(), emailThemes, emailText);
+                    emailService.sendEmail(request.getEmail(), emailText);
                 } catch (Exception e) {
                     log.error("Failed to send registration email", e);
                 }

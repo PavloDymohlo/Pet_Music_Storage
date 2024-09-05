@@ -6,7 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ua.dymohlo.PetMusicStorage.component.TelegramBot;
+import ua.dymohlo.PetMusicStorage.configuration.TelegramBot;
 import ua.dymohlo.PetMusicStorage.entity.User;
 import ua.dymohlo.PetMusicStorage.repository.UserRepository;
 

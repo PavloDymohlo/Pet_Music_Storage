@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import ua.dymohlo.PetMusicStorage.entity.User;
 import ua.dymohlo.PetMusicStorage.repository.UserRepository;
 
+import java.util.function.Consumer;
+
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -20,11 +23,11 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String from;
 
-    public void sendSimpleMessage(String to, String topic, String text) {
+    public void sendEmail(String to, String messageText) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject(topic);
-        message.setText(text);
+        message.setText(messageText);
         message.setFrom(from);
         try {
             javaMailSender.send(message);
@@ -33,72 +36,67 @@ public class EmailService {
         }
     }
 
-    public void notifyUserAboutChangeSubscription(String userEmail, String subscription, String subscriptionExpiredDate) {
+    private void processUserByEmail(String userEmail, Consumer<User> action) {
         User user = userRepository.findByEmailIgnoreCase(userEmail);
         if (user != null) {
-            String message = String.format("Your subscription has been changed to the %s. Subscription expiration date:  %s. If this wasn't you, please contact support.", subscription, subscriptionExpiredDate);
-            sendSimpleMessage(userEmail, topic, message);
+            action.accept(user);
+        } else {
+            log.warn("User with email {} not found", userEmail);
         }
+    }
+
+    public void notifyUserAboutChangeSubscription(String userEmail, String subscription, String subscriptionExpiredDate) {
+        processUserByEmail(userEmail, user -> {
+            String message = String.format("Your subscription has been changed to %s. Subscription expiration date: %s. If this wasn't you, please contact support.", subscription, subscriptionExpiredDate);
+            sendEmail(userEmail, message);
+        });
     }
 
     public void notifyUserAboutChangePhoneNumber(long newPhoneNumber, String userEmail) {
-        User user = userRepository.findByEmailIgnoreCase(userEmail);
-        if (user != null) {
-            String message = String.format("Your phone number has been changed to the %s. If this wasn't you, please contact support.", newPhoneNumber);
-            sendSimpleMessage(userEmail, topic, message);
-        }
+        processUserByEmail(userEmail, user -> {
+            String message = String.format("Your phone number has been changed to %s. If this wasn't you, please contact support.", newPhoneNumber);
+            sendEmail(userEmail, message);
+        });
     }
 
     public void notifyUserAboutChangeBankCard(String userEmail, long newBankCardNumber) {
-        User user = userRepository.findByEmailIgnoreCase(userEmail);
-        if (user != null) {
-            String message = String.format("Your bank card has been changed to the %s. If this wasn't you, please contact support.", newBankCardNumber);
-            sendSimpleMessage(userEmail, topic, message);
-        }
+        processUserByEmail(userEmail, user -> {
+            String message = String.format("Your bank card has been changed to %s. If this wasn't you, please contact support.", newBankCardNumber);
+            sendEmail(userEmail, message);
+        });
     }
 
     public void notifyUserAboutChangePassword(String userEmail) {
-        User user = userRepository.findByEmailIgnoreCase(userEmail);
-        if (user != null) {
-            String message = String.format("Your password has been changed. If this wasn't you, please contact support.");
-            sendSimpleMessage(userEmail, topic, message);
-        }
+        processUserByEmail(userEmail, user -> {
+            String message = "Your password has been changed. If this wasn't you, please contact support.";
+            sendEmail(userEmail, message);
+        });
     }
 
     public void notifyUserAboutChangeAutoRenewStatus(String userEmail, String autoRenewStatus) {
-        User user = userRepository.findByEmailIgnoreCase(userEmail);
-        if (user != null) {
-            String message = String.format("Your auto-renew status has been changed to the %s. If this wasn't you, please contact support.", autoRenewStatus);
-            sendSimpleMessage(userEmail, topic, message);
-        }
+        processUserByEmail(userEmail, user -> {
+            String message = String.format("Your auto-renew status has been changed to %s. If this wasn't you, please contact support.", autoRenewStatus);
+            sendEmail(userEmail, message);
+        });
     }
 
+
     public void notifyUserAboutChangeEmail(long userPhoneNumber, String oldUserEmail, String newUserEmail) {
-        SimpleMailMessage firstSenderMessage = new SimpleMailMessage();
-        SimpleMailMessage secondSenderMessage = new SimpleMailMessage();
         User user = userRepository.findByPhoneNumber(userPhoneNumber);
         if (user != null) {
-            String messageToOldEmail = String.format("Your email has been changed to the %s. If this wasn't you, please contact support.", newUserEmail);
-            String messageToNewEmail = String.format("You have changed your email address. Here is the address of your previous mailbox. %s. If this wasn't you, please contact support.", oldUserEmail);
-            firstSenderMessage.setTo(oldUserEmail);
-            firstSenderMessage.setSubject(topic);
-            firstSenderMessage.setText(messageToOldEmail);
-            firstSenderMessage.setFrom(from);
-            javaMailSender.send(firstSenderMessage);
-            secondSenderMessage.setTo(newUserEmail);
-            secondSenderMessage.setSubject(topic);
-            secondSenderMessage.setText(messageToNewEmail);
-            secondSenderMessage.setFrom(from);
-            javaMailSender.send(secondSenderMessage);
-        }
+            String messageToOldEmail = String.format("Your email has been changed to %s. If this wasn't you, please contact support.", newUserEmail);
+            String messageToNewEmail = String.format("You have changed your email address. Previous email: %s. If this wasn't you, please contact support.", oldUserEmail);
 
+            sendEmail(oldUserEmail, messageToOldEmail);
+            sendEmail(newUserEmail, messageToNewEmail);
+        }
     }
 
     public void notifyUserAboutDeleteAccount(String userEmail) {
-        User user = userRepository.findByEmailIgnoreCase(userEmail);
-        if (user != null) {
-            String message = String.format("Your account has been deleted. If this wasn't you, please contact support.");
-            sendSimpleMessage(userEmail, topic, message);
-        }
+        processUserByEmail(userEmail, user -> {
+            String message = "Your account has been deleted. If this wasn't you, please contact support.";
+            sendEmail(userEmail, message);
+        });
     }
 }
+

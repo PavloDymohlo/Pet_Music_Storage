@@ -926,7 +926,7 @@ function returnMainMenu(event) {
         console.error('JWT token not found');
         return;
     }
-    fetch('http://localhost:8080/admin_office', {
+    fetch('/admin_office', {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${jwtToken}`
@@ -934,7 +934,7 @@ function returnMainMenu(event) {
     })
         .then(response => {
         if (response.ok) {
-            window.location.href = 'http://localhost:8080/admin_office';
+            window.location.href = '/admin_office';
         } else {
             throw new Error('Invalid token or request failed');
         }
