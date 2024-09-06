@@ -16,63 +16,40 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        String chatId = update.getMessage().getChatId().toString();
         if (update.hasMessage() && update.getMessage().hasText()) {
+            String chatId = update.getMessage().getChatId().toString();
             String text = update.getMessage().getText();
             if ("/start".equals(text)) {
-                SendMessage sendMessage = new SendMessage();
-                sendMessage.setChatId(chatId);
-                String responseMessage = "Enter your phone number:";
-                sendMessage.setText(responseMessage);
-                try {
-                    this.execute(sendMessage);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                    throw new RuntimeException(e);
-                }
+                handleStartCommand(chatId);
             } else {
-                try {
-                    long phoneNumber = Long.parseLong(text);
-                    User user = userRepository.findByPhoneNumber(phoneNumber);
-                    if (user != null) {
-                        user.setTelegramChatId(chatId);
-                        userRepository.save(user);
-                        SendMessage sendMessage = new SendMessage();
-                        sendMessage.setChatId(chatId);
-                        String responseMessage = "Congratulations! You've successfully connected to our bot. You will now receive notifications related to changes in your account.";
-                        sendMessage.setText(responseMessage);
-                        try {
-                            this.execute(sendMessage);
-                        } catch (TelegramApiException e) {
-                            e.printStackTrace();
-                            throw new RuntimeException(e);
-                        }
-                    } else {
-                        SendMessage sendMessage = new SendMessage();
-                        sendMessage.setChatId(chatId);
-                        String responseMessage = "User with phone number " + phoneNumber + " not found!";
-                        sendMessage.setText(responseMessage);
-                        try {
-                            this.execute(sendMessage);
-                        } catch (TelegramApiException e) {
-                            e.printStackTrace();
-                            throw new RuntimeException(e);
-                        }
-                    }
-                } catch (NumberFormatException e) {
-                    SendMessage sendMessage = new SendMessage();
-                    sendMessage.setChatId(chatId);
-                    String responseMessage = "Please, enter correct phone number";
-                    sendMessage.setText(responseMessage);
-                    try {
-                        this.execute(sendMessage);
-                    } catch (TelegramApiException exception) {
-                        e.printStackTrace();
-                        throw new RuntimeException(e);
-                    }
-                }
+                handlePhoneNumberInput(chatId, text);
             }
         }
+    }
+
+    private void handleStartCommand(String chatId) {
+        sendMessage(chatId, "Enter your phone number:");
+    }
+
+    private void handlePhoneNumberInput(String chatId, String text) {
+        try {
+            long phoneNumber = Long.parseLong(text);
+            User user = userRepository.findByPhoneNumber(phoneNumber);
+            if (user != null) {
+                updateAndNotifyUser(user, chatId);
+            } else {
+                sendMessage(chatId, "User with phone number " + phoneNumber + " not found!");
+            }
+        } catch (NumberFormatException e) {
+            sendMessage(chatId, "Please, enter correct phone number");
+        }
+    }
+
+    private void updateAndNotifyUser(User user, String chatId) {
+        user.setTelegramChatId(chatId);
+        userRepository.save(user);
+        sendMessage(chatId, "Congratulations! You've successfully connected to our bot. " +
+                "You will now receive notifications related to changes in your account.");
     }
 
     @Override
@@ -88,13 +65,14 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     public void sendMessage(String chatId, String text) {
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId);
-        message.setText(text);
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(text);
         try {
-            execute(message);
+            execute(sendMessage);
         } catch (TelegramApiException e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }
