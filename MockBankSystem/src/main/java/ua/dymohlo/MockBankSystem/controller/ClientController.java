@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ua.dymohlo.MockBankSystem.dto.TransactionDTO;
+import ua.dymohlo.MockBankSystem.entity.Client;
 import ua.dymohlo.MockBankSystem.service.ClientService;
 
 
@@ -28,6 +29,18 @@ public class ClientController {
             return ResponseEntity.ok("Transaction successful!");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Transaction failed: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<String> addClient(@RequestBody Client client) {
+        try {
+            clientService.addClient(client);
+            return ResponseEntity.ok("Client added successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid client data: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
         }
     }
 }

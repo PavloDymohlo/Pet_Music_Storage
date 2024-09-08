@@ -2,6 +2,7 @@ package ua.dymohlo.MockBankSystem.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.stereotype.Service;
 import ua.dymohlo.MockBankSystem.entity.Client;
 import ua.dymohlo.MockBankSystem.repository.ClientRepository;
@@ -61,5 +62,12 @@ public class ClientService {
         } catch (ParseException e) {
             throw new IllegalArgumentException("Invalid date format!");
         }
+    }
+
+    public Client addClient(Client client) {
+        if (client.getClientFullName() == null || client.getCardNumber() <= 0) {
+            throw new IllegalArgumentException("Invalid client data");
+        }
+        return clientRepository.save(client);
     }
 }
