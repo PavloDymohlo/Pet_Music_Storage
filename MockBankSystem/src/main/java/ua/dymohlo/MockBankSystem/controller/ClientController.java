@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ua.dymohlo.MockBankSystem.dto.TransactionDTO;
-import ua.dymohlo.MockBankSystem.entity.Client;
 import ua.dymohlo.MockBankSystem.service.ClientService;
 
 

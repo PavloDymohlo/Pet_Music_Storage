@@ -99,3 +99,8 @@ The project uses **JUnit** and **Mockito** for unit and integration testing. In-
 
 ## Author
 - **Pavel Pavlik** - [LinkedIn](https://www.linkedin.com/in/pavelpavlik/)
+
+
+---
+## YouTube
+- **Short video review in Ukrainian** - [YouTube](https://www.youtube.com/watch?v=zO3D6wFv3dc&t=1s)
