@@ -63,11 +63,4 @@ public class ClientService {
             throw new IllegalArgumentException("Invalid date format!");
         }
     }
-
-    public Client addClient(Client client) {
-        if (client.getClientFullName() == null || client.getCardNumber() <= 0) {
-            throw new IllegalArgumentException("Invalid client data");
-        }
-        return clientRepository.save(client);
-    }
 }

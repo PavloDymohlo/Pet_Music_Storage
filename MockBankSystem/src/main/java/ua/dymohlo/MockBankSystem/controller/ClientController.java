@@ -31,16 +31,4 @@ public class ClientController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Transaction failed: " + e.getMessage());
         }
     }
-
-    @PostMapping("/add")
-    public ResponseEntity<String> addClient(@RequestBody Client client) {
-        try {
-            clientService.addClient(client);
-            return ResponseEntity.ok("Client added successfully");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid client data: " + e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
-        }
-    }
 }
