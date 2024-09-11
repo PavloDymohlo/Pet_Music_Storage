@@ -10,6 +10,7 @@ import java.util.List;
 
 @Configuration
 public class SwaggerConfig {
+
     //http://localhost:8081/swagger-ui/index.html - swagger link
     private final String URL = "http://localhost:8081";
     private final String TITLE = "Mock bank system";
